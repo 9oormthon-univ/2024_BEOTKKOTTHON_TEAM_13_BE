@@ -1,0 +1,2 @@
+# 2024_BEOTKKOTTHON_TEAM_13_BE
+13팀 [ N분의1 ] 백엔드 레포지토리
