@@ -1,0 +1,32 @@
+* { font-family: 'Noto Sans KR', sans-serif; padding: 0; margin: 0; }
+
+body { background-color: #fbfbfb; }
+
+.container { width: 440px; padding-top: 20px; margin-left: 50%; transform: translate(-50%); }
+.container > .header { display: flex; justify-content: space-between; }
+.container > .title { color: #3a3a3a; margin-bottom: 3px; }
+.container > .sub-title { color: #9e9e9e; margin-bottom: 20px; }
+
+.container > .waiting > img { margin-left: 50%; transform: translate(-50%); }
+.container > .waiting > *:not(img) { text-align: center; }
+
+.topics > button { border: none; width: 100%; height: 50px; font-size: 11pt; border-radius: 5px; color: #3e3e3e; text-align: left; padding-left: 15px; margin-bottom: 5px; cursor: pointer; transition: all 0.2s ease-in-out; }
+.topics > button:hover { background-color: #518efb; color: white; }
+
+.go-back { text-decoration: none; color: #adadad; background-color: transparent; padding: 10px; border-radius: 5px; transition: background-color 0.2s ease-in-out; }
+.go-back:hover { background-color: #f4f4f4; }
+
+.message-container { height: 60vh; background-color: #f1f1f1; border-radius: 5px; }
+
+.message-alert { text-align: center; padding-top: 15px; }
+.message-alert > span { background-color: #e0e0e0; border-radius: 30px; padding: 3px 20px 5px; font-size: 10pt; color: #5d5d5d; }
+.message-from { text-align: left; padding-top: 20px; padding-left: 10px; }
+.message-from > span { background-color: #ffffff; border-radius: 10px 10px 10px 0; padding: 5px 15px 7px; font-size: 12pt; color: #5d5d5d; }
+.message-to { text-align: right; padding-top: 20px; padding-right: 10px; }
+.message-to > span { background-color: #518efb; border-radius: 10px 10px 0 10px; padding: 5px 15px 7px; font-size: 12pt; color: white; }
+
+.sending-container { display: flex; flex-direction: row; margin-top: 5px; border: 1px solid #d8d8d8; padding: 7px; border-radius: 5px; }
+.sending-container:focus-within { border: 1px solid #acacac; }
+.sending-container > input[type="text"] { flex-grow: 2; border: none; background-color: transparent; font-size: 11pt; color: #5d5d5d; }
+.sending-container > input[type="text"]:focus { outline: none; }
+.sending-container > input[type="button"] { padding: 8px 15px; border: none; border-radius: 30px; background-color: #518efb; color: white; cursor: pointer; }
