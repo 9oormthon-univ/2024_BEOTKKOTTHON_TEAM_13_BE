@@ -4,6 +4,7 @@ import com.team13.n1.dto.MessageDto;
 import com.team13.n1.entity.ChatBrief;
 import com.team13.n1.service.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 // 채팅방 컨트롤러
+@Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/chat")
@@ -72,7 +74,7 @@ public class ChatController {
             if (chatService.existsUserIdInChat(chatId, userId)) {
                 chatService.userExit(userId, chatId); // 채팅방 데이터에서 해당 유저 ID 제거
                 chatWSService.userExit(request.get("session_id"), userId, chatId); // 웹소켓에서도 해당 유저 제거
-                joinedChatsService.userExit(userId, chatId);
+                joinedChatsService.userExit(userId, chatId); // 유저가 참여한 채팅방에서 해당 채팅방 제거
             }
         }
     }
