@@ -90,6 +90,15 @@
                 document.getElementsByClassName("message-container")[0].appendChild(messageElement);
             } else if (message.type === "COMPLETE") {
                 console.log("리뷰 작성 시작");
+                // 최종 공동구매 종료를 위해서 유저를 삭제해야 함
+                fetch("/chat/exit-user", {
+                    method: "POST",
+                    headers: { "Content-type": "application/json; charset=UTF-8" },
+                    body: JSON.stringify({
+                        session_id: sessionStorage.getItem("session_id"),
+                        chat_id: chatId
+                    })
+                });
             } else if (message.type === "ERROR") {
                 alert(message.message);
             }
@@ -139,7 +148,7 @@
 <body>
     <div class="container">
         <div class="header" style="margin-bottom: 10px;">
-            <button class="go-back" onclick="doExit()">공동구매 나가기</button>
+            <button class="go-back" onclick="doExit()">공동구매 포기하기</button>
             <button class="go-back" onclick="doComplete()">공동구매 완료</button>
         </div>
         <div class="message-container">

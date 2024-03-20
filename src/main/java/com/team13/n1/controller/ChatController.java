@@ -1,9 +1,8 @@
 package com.team13.n1.controller;
 
 import com.team13.n1.dto.MessageDto;
-import com.team13.n1.service.ChatService;
-import com.team13.n1.service.ChatWSService;
-import com.team13.n1.service.UserSessionService;
+import com.team13.n1.entity.ChatBrief;
+import com.team13.n1.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +15,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/chat")
 public class ChatController {
-    private final UserSessionService sessService;  // 유저 세션 관리 서비스
-    private final ChatService chatService;         // 채팅 관리 서비스
-    private final ChatWSService chatWSService;     // 채팅 웹소켓 관리 서비스
+    private final UserSessionService sessService;             // 유저 세션 관리 서비스
+    private final ChatService chatService;                    // 채팅 관리 서비스
+    private final ChatWSService chatWSService;                // 채팅 웹소켓 관리 서비스
+    private final UserJoinedChatsService joinedChatsService;  // 참여 채팅방 관리 서비스
+    private final ChatBriefService chatBriefService;          // 채팅방 목록에서 보여지는 간단 채팅방 목록
 
     // 과거 채팅 메시지들 전송
     @GetMapping("/init-messages")
@@ -39,7 +40,10 @@ public class ChatController {
     public String createNewChat(@RequestBody Map<String, String> request) {
         if (sessService.existsById(request.get("session_id"))) {
             String userId = sessService.getUserIdBySessionId(request.get("session_id"));
-            return chatService.save(userId); // chatService.save()에서 채팅방 ID 반환값을 그대로 클라이언트로 전달
+            String chatId = chatService.save(userId); // chatService.save()에서 채팅방 ID 반환값을 그대로 클라이언트로 전달
+            joinedChatsService.addChatIdInUser(userId, chatId);
+            chatBriefService.save(new ChatBrief(chatId, "", ""));
+            return chatId;
         }
         return "";
     }
@@ -54,6 +58,7 @@ public class ChatController {
             if (!chatService.existsUserIdInChat(chatId, userId)) {
                 chatWSService.join(chatId, userId, userId); // 해당 유저 입장 메시지('~유저가 입장하였습니다.') 표시
                 chatService.addUserIdInChat(request.get("chat_id"), userId); // 유저 ID 등록
+                joinedChatsService.addChatIdInUser(userId, chatId);
             }
         }
     }
@@ -67,6 +72,7 @@ public class ChatController {
             if (chatService.existsUserIdInChat(chatId, userId)) {
                 chatService.userExit(userId, chatId); // 채팅방 데이터에서 해당 유저 ID 제거
                 chatWSService.userExit(request.get("session_id"), userId, chatId); // 웹소켓에서도 해당 유저 제거
+                joinedChatsService.userExit(userId, chatId);
             }
         }
     }

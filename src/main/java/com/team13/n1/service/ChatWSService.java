@@ -23,6 +23,7 @@ import java.util.Map;
 public class ChatWSService {
     private final UserSessionService sessService;
     private final ChatService chatService;
+    private final ChatBriefService chatBriefService;
     private final ChatUnreadMessagesService unreadMsgsService;
 
     private final ObjectMapper mapper;
@@ -158,6 +159,9 @@ public class ChatWSService {
             if (packet.getType() == MessagePacket.MessageType.MESSAGE_TEXT ||
                     packet.getType() == MessagePacket.MessageType.MESSAGE_IMAGE ||
                     packet.getType() == MessagePacket.MessageType.NOTICE) {
+                // 해당 채팅방의 chat_brief의 last_message를 해당 메시지로 반영
+                chatBriefService.updateLastMessage(chatId, packet.getMessage());
+
                 for (String userIdInChat : userIdsInChat) {
                     unreadMsgsService.addMessage(userIdInChat, chatId, packet.getMessage());
                 }
