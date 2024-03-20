@@ -59,6 +59,7 @@ public class PostController {
         postDTO.setGroupSize(5);
         postDTO.setCurGroupSize(3);
         postDTO.setCreatedAt("2024년 3월 19일");
+        postDTO.setLocationAdress("서울시 성북구 ");
 
         return postDTO;
     }

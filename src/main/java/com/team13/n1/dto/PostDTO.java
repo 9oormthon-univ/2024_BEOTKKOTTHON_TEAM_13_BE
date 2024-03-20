@@ -14,16 +14,19 @@ public class PostDTO {
     private String userId;
     private String chatId;
     private String title;
+    private Integer userLike;
     private String postImages;
     private Integer postStatus;
     private String price;
-    private Integer userLike;
+    private String createdAt;
     private String userNickname;
     private float userScore;
-    private String ingredientName;
     private String ingredientUrl;
     private String contents;
+    private String ingredientName;
+    private String locationAdress;
     private Integer groupSize;
     private Integer curGroupSize;
-    private String createdAt;
+
+    //지도 내용 추가
 }
