@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.UUID;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -38,6 +39,7 @@ public class DataLoader implements CommandLineRunner {
 
     private void createUserAndPost(String userProfile, String userNickname, String postTitle, String postImages, String contents) {
         User user = new User();
+        user.setId(UUID.randomUUID().toString());
         user.setRating(userProfile.length()); // 임의의 값 설정
         user.setProfile(userProfile);
         user.setNickname(userNickname);
