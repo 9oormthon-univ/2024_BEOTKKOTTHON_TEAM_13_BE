@@ -1,5 +1,6 @@
 package com.team13.n1.entity;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +18,7 @@ import java.util.List;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer id;
 
     private String title;
@@ -25,7 +27,6 @@ public class Post {
     private String contents;
     private Integer groupSize;
     private Integer curGroupSize;
-
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -39,5 +40,6 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
 }
 

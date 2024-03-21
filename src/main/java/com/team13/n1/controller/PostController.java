@@ -1,5 +1,6 @@
 package com.team13.n1.controller;
 
+
 import com.team13.n1.entity.Post;
 import com.team13.n1.entity.PostIngredient;
 import com.team13.n1.entity.User;
@@ -7,6 +8,7 @@ import com.team13.n1.repository.PostIngredientRepository;
 import com.team13.n1.repository.PostRepository;
 import com.team13.n1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -82,5 +84,7 @@ public class PostController {
 
         return postData;
     }
+
+
 }
 
