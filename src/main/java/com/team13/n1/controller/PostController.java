@@ -2,17 +2,14 @@ package com.team13.n1.controller;
 
 import com.team13.n1.entity.PostIngredient;
 import com.team13.n1.repository.UserRepository;
+import com.team13.n1.service.PostService;
 import lombok.RequiredArgsConstructor;
 import com.team13.n1.entity.Post;
 import com.team13.n1.entity.User;
 import com.team13.n1.repository.PostRepository;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -22,21 +19,17 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PostController {
 
-    @Autowired
-    private PostRepository postRepository;
+    private final PostService service;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    @GetMapping("/list")
-    public ResponseEntity<List<Map<String, Object>>> getPostsWithIngredients() {
-        List<Post> posts = postRepository.findAll();
-        List<Map<String, Object>> data = new ArrayList<>();
-        for (Post post : posts) {
-            Map<String, Object> postData = createPostData(post);
-            data.add(postData);
-        }
-        return ResponseEntity.ok(data);
+
+    @GetMapping("list")
+    public List<Map<String, Object>> list(@RequestParam("type") String type,
+                                          @RequestParam("keyword") String keyword,
+                                          @RequestParam("page") String page) {
+        return service.getList(type, keyword, page);
     }
 
     @GetMapping("{post_id}")

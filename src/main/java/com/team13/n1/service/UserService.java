@@ -5,6 +5,8 @@ import com.team13.n1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -18,5 +20,15 @@ public class UserService {
     // 새로운 유저 등록
     public void addUser(String userId, String nickname) {
         repository.save(new User(userId, nickname));
+    }
+
+    public String getNicknameById(String userId) {
+        if (existsById(userId)) {
+            Optional<User> user = repository.findById(userId);
+            if (user.isPresent()) {
+                return user.get().getNickname();
+            }
+        }
+        return "";
     }
 }
