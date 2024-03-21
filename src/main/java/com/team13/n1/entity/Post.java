@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.Date;
 import java.util.List;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -32,7 +33,7 @@ public class Post {
     private int groupSize;
     private int curGroupSize;
     private String chatId;
-    private Date createdAt;
+    @CreationTimestamp private Date createdAt;
     private Date closedAt;
 
     @OneToMany
