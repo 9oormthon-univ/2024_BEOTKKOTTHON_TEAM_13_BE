@@ -1,5 +1,6 @@
 package com.team13.n1.wspacket;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +22,9 @@ public class MessagePacket {
     // ERROR - 에러 메시지
 
     private MessageType type; // 메시지 타입
-    private String sessionId, chatId; // 메시지를 전송한 세션 ID와 채팅방 ID
+    private String sessionId; // 메시지를 전송한 세션 ID
+    private String chatId; // 메시지를 보낼 혹은 메시지가 전송된 채팅방 ID
+    private String nickname; // 메시지를 전송한 유저의 닉네임
+    @JsonProperty("profile_image") private String profileImage; // 메시지를 전송한 유저의 프로필 이미지
     private String message; // 메시지 내용
 }

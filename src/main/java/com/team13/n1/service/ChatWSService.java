@@ -5,6 +5,7 @@ import com.team13.n1.dto.MessageDto;
 import com.team13.n1.dto.WSSession;
 import com.team13.n1.wspacket.MessagePacket;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -17,12 +18,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 @EnableScheduling
 public class ChatWSService {
     private final UserSessionService sessService;
     private final ChatService chatService;
+    private final ChatBriefService chatBriefService;
     private final ChatUnreadMessagesService unreadMsgsService;
 
     private final ObjectMapper mapper;
@@ -139,18 +142,23 @@ public class ChatWSService {
             if (session.isOpen()) // 세션이 열려 있을 경우에만 메시지를 전송함
                 session.sendMessage(new TextMessage(mapper.writeValueAsString(message))); // 메시지 내용을 문자열로 변환하여 메시지를 전송함
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
         }
-        System.out.println(session.getId() + " <- " + message);
+        log.info(session.getId() + " <- " + message);
     }
 
     // 채팅방 내의 전체 유저에게 메시지 전송
     private void broadcast(String chatId, String userId, MessagePacket packet) {
         if (chatRooms.containsKey(chatId)) {
             List<String> userIdsInChat = chatService.getUserIdsInChat(chatId);
-            chatService.addMessage(chatId, new MessageDto(userId, packet.getMessage(), packet.getType()));
+            // TODO: 유저 닉네임 및 프로필 사진 추가
+            chatService.addMessage(chatId, new MessageDto("윤준영", "/user-image/profile/ypjun100.png",
+                    packet.getType(), packet.getMessage()));
 
             for (WSSession wsSession : chatRooms.get(chatId)) {
+                // TODO: 유저 닉네임 및 프로필 사진 추가
+                packet.setNickname("윤준영");
+                packet.setProfileImage("/user-image/profile/ypjun100.png");
                 sendMessage(wsSession.getWsSession(), packet);
                 userIdsInChat.remove(wsSession.getUserId()); // 메시지를 전송한 유저는 삭제하고 남은 유저는 읽지 않은 메시지로 전송
             }
@@ -158,6 +166,9 @@ public class ChatWSService {
             if (packet.getType() == MessagePacket.MessageType.MESSAGE_TEXT ||
                     packet.getType() == MessagePacket.MessageType.MESSAGE_IMAGE ||
                     packet.getType() == MessagePacket.MessageType.NOTICE) {
+                // 해당 채팅방의 chat_brief의 last_message를 해당 메시지로 반영
+                chatBriefService.updateLastMessage(chatId, packet.getMessage());
+
                 for (String userIdInChat : userIdsInChat) {
                     unreadMsgsService.addMessage(userIdInChat, chatId, packet.getMessage());
                 }

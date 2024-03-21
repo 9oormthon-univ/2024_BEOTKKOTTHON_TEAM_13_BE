@@ -11,12 +11,14 @@ import com.team13.n1.service.*;
 import com.team13.n1.wspacket.MessagePacket;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 // 채팅방 목록 컨트롤러
+@Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/chats")
@@ -36,6 +38,7 @@ public class ChatsController {
         // 이때, chat_brief에는 채팅방 목록에서 보여주기 위한 채팅방 ID, 해당 채팅방의 마지막 메시지, 채팅방과 연결된 게시글 ID가 저장됨
         if (sessService.existsById(sessionId)) {
             String userId = sessService.getUserIdBySessionId(sessionId);
+
             // userId 데이터가 존재하고, 해당 유저가 참여한 채팅방이 있는 경우 실행
             if (!userId.isEmpty() && joinedChatsService.existsByUserId(userId)) {
                 List<String> chatIds = joinedChatsService.getChatsIdsByUserId(userId); // 해당 유저가 참여한 채팅방 ID 리스트
@@ -56,6 +59,7 @@ public class ChatsController {
 
         if (sessService.existsById(sessionId)) {
             String userId = sessService.getUserIdBySessionId(sessionId);
+
             if (!userId.isEmpty() && chatUnreadMessagesService.existsByUserId(userId)) {
                 result.addAll(chatUnreadMessagesService.getUnreadMessagesByUserId(userId));
             }
@@ -78,8 +82,11 @@ public class ChatsController {
         userIds.add("ypjun101");
 
         List<MessageDto> messageDtos = new ArrayList<>();
-        messageDtos.add(new MessageDto("ypjun100", "ypjun100이 보낸 메시지임", MessagePacket.MessageType.MESSAGE_TEXT));
-        messageDtos.add(new MessageDto("ypjun101", "이거는 ypjun101이 보낸 메시지임", MessagePacket.MessageType.MESSAGE_TEXT));
+
+        messageDtos.add(new MessageDto("윤준영100", "/user-image/profile/ypjun100.png",
+                MessagePacket.MessageType.MESSAGE_TEXT, "윤준영100이 보낸 메시지"));
+        messageDtos.add(new MessageDto("윤준영101", "/user-image/profile/ypjun101.png",
+                MessagePacket.MessageType.MESSAGE_TEXT, "윤준영101이 보낸 메시지"));
         chatService.save(new Chat("abc", "", userIds, messageDtos));
 
         chatBriefService.save(new ChatBrief("abc", "", "hi2"));

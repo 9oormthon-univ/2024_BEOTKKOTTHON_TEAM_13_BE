@@ -1,6 +1,7 @@
 package com.team13.n1.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,11 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    @Id
-    @JoinColumn(name = "user_id")
-    private String id;
-
+    @Id private String id;
     private String nickname;
-    private int rating;
-    private String profile;
+    private double userRating;
+    private String profileImage;
+
+    public User(String id, String nickname) {
+        this.id = id;
+        this.nickname = nickname;
+        userRating = 0d;
+        profileImage = "";
+    }
 }

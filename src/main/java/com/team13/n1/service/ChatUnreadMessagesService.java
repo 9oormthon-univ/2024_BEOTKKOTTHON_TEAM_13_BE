@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,6 +40,10 @@ public class ChatUnreadMessagesService {
             unreadMessages.add(new ChatUnreadMessageDto(chatId, message));
             template.updateFirst(Query.query(Criteria.where("_id").is(userId)),
                     Update.update("unread_messages", unreadMessages), ChatUnreadMessages.class);
+        } else {
+            List<ChatUnreadMessageDto> unreadMessages = new ArrayList<>();
+            unreadMessages.add(new ChatUnreadMessageDto(chatId, message));
+            save(new ChatUnreadMessages(userId, unreadMessages));
         }
     }
 

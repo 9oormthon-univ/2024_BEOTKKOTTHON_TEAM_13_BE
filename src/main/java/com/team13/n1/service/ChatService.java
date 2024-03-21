@@ -80,6 +80,7 @@ public class ChatService {
 
             if (userIds.isEmpty()) {
                 template.remove(Query.query(Criteria.where("_id").is(chatId)), "chat");
+                return;
             }
 
             template.updateFirst(Query.query(Criteria.where("_id").is(chatId)),
