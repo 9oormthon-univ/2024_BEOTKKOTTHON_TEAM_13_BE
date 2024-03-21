@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -37,5 +36,6 @@ public class Post {
     private Date closedAt;
 
     @OneToMany
+    @JoinColumn(name = "post_id")
     private List<PostIngredient> ingredients;
 }
