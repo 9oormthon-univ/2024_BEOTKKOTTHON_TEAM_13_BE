@@ -1,6 +1,5 @@
 package com.team13.n1.service;
 
-import com.team13.n1.entity.Chat;
 import com.team13.n1.entity.UserJoinedChats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
