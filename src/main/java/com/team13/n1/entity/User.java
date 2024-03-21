@@ -1,6 +1,7 @@
 package com.team13.n1.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    @Id private String id;
+    @Id
+    private String id;
     private String nickname;
     private double userRating;
     private String profileImage;
