@@ -25,4 +25,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query(value="select * from post limit :n, :m", nativeQuery = true)
     List<Post> findWithLimit(@Param("n") int n, @Param("m") int m);
+
+    List<Post> findByUserId(String userId);
 }

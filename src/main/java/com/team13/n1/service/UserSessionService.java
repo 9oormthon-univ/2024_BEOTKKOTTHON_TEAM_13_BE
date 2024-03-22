@@ -30,7 +30,7 @@ public class UserSessionService {
 
         // 테스트용 코드
         if (sessionId.equals("test_session_id"))
-            return "testid";
+            return "ypjun100";
 
         return "";
     }

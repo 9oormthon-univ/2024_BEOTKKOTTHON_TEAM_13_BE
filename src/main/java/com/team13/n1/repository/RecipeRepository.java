@@ -18,4 +18,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
     // 레시피 탐색
     @Query(value="select * from recipe where title like %:keyword% limit :n, :m", nativeQuery = true)
     List<Recipe> findByKeywordWithLimit(@Param("keyword") String keyword, @Param("n") int n, @Param("m") int m);
+
+    List<Recipe> findByUserId(String userId);
 }
