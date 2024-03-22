@@ -17,7 +17,6 @@ public class RecipeProcess {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int recipeId;
     private String image;
     private String contents;
 }

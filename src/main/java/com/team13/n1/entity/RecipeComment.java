@@ -17,7 +17,6 @@ public class RecipeComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int recipeId;
     private String userId;
     private String comment;
 }

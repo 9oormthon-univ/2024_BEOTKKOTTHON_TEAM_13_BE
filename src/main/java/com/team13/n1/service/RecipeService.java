@@ -16,6 +16,8 @@ public class RecipeService {
 
     private final RecipeRepository repository;
 
+    private final UserService userService;
+
     // 10개의 랜덤 레시피 가져오기
     public List<Map<String, Object>> getBriefList() {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -56,12 +58,36 @@ public class RecipeService {
         return result;
     }
 
+    public Map<String, Object> getRecipeById(int recipeId) {
+        Optional<Recipe> recipe = repository.findById(recipeId);
+        return recipe.map(this::recipeToHashMap)
+                .orElseGet(HashMap::new);
+    }
+
     // Recipe -> Hashmap 변환 (특정 정보만 저장)
     private Map<String, Object> recipeToSimpleHashMap(Recipe recipe) {
         Map<String, Object> hashmap = new HashMap<>();
         hashmap.put("id", recipe.getId());
         hashmap.put("title", recipe.getTitle());
         hashmap.put("thumbnail_image", recipe.getThumbnailImage());
+        return hashmap;
+    }
+
+    // Recipe -> Hashmap 변환 (전체 정보 저장)
+    private Map<String, Object> recipeToHashMap(Recipe recipe) {
+        Map<String, Object> hashmap = recipeToSimpleHashMap(recipe);
+
+        Map<String, String> user = new HashMap<>();
+        user.put("nickname", userService.getNicknameById(recipe.getUserId()));
+        user.put("profile_image", userService.getProfileImageById(recipe.getUserId()));
+        hashmap.put("user", user);
+
+        hashmap.put("created_at", recipe.getCreatedAt());
+        hashmap.put("likes_count", recipe.getLikesCount());
+
+        hashmap.put("ingredients", recipe.getIngredients());
+        hashmap.put("processes", recipe.getProcesses());
+
         return hashmap;
     }
 }
