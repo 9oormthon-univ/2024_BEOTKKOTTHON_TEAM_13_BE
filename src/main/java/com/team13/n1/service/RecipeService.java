@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -24,11 +21,7 @@ public class RecipeService {
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (Recipe recipe : repository.findRandomRecipes(10)) {
-            Map<String, Object> resultRecipe = new HashMap<>();
-            resultRecipe.put("id", recipe.getId());
-            resultRecipe.put("title", recipe.getTitle());
-            resultRecipe.put("thumbnail_image", recipe.getThumbnailImage());
-            result.add(resultRecipe);
+            result.add(recipeToSimpleHashMap(recipe));
         }
 
         return result;
@@ -41,13 +34,34 @@ public class RecipeService {
         int n = (Integer.parseInt(page) - 1) * RECIPE_PER_PAGE;
 
         for (Recipe recipe : repository.findByKeywordWithLimit(keyword, n, RECIPE_PER_PAGE)) {
-            Map<String, Object> resultRecipe = new HashMap<>();
-            resultRecipe.put("id", recipe.getId());
-            resultRecipe.put("title", recipe.getTitle());
-            resultRecipe.put("thumbnail_image", recipe.getThumbnailImage());
-            result.add(resultRecipe);
+            result.add(recipeToSimpleHashMap(recipe));
         }
 
         return result;
+    }
+
+    // 간단 레시피 불러오기
+    public Map<String, Object> getSimpleRecipeById(int recipeId) {
+        Optional<Recipe> recipe = repository.findById(recipeId);
+        return recipe.map(this::recipeToSimpleHashMap)
+                .orElseGet(HashMap::new);
+    }
+
+    // 게시글 작성자 유저 ID로 게시글들 불러오기
+    public List<Map<String, Object>> getSimpleRecipesByUserId(String userId) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Recipe recipe : repository.findByUserId(userId)) {
+            result.add(recipeToSimpleHashMap(recipe));
+        }
+        return result;
+    }
+
+    // Recipe -> Hashmap 변환 (특정 정보만 저장)
+    private Map<String, Object> recipeToSimpleHashMap(Recipe recipe) {
+        Map<String, Object> hashmap = new HashMap<>();
+        hashmap.put("id", recipe.getId());
+        hashmap.put("title", recipe.getTitle());
+        hashmap.put("thumbnail_image", recipe.getThumbnailImage());
+        return hashmap;
     }
 }

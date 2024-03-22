@@ -1,10 +1,13 @@
 package com.team13.n1.controller;
 
-import com.team13.n1.service.UserService;
+import com.team13.n1.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -13,6 +16,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService service;
+    private final UserSessionService sessService;
+    private final UserLikesService likesService;
+    private final PostService postService;
+    private final RecipeService recipeService;
 
     @PostMapping("signup")
     public String signUp(@RequestBody Map<String, String> request) {
@@ -26,5 +33,51 @@ public class UserController {
             return "ok";
         }
         return "";
+    }
+
+    // 사용자 닉네임, 만족도 반환
+    @GetMapping("info")
+    public Map<String, Object> info(@RequestParam String session_id) {
+        if (sessService.existsById(session_id)) {
+            String userId = sessService.getUserIdBySessionId(session_id);
+            return service.getUserInfo(userId);
+        }
+        return new HashMap<>();
+    }
+
+    // 사용자가 작성한 글
+    @GetMapping("posts")
+    public List<Map<String, Object>> userPosts(@RequestParam String session_id) {
+        if (sessService.existsById(session_id)) {
+            String userId = sessService.getUserIdBySessionId(session_id);
+            return postService.getSimplePostsByUserId(userId);
+        }
+        return new ArrayList<>();
+    }
+
+    // 사용자가 작성한 레시피
+    @GetMapping("recipes")
+    public List<Map<String, Object>> userRecipes(@RequestParam String session_id) {
+        if (sessService.existsById(session_id)) {
+            String userId = sessService.getUserIdBySessionId(session_id);
+            return recipeService.getSimpleRecipesByUserId(userId);
+        }
+        return new ArrayList<>();
+    }
+
+    // 사용자가 좋아요 한 공동구매 및 레시피
+    @GetMapping("likes")
+    public List<Map<String, Object>> userLikesPost(@RequestParam String session_id, @RequestParam String type) {
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        if (sessService.existsById(session_id)) {
+            String userId = sessService.getUserIdBySessionId(session_id);
+            if (type.equals("post"))
+                result.addAll(likesService.getUserLikesPosts(userId));
+            else if (type.equals("recipe"))
+                result.addAll(likesService.getUserLikesRecipes(userId));
+        }
+
+        return result;
     }
 }

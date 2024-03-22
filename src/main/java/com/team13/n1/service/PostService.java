@@ -32,11 +32,27 @@ public class PostService {
         return result;
     }
 
-    // 게시글 불러오기
+    // 게시글 불러오기 (PostController용)
     public ResponseEntity<Map<String, Object>> getPost(int postId) {
         Optional<Post> post = repository.findById(postId);
         return post.map(value -> ResponseEntity.ok(postToHashMap(value)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // 게시글 불러오기 (UserService용)
+    public Map<String, Object> getSimplePostById(int postId) {
+        Optional<Post> post = repository.findById(postId);
+        return post.map(this::postToSimpleHashMap)
+                .orElseGet(HashMap::new);
+    }
+
+    // 게시글 작성자 유저 ID로 게시글들 불러오기
+    public List<Map<String, Object>> getSimplePostsByUserId(String userId) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Post post : repository.findByUserId(userId)) {
+            result.add(postToSimpleHashMap(post));
+        }
+        return result;
     }
 
 
