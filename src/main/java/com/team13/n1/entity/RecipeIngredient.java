@@ -1,5 +1,6 @@
 package com.team13.n1.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +16,7 @@ public class RecipeIngredient {
     private int id;
 
     @ManyToOne
+    @JsonIgnore
     private Recipe recipe;
     private String name;
 }
