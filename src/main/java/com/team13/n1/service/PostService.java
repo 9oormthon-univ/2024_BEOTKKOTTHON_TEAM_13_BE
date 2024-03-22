@@ -2,7 +2,10 @@ package com.team13.n1.service;
 
 import com.team13.n1.entity.Post;
 import com.team13.n1.entity.PostIngredient;
+import com.team13.n1.entity.Recipe;
+import com.team13.n1.entity.RecipeIngredient;
 import com.team13.n1.repository.PostRepository;
+import com.team13.n1.repository.RecipeIngredientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,8 @@ public class PostService {
     private final int RECIPE_PER_PAGE = 20;
 
     private final PostRepository repository;
+    private final RecipeIngredientRepository ingredientRepo;
+
     private final UserService userService;
 
     // 게시글 리스트
@@ -132,6 +137,25 @@ public class PostService {
         hashmap.put("url", post.getUrl());
         hashmap.put("chat_id", post.getChatId());
         hashmap.put("created_at", post.getCreatedAt());
+
+        // 식재료 공동구매인 경우 해당 식재료로 요리할 수 있는 관련 레시피 추가
+        List<Map<String, Object>> linkedRecipes = new ArrayList<>();
+        if (post.getType() == 0) {
+            // 재료 이름으로 레시피 검색
+            List<RecipeIngredient> ingredients = ingredientRepo.findRecipeIngredientByName(post.getTitle());
+
+            if (!ingredients.isEmpty()) {
+                Recipe recipe = ingredients.get(ingredients.size() - 1).getRecipe();
+
+                Map<String, Object> result = new HashMap<>();
+                result.put("id", recipe.getId());
+                result.put("thumbnail_image", recipe.getThumbnailImage());
+                result.put("title", recipe.getTitle());
+
+                linkedRecipes.add(result);
+            }
+        }
+        hashmap.put("linked_recipes", linkedRecipes);
 
         return hashmap;
     }

@@ -26,7 +26,8 @@ public class RecipeController {
     }
 
     @GetMapping("{recipe_id}")
-    public Map<String, Object> recipe(@PathVariable("recipe_id") int recipeId) {
-        return service.getRecipeById(recipeId);
+    public Map<String, Object> recipe(@PathVariable("recipe_id") int recipeId,
+                                      @RequestParam("bcode") String bCode) {
+        return service.getRecipeById(recipeId, bCode);
     }
 }

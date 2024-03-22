@@ -1,6 +1,7 @@
 package com.team13.n1.service;
 
 import com.team13.n1.entity.Recipe;
+import com.team13.n1.entity.RecipeIngredient;
 import com.team13.n1.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -17,6 +18,7 @@ public class RecipeService {
     private final RecipeRepository repository;
 
     private final UserService userService;
+    private final PostService postService;
 
     // 10개의 랜덤 레시피 가져오기
     public List<Map<String, Object>> getBriefList() {
@@ -58,11 +60,12 @@ public class RecipeService {
         return result;
     }
 
-    public Map<String, Object> getRecipeById(int recipeId) {
+    public Map<String, Object> getRecipeById(int recipeId, String bCode) {
         Optional<Recipe> recipe = repository.findById(recipeId);
-        return recipe.map(this::recipeToHashMap)
+        return recipe.map(value -> recipeToHashMap(value, bCode))
                 .orElseGet(HashMap::new);
     }
+
 
     // Recipe -> Hashmap 변환 (특정 정보만 저장)
     private Map<String, Object> recipeToSimpleHashMap(Recipe recipe) {
@@ -74,7 +77,7 @@ public class RecipeService {
     }
 
     // Recipe -> Hashmap 변환 (전체 정보 저장)
-    private Map<String, Object> recipeToHashMap(Recipe recipe) {
+    private Map<String, Object> recipeToHashMap(Recipe recipe, String bCode) {
         Map<String, Object> hashmap = recipeToSimpleHashMap(recipe);
 
         Map<String, String> user = new HashMap<>();
@@ -87,6 +90,26 @@ public class RecipeService {
 
         hashmap.put("ingredients", recipe.getIngredients());
         hashmap.put("processes", recipe.getProcesses());
+
+        // linked_posts (주변 공동구매 게시글)
+        List<Map<String, Object>> linkedPosts = new ArrayList<>();
+        for (RecipeIngredient ingredient : recipe.getIngredients()) {
+            List<Map<String, Object>> foundPosts = postService.getList(bCode, "ingd", ingredient.getName(), "1");
+            log.info(ingredient.getName());
+            log.info(foundPosts);
+
+            if (!foundPosts.isEmpty()) {
+                Map<String, Object> foundPost = foundPosts.get(0);
+
+                Map<String, Object> result = new HashMap<>();
+                result.put("id", foundPost.get("id"));
+                result.put("image", foundPost.get("image"));
+                result.put("title", foundPost.get("title"));
+
+                linkedPosts.add(result);
+            }
+        }
+        hashmap.put("linked_posts", linkedPosts);
 
         return hashmap;
     }
