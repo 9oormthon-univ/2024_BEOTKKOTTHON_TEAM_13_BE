@@ -68,8 +68,6 @@ public class PostService {
 
         List<Post> posts = bCode.isBlank() ? repository.findWithLimit(n, RECIPE_PER_PAGE) :
                 repository.findWithLimit(bCode, n, RECIPE_PER_PAGE);
-        log.info(bCode);
-        log.info(bCode.isBlank());
         for (Post post : posts) {
             Map<String, Object> hashmap = postToSimpleHashMap(post);
             result.add(hashmap);
