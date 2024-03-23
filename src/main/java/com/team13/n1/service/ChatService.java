@@ -51,6 +51,15 @@ public class ChatService {
         return messages;
     }
 
+    // 채팅방에 연결된 게시글 ID 반환
+    public int getPostIdById(String chatId) {
+        Chat chat = template.findById(chatId, Chat.class, "chat");
+        if (chat != null) {
+            return chat.getPostId();
+        }
+        return -1;
+    }
+
     // 채팅방 메시지 추가
     public void addMessage(String chatId, MessageDto message) {
         Chat chat = template.findById(chatId, Chat.class, "chat");
@@ -108,7 +117,7 @@ public class ChatService {
         List<String> userIds = new ArrayList<>();
         userIds.add(userId);
 
-        save(new Chat(chatId, "", userIds, new ArrayList<>()));
+        save(new Chat(chatId, 1, userIds, new ArrayList<>()));
         return chatId;
     }
 }

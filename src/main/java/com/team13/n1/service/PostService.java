@@ -60,6 +60,15 @@ public class PostService {
         return result;
     }
 
+    // 게시글 title 반환
+    public String getTitleById(int postId) {
+        Optional<Post> post = repository.findById(postId);
+        if (post.isPresent()) {
+            return post.get().getTitle();
+        }
+        return "";
+    }
+
 
     // 게시글 전체 리스트
     private List<Map<String, Object>> getAllList(String bCode, String page) {
