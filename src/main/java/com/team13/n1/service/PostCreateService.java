@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 // PostCreateService.java
 @Service
@@ -101,4 +102,38 @@ public class PostCreateService {
         ingredient.setUrl(ingredientDto.getUrl());
         return ingredient;
     }
+
+    public void updatePost(Integer postId, PostCreateRequest request) {
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            // 게시물 업데이트 로직 구현
+            post.setTitle(request.getTitle());
+            post.setPrice(request.getPrice());
+            post.setContents(request.getContents());
+            post.setImages(request.getImages());
+            // 필요한 내용을 업데이트하고 저장
+            postRepository.save(post);
+        } else {
+            // 해당 postId에 해당하는 게시물이 없을 경우 예외 처리
+            throw new IllegalArgumentException("Post not found with id: " + postId);
+        }
+    }
+
+    public void deletePost(Integer postId) {
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            // 연관된 PostIngredient들 먼저 삭제
+            List<PostIngredient> postIngredients = postIngredientRepository.findByPost(post);
+            postIngredientRepository.deleteAll(postIngredients);
+            // 게시물 삭제
+            postRepository.delete(post);
+        } else {
+            // 해당 postId에 해당하는 게시물이 없을 경우 예외 처리
+            throw new IllegalArgumentException("Post not found with id: " + postId);
+        }
+    }
+
+
 }

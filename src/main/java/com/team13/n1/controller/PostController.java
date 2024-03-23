@@ -48,4 +48,21 @@ public class PostController {
         postCreateService.postRIngd(request);
         return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully.");
     }
+
+    // PUT 메소드로 게시물 수정
+    @PutMapping("/{postId}")
+    public ResponseEntity<String> updatePost(@PathVariable("postId") Integer postId, @RequestBody PostCreateRequest request) {
+        postCreateService.updatePost(postId, request);
+        return ResponseEntity.ok("Post updated successfully.");
+    }
+
+    // DELETE 메소드로 게시물 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<String> deletePost(@PathVariable("postId") Integer postId) {
+        postCreateService.deletePost(postId);
+        return ResponseEntity.ok("Post deleted successfully.");
+    }
+
+
+
 }
