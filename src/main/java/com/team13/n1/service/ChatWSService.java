@@ -27,6 +27,7 @@ public class ChatWSService {
     private final ChatService chatService;
     private final ChatBriefService chatBriefService;
     private final ChatUnreadMessagesService unreadMsgsService;
+    private final UserService userService;
 
     private final ObjectMapper mapper;
 
@@ -151,14 +152,13 @@ public class ChatWSService {
     private void broadcast(String chatId, String userId, MessagePacket packet) {
         if (chatRooms.containsKey(chatId)) {
             List<String> userIdsInChat = chatService.getUserIdsInChat(chatId);
-            // TODO: 유저 닉네임 및 프로필 사진 추가
-            chatService.addMessage(chatId, new MessageDto("윤준영", "/user-image/profile/ypjun100.png",
+            chatService.addMessage(chatId, new MessageDto(userService.getNicknameById(userId),
+                    userService.getProfileImageById(userId),
                     packet.getType(), packet.getMessage()));
 
             for (WSSession wsSession : chatRooms.get(chatId)) {
-                // TODO: 유저 닉네임 및 프로필 사진 추가
-                packet.setNickname("윤준영");
-                packet.setProfileImage("/user-image/profile/ypjun100.png");
+                packet.setNickname(userService.getNicknameById(userId));
+                packet.setProfileImage(userService.getProfileImageById(userId));
                 sendMessage(wsSession.getWsSession(), packet);
                 userIdsInChat.remove(wsSession.getUserId()); // 메시지를 전송한 유저는 삭제하고 남은 유저는 읽지 않은 메시지로 전송
             }
