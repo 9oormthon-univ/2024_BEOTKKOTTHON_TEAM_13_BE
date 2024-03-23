@@ -1,14 +1,12 @@
 package com.team13.n1.controller;
 
+import com.team13.n1.entity.UserSession;
 import com.team13.n1.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -30,7 +28,9 @@ public class UserController {
     @PostMapping("signin")
     public String signIn(@RequestBody Map<String, String> request) {
         if (service.existsById(request.get("user_id"))) {
-            return "ok";
+            String sessionId = UUID.randomUUID().toString();
+            sessService.save(new UserSession(sessionId, request.get("id")));
+            return sessionId;
         }
         return "";
     }
