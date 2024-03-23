@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.util.*;
@@ -32,5 +33,10 @@ public class PostController {
     @PostMapping
     public String save(@RequestBody Map<String, Object> request) throws ParseException {
         return service.save(request);
+    }
+
+    @PostMapping("image")
+    public String saveImage(@RequestParam("image_file") MultipartFile imageFile) {
+        return service.saveImage(imageFile);
     }
 }

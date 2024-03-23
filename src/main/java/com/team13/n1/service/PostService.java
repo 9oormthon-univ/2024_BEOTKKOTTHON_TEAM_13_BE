@@ -8,9 +8,13 @@ import com.team13.n1.repository.PostRepository;
 import com.team13.n1.repository.RecipeIngredientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -27,6 +31,9 @@ public class PostService {
 
     private final UserService userService;
     private final UserSessionService userSessService;
+
+    @Value("${image.upload.dir}")
+    private String imageUploadDir;
 
     // 게시글 리스트
     public List<Map<String, Object>> getList(String bCode, String type, String keyword, String page) {
@@ -115,6 +122,19 @@ public class PostService {
             return chatId;
         }
         return "";
+    }
+
+    // 이미지 저장
+    public String saveImage(MultipartFile imageFile) {
+        String fileext = imageFile.getOriginalFilename().split("\\.")[1];
+        String path = imageUploadDir + "/" + UUID.randomUUID() + "." + fileext;
+        File file = new File(path);
+        try {
+            imageFile.transferTo(file);
+        } catch (IOException e) {
+            log.error(e);
+        }
+        return path;
     }
 
 
