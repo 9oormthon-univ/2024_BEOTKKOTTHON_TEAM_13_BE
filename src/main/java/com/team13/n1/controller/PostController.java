@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -37,11 +38,7 @@ public class PostController {
         return service.getPost(postId);
     }
 
-    @PostMapping("/ingd")
-    public ResponseEntity<String> postIngd(@RequestBody PostCreateRequest request) {
-        postCreateService.postIngd(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully.");
-    }
+
 
     @PostMapping("/r_ingd")
     public ResponseEntity<String> postRIngd(@RequestBody PostCreateRequest request) {
@@ -49,19 +46,15 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully.");
     }
 
-    // PUT 메소드로 게시물 수정
-    @PutMapping("/{postId}")
-    public ResponseEntity<String> updatePost(@PathVariable("postId") Integer postId, @RequestBody PostCreateRequest request) {
-        postCreateService.updatePost(postId, request);
-        return ResponseEntity.ok("Post updated successfully.");
-    }
 
-    // DELETE 메소드로 게시물 삭제
-    @DeleteMapping("/{postId}")
-    public ResponseEntity<String> deletePost(@PathVariable("postId") Integer postId) {
-        postCreateService.deletePost(postId);
-        return ResponseEntity.ok("Post deleted successfully.");
-    }
+@PostMapping("/r_ingd/image")
+public ResponseEntity<String> postRIngdImage(@RequestParam("imageFile") MultipartFile imageFile) {
+    String imagePath = postCreateService.saveImageAndReturnPath(imageFile);
+    return ResponseEntity.status(HttpStatus.CREATED).body(imagePath);
+}
+
+
+
 
 
 

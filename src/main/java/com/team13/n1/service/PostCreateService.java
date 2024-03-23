@@ -8,7 +8,10 @@ import com.team13.n1.repository.PostIngredientRepository;
 import com.team13.n1.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +29,11 @@ public class PostCreateService {
         this.postIngredientRepository = postIngredientRepository;
     }
 
+    @Value("${upload.dir}")
+    private String uploadDir;
+
     public void postIngd(PostCreateRequest request) {
+
         Post post = new Post();
         post.setUserId("abc"); //로그인하면 필요없음
         post.setTitle(request.getTitle());
@@ -47,6 +54,7 @@ public class PostCreateService {
         post.setCurGroupSize(0);
         post.setUrl(request.getUrl());
 
+
         // Post를 저장
         Post savedPost = postRepository.save(post);
 
@@ -60,10 +68,9 @@ public class PostCreateService {
         }
     }
 
-
-    public void postRIngd(PostCreateRequest request) {
+    public void postRIngd( PostCreateRequest request) {
         Post post = new Post();
-        post.setUserId("cook"); //로그인하면 필요없음
+        post.setUserId("kkk"); //로그인하면 필요없음
         post.setTitle(request.getTitle());
         post.setPrice(request.getPrice());
         post.setContents(request.getContents());
@@ -103,37 +110,18 @@ public class PostCreateService {
         return ingredient;
     }
 
-    public void updatePost(Integer postId, PostCreateRequest request) {
-        Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isPresent()) {
-            Post post = optionalPost.get();
-            // 게시물 업데이트 로직 구현
-            post.setTitle(request.getTitle());
-            post.setPrice(request.getPrice());
-            post.setContents(request.getContents());
-            post.setImages(request.getImages());
-            // 필요한 내용을 업데이트하고 저장
-            postRepository.save(post);
-        } else {
-            // 해당 postId에 해당하는 게시물이 없을 경우 예외 처리
-            throw new IllegalArgumentException("Post not found with id: " + postId);
+    public String saveImageAndReturnPath(MultipartFile imageFile) {
+        String imageName = imageFile.getOriginalFilename();
+        String imagePath = uploadDir + "/" + imageName;
+        File dest = new File(imagePath);
+        try {
+            imageFile.transferTo(dest);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return imagePath;
     }
 
-    public void deletePost(Integer postId) {
-        Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isPresent()) {
-            Post post = optionalPost.get();
-            // 연관된 PostIngredient들 먼저 삭제
-            List<PostIngredient> postIngredients = postIngredientRepository.findByPost(post);
-            postIngredientRepository.deleteAll(postIngredients);
-            // 게시물 삭제
-            postRepository.delete(post);
-        } else {
-            // 해당 postId에 해당하는 게시물이 없을 경우 예외 처리
-            throw new IllegalArgumentException("Post not found with id: " + postId);
-        }
     }
 
 
-}

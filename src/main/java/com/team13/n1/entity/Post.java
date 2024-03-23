@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Data
@@ -32,9 +33,10 @@ public class Post {
     private int groupSize;
     private int curGroupSize;
     private String chatId;
+    private String imageName;
+    private String imagePath;
     @CreationTimestamp private Date createdAt;
     private Date closedAt;
-
     @OneToMany
     @JoinColumn(name = "post_id")
     private List<PostIngredient> ingredients;
