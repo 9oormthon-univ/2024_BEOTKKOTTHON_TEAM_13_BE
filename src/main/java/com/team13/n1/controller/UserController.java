@@ -29,7 +29,7 @@ public class UserController {
     public String signIn(@RequestBody Map<String, String> request) {
         if (service.existsById(request.get("user_id"))) {
             String sessionId = UUID.randomUUID().toString();
-            sessService.save(new UserSession(sessionId, request.get("id")));
+            sessService.save(new UserSession(sessionId, request.get("user_id")));
             return sessionId;
         }
         return "";

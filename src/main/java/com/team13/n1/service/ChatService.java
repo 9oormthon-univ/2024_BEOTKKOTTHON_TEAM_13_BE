@@ -2,6 +2,7 @@ package com.team13.n1.service;
 
 import com.team13.n1.dto.MessageDto;
 import com.team13.n1.entity.Chat;
+import com.team13.n1.entity.ChatBrief;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -17,6 +18,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatService {
     private final MongoTemplate template;
+
+    private final UserJoinedChatsService userJoinedChatsService;
+    private final ChatBriefService briefService;
 
     // 채팅방에 유저 ID 추가
     public void addUserIdInChat(String chatId, String userId) {
@@ -111,13 +115,16 @@ public class ChatService {
     }
 
     // 해당 유저의 ID가 포함된 채팅방 생성
-    public String save(String userId) {
+    public String save(String userId, int postId) {
         String chatId = UUID.randomUUID().toString();
 
         List<String> userIds = new ArrayList<>();
         userIds.add(userId);
 
-        save(new Chat(chatId, 1, userIds, new ArrayList<>()));
+        save(new Chat(chatId, postId, userIds, new ArrayList<>()));
+        userJoinedChatsService.addChatIdInUser(userId, chatId);
+        briefService.save(new ChatBrief(chatId, postId, ""));
+
         return chatId;
     }
 }

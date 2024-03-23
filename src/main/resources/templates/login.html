@@ -5,11 +5,11 @@
     <title>로그인</title>
     <script>
         function onLogin() {
-            fetch("/login", {
+            fetch("/user/signin", {
                 method: "POST",
                 headers: { "Content-type": "application/json; charset=UTF-8" },
                 body: JSON.stringify({
-                    id: document.getElementById("id").value
+                    user_id: document.getElementById("id").value
                 })
             }).then((res) => res.text())
                 .then((res) => {
