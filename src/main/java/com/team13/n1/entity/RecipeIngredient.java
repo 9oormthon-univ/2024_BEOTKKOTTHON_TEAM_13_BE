@@ -19,4 +19,5 @@ public class RecipeIngredient {
 
     private int recipeId;
     private String name;
+    private String amount;
 }

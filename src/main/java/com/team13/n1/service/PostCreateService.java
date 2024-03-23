@@ -25,16 +25,61 @@ public class PostCreateService {
         this.postIngredientRepository = postIngredientRepository;
     }
 
-    public void createPost(PostCreateRequest request) {
+    public void postIngd(PostCreateRequest request) {
         Post post = new Post();
-        post.setUserId(request.getUserId());
+        post.setUserId("abc"); //로그인하면 필요없음
         post.setTitle(request.getTitle());
         post.setPrice(request.getPrice());
+        post.setContents(request.getContents());
         post.setImages(request.getImages());
         post.setGroupSize(request.getGroupSize());
         post.setContents(request.getContents());
         post.setClosedAt(new Date());
-        // Set other fields similarly
+        post.setType(0); //0==INGD,1==RINGD
+        post.setStatus(0); //0 진행중, 1은 완료 혹은 종료
+        post.setLocationAddress("부산광역시 사하구");
+        post.setLocationBcode("00000011111");
+        post.setLocationLatitude("12.123");
+        post.setLocationLongitude("12.123");
+        post.setChatId("abcchat");
+        post.setCreatedAt(new Date());
+        post.setCurGroupSize(0);
+        post.setUrl(request.getUrl());
+
+        // Post를 저장
+        Post savedPost = postRepository.save(post);
+
+        if (request.getIngredients() != null && !request.getIngredients().isEmpty()) {
+            // 첫 번째 ingredient만 선택하여 처리
+            PostIngredientDto firstIngredient = request.getIngredients().get(0);
+            PostIngredient ingredient = convertToEntity(firstIngredient);
+            // Post와 연관시킴
+            ingredient.setPost(savedPost);
+            postIngredientRepository.save(ingredient);
+        }
+    }
+
+
+    public void postRIngd(PostCreateRequest request) {
+        Post post = new Post();
+        post.setUserId("cook"); //로그인하면 필요없음
+        post.setTitle(request.getTitle());
+        post.setPrice(request.getPrice());
+        post.setContents(request.getContents());
+        post.setImages(request.getImages());
+        post.setGroupSize(request.getGroupSize());
+        post.setContents(request.getContents());
+        post.setClosedAt(new Date());
+        post.setType(0); //0==INGD,1==RINGD
+        post.setStatus(0); //0 진행중, 1은 완료 혹은 종료
+        post.setLocationAddress("서울시 성북구");
+        post.setLocationBcode("000000133311");
+        post.setLocationLatitude("13.222");
+        post.setLocationLongitude("13.222");
+        post.setChatId("Ringd");
+        post.setCreatedAt(new Date());
+        post.setCurGroupSize(0);
+        post.setUrl(request.getUrl());
 
         // Post를 저장
         Post savedPost = postRepository.save(post);

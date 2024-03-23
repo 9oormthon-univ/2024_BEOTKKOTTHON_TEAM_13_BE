@@ -17,6 +17,7 @@ public class PostIngredient {
     private String name;
     private String url;
 
+
     // Post와의 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

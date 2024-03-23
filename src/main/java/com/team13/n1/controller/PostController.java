@@ -37,9 +37,15 @@ public class PostController {
         return service.getPost(postId);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<String> createPost(@RequestBody PostCreateRequest request) {
-        postCreateService.createPost(request);
+    @PostMapping("/ingd")
+    public ResponseEntity<String> postIngd(@RequestBody PostCreateRequest request) {
+        postCreateService.postIngd(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully.");
+    }
+
+    @PostMapping("/r_ingd")
+    public ResponseEntity<String> postRIngd(@RequestBody PostCreateRequest request) {
+        postCreateService.postRIngd(request);
         return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully.");
     }
 }
