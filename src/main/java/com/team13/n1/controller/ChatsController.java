@@ -22,6 +22,7 @@ public class ChatsController {
     private final ChatService chatService;                              // 채팅방 관리 서비스
     private final ChatBriefService chatBriefService;                    // 채팅방의 마지막 메시지만 담은 관리 서비스
     private final ChatUnreadMessagesService chatUnreadMessagesService;  // 해당 유저의 미확인 메시지 관리 서비스
+    private final PostService postService;                              // 게시글 관리 서비스
 
     // 유저가 참여한 채팅방 목록을 불러옴
     @GetMapping("/list")
@@ -38,7 +39,7 @@ public class ChatsController {
                 List<String> chatIds = joinedChatsService.getChatsIdsByUserId(userId); // 해당 유저가 참여한 채팅방 ID 리스트
                 for (String chatId : chatIds) {
                     ChatBrief chatBrief = chatBriefService.getById(chatId);
-                    result.add(new ChatBriefDto(chatBrief.getChatId(), chatBrief.getPostId(), chatBrief.getLastMessage()));
+                    result.add(new ChatBriefDto(chatBrief.getChatId(), postService.getTitleById(chatBrief.getPostId()), chatBrief.getLastMessage()));
                 }
             }
         }
