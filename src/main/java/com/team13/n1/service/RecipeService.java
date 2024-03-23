@@ -95,8 +95,6 @@ public class RecipeService {
         List<Map<String, Object>> linkedPosts = new ArrayList<>();
         for (RecipeIngredient ingredient : recipe.getIngredients()) {
             List<Map<String, Object>> foundPosts = postService.getList(bCode, "ingd", ingredient.getName(), "1");
-            log.info(ingredient.getName());
-            log.info(foundPosts);
 
             if (!foundPosts.isEmpty()) {
                 Map<String, Object> foundPost = foundPosts.get(0);

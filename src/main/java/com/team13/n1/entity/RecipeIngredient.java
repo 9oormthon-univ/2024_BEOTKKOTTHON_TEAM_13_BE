@@ -19,4 +19,5 @@ public class RecipeIngredient {
     @JsonIgnore
     private Recipe recipe;
     private String name;
+    private String amount;
 }
