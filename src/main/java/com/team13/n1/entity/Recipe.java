@@ -27,11 +27,13 @@ public class Recipe {
     @JoinColumn(name="recipe_id")
     private List<RecipeIngredient> ingredients;
 
-    @OneToMany
-    @JoinColumn(name="recipe_id")
-    private List<RecipeProcess> processes;
+//    @OneToMany
+//    @JoinColumn(name="recipe_id")
+//    private List<RecipeProcess> processes;
 
-    @OneToMany
-    @JoinColumn(name="recipe_id")
-    private List<RecipeComment> comments;
+//    @OneToMany
+//    @JoinColumn(name="recipe_id")
+//    private List<RecipeComment> comments;
+
+
 }

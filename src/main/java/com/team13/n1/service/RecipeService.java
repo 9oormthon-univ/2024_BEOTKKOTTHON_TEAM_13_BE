@@ -89,7 +89,7 @@ public class RecipeService {
         hashmap.put("likes_count", recipe.getLikesCount());
 
         hashmap.put("ingredients", recipe.getIngredients());
-        hashmap.put("processes", recipe.getProcesses());
+//        hashmap.put("processes", recipe.getProcesses());
 
         // linked_posts (주변 공동구매 게시글)
         List<Map<String, Object>> linkedPosts = new ArrayList<>();
