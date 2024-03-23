@@ -80,4 +80,16 @@ public class UserController {
 
         return result;
     }
+
+    // 사용자 공동구매 혹은 레시피 좋아요
+    @PostMapping("likes")
+    public void likesPostRecipe(@RequestBody Map<String, String> request) {
+        if (sessService.existsById(request.get("session_id"))) {
+            if (request.get("type").equals("post")) {
+                service.likesPost(Integer.parseInt(request.get("id")), sessService.getUserIdBySessionId(request.get("session_id")));
+            } else if (request.get("type").equals("recipe")) {
+                service.likesRecipe(Integer.parseInt(request.get("id")), sessService.getUserIdBySessionId(request.get("session_id")));
+            }
+        }
+    }
 }
