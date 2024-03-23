@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,19 +23,28 @@ public class ChatController {
     private final ChatWSService chatWSService;                // 채팅 웹소켓 관리 서비스
     private final UserJoinedChatsService joinedChatsService;  // 참여 채팅방 관리 서비스
     private final ChatBriefService chatBriefService;          // 채팅방 목록에서 보여지는 간단 채팅방 목록
+    private final PostService postService;                    // 게시글 관리 서비스
 
     // 과거 채팅 메시지들 전송
     @GetMapping("/init-messages")
-    public List<MessageDto> getInitMessages(@RequestParam("id") String chatId, @RequestParam("session_id") String sessionId) {
-        // 만약 세션이 유효하다면, messages 리스트 내에 메시지들을 담아서 전송
-        List<MessageDto> messages = new ArrayList<>();
+    public Map<String, Object> getInitMessages(@RequestParam("id") String chatId, @RequestParam("session_id") String sessionId) {
+        Map<String, Object> hashmap = new HashMap<>();
+
         if (sessService.existsById(sessionId)) { // 세션이 유효한지 확인
+            // 채팅방 정보 저장
+            int postId = chatService.getPostIdById(chatId);
+            hashmap.put("post_title", postService.getTitleById(postId)); // 해당 채팅방과 연결된 게시글의 제목 저장
+
+            // messages 리스트 내에 메시지들을 담아서 저장
+            List<MessageDto> messages = new ArrayList<>();
             String userId = sessService.getUserIdBySessionId(sessionId);
             if (chatService.existsUserIdInChat(chatId, userId)) {
                 messages.addAll(chatService.getMessagesById(chatId));
             }
+            hashmap.put("messages", messages);
         }
-        return messages;
+
+        return hashmap;
     }
 
     // 새로운 채팅방 생성
@@ -44,7 +54,7 @@ public class ChatController {
             String userId = sessService.getUserIdBySessionId(request.get("session_id"));
             String chatId = chatService.save(userId); // chatService.save()에서 채팅방 ID 반환값을 그대로 클라이언트로 전달
             joinedChatsService.addChatIdInUser(userId, chatId);
-            chatBriefService.save(new ChatBrief(chatId, "", ""));
+            chatBriefService.save(new ChatBrief(chatId, -1, ""));
             return chatId;
         }
         return "";

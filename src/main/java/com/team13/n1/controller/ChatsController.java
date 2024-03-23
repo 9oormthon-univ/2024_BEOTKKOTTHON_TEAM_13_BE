@@ -2,14 +2,8 @@ package com.team13.n1.controller;
 
 import com.team13.n1.dto.ChatBriefDto;
 import com.team13.n1.dto.ChatUnreadMessageDto;
-import com.team13.n1.entity.Chat;
 import com.team13.n1.entity.ChatBrief;
-import com.team13.n1.dto.MessageDto;
-import com.team13.n1.entity.ChatUnreadMessages;
-import com.team13.n1.entity.UserJoinedChats;
 import com.team13.n1.service.*;
-import com.team13.n1.wspacket.MessagePacket;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +22,7 @@ public class ChatsController {
     private final ChatService chatService;                              // 채팅방 관리 서비스
     private final ChatBriefService chatBriefService;                    // 채팅방의 마지막 메시지만 담은 관리 서비스
     private final ChatUnreadMessagesService chatUnreadMessagesService;  // 해당 유저의 미확인 메시지 관리 서비스
+    private final PostService postService;                              // 게시글 관리 서비스
 
     // 유저가 참여한 채팅방 목록을 불러옴
     @GetMapping("/list")
@@ -44,7 +39,7 @@ public class ChatsController {
                 List<String> chatIds = joinedChatsService.getChatsIdsByUserId(userId); // 해당 유저가 참여한 채팅방 ID 리스트
                 for (String chatId : chatIds) {
                     ChatBrief chatBrief = chatBriefService.getById(chatId);
-                    result.add(new ChatBriefDto(chatBrief.getChatId(), chatBrief.getPostId(), chatBrief.getLastMessage()));
+                    result.add(new ChatBriefDto(chatBrief.getChatId(), postService.getTitleById(chatBrief.getPostId()), chatBrief.getLastMessage()));
                 }
             }
         }
@@ -69,38 +64,38 @@ public class ChatsController {
     }
 
     // 테스트 용으로 임시 데이터 저장
-    @PostConstruct
-    private void init() {
-        List<String> chatIds = new ArrayList<>();
-        chatIds.add("abc");
-
-        // ypjun100
-        joinedChatsService.save(new UserJoinedChats("ypjun100", chatIds));
-
-        List<String> userIds = new ArrayList<>();
-        userIds.add("ypjun100");
-        userIds.add("ypjun101");
-
-        List<MessageDto> messageDtos = new ArrayList<>();
-
-        messageDtos.add(new MessageDto("윤준영100", "/user-image/profile/ypjun100.png",
-                MessagePacket.MessageType.MESSAGE_TEXT, "윤준영100이 보낸 메시지"));
-        messageDtos.add(new MessageDto("윤준영101", "/user-image/profile/ypjun101.png",
-                MessagePacket.MessageType.MESSAGE_TEXT, "윤준영101이 보낸 메시지"));
-        chatService.save(new Chat("abc", "", userIds, messageDtos));
-
-        chatBriefService.save(new ChatBrief("abc", "", "hi2"));
-
-        List<ChatUnreadMessageDto> unreadMessages = new ArrayList<>();
-        unreadMessages.add(new ChatUnreadMessageDto("abc", "미확인 메시지1"));
-        unreadMessages.add(new ChatUnreadMessageDto("abc", "hi2"));
-        chatUnreadMessagesService.save(new ChatUnreadMessages("ypjun100", unreadMessages));
-
-        // ypjun101
-        chatIds.add("bcd");
-        unreadMessages.add(new ChatUnreadMessageDto("bcd", "미확인 메시지3"));
-        chatBriefService.save(new ChatBrief("bcd", "", "미확인 메시지3"));
-        joinedChatsService.save(new UserJoinedChats("ypjun101", chatIds));
-        chatUnreadMessagesService.save(new ChatUnreadMessages("ypjun101", unreadMessages));
-    }
+//    @PostConstruct
+//    private void init() {
+//        List<String> chatIds = new ArrayList<>();
+//        chatIds.add("abc");
+//
+//        // ypjun100
+//        joinedChatsService.save(new UserJoinedChats("ypjun100", chatIds));
+//
+//        List<String> userIds = new ArrayList<>();
+//        userIds.add("ypjun100");
+//        userIds.add("ypjun101");
+//
+//        List<MessageDto> messageDtos = new ArrayList<>();
+//
+//        messageDtos.add(new MessageDto("윤준영100", "/user-image/profile/ypjun100.png",
+//                MessagePacket.MessageType.MESSAGE_TEXT, "윤준영100이 보낸 메시지"));
+//        messageDtos.add(new MessageDto("윤준영101", "/user-image/profile/ypjun101.png",
+//                MessagePacket.MessageType.MESSAGE_TEXT, "윤준영101이 보낸 메시지"));
+//        chatService.save(new Chat("abc", "", userIds, messageDtos));
+//
+//        chatBriefService.save(new ChatBrief("abc", "", "hi2"));
+//
+//        List<ChatUnreadMessageDto> unreadMessages = new ArrayList<>();
+//        unreadMessages.add(new ChatUnreadMessageDto("abc", "미확인 메시지1"));
+//        unreadMessages.add(new ChatUnreadMessageDto("abc", "hi2"));
+//        chatUnreadMessagesService.save(new ChatUnreadMessages("ypjun100", unreadMessages));
+//
+//        // ypjun101
+//        chatIds.add("bcd");
+//        unreadMessages.add(new ChatUnreadMessageDto("bcd", "미확인 메시지3"));
+//        chatBriefService.save(new ChatBrief("bcd", "", "미확인 메시지3"));
+//        joinedChatsService.save(new UserJoinedChats("ypjun101", chatIds));
+//        chatUnreadMessagesService.save(new ChatUnreadMessages("ypjun101", unreadMessages));
+//    }
 }

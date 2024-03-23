@@ -12,11 +12,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecipeComment {
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String userId;
-    private String comment;
+    private String fromUserId;
+    private String toUserId;
+    private int postId;
+    private String text;
+    private String score;
 }

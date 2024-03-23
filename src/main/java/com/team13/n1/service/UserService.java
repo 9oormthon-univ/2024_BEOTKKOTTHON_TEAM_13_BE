@@ -46,6 +46,17 @@ public class UserService {
         return 0d;
     }
 
+    // 유저 ID를 통해 프로필 이미지 불러오기
+    public String getProfileImageById(String userId) {
+        if (existsById(userId)) {
+            Optional<User> user = repository.findById(userId);
+            if (user.isPresent()) {
+                return user.get().getProfileImage();
+            }
+        }
+        return "";
+    }
+
     // 유저 정보(닉네임, 만족도)
     public Map<String, Object> getUserInfo(String userId) {
         Map<String, Object> user = new HashMap<>();

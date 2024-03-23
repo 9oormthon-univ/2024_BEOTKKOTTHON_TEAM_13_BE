@@ -34,4 +34,9 @@ public class UserSessionService {
 
         return "";
     }
+
+    // 새로운 세션 저장
+    public void save(UserSession userSession) {
+        repository.save(userSession);
+    }
 }
