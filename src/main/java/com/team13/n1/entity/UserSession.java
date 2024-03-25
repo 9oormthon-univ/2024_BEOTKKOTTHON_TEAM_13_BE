@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @Data
-@RedisHash(value="user_session", timeToLive = 300)
+@RedisHash(value="user_session", timeToLive = 3600)
 public class UserSession {
     @Id private String id;  // 세션 ID (웹소켓 세션과 다른 것에 주의)
     private String userId;  // 해당 유저의 ID

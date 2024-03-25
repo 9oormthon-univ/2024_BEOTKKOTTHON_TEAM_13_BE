@@ -8,9 +8,15 @@ import com.team13.n1.repository.PostRepository;
 import com.team13.n1.repository.RecipeIngredientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Log4j2
@@ -20,9 +26,14 @@ public class PostService {
     private final int RECIPE_PER_PAGE = 20;
 
     private final PostRepository repository;
-    private final RecipeIngredientRepository ingredientRepo;
+    private final RecipeIngredientRepository recipeIngredientRepo;
+    private final ChatService chatService;
 
     private final UserService userService;
+    private final UserSessionService userSessService;
+
+    @Value("${image.upload.dir}")
+    private String imageUploadDir;
 
     // 게시글 리스트
     public List<Map<String, Object>> getList(String bCode, String type, String keyword, String page) {
@@ -67,6 +78,63 @@ public class PostService {
             return post.get().getTitle();
         }
         return "";
+    }
+
+    // 게시글 저장
+    public String save(Map<String, Object> request) throws ParseException {
+        if (userSessService.existsById((String) request.get("session_id"))) {
+            String userId = userSessService.getUserIdBySessionId((String) request.get("session_id"));
+
+            Post post = new Post();
+            post.setUserId(userId);
+            post.setImages((String)request.get("image"));
+            post.setType(request.get("type").equals("ingd") ? 0 : 1);
+            post.setTitle((String)request.get("title"));
+            post.setContents((String)request.get("contents"));
+
+            if (post.getType() == 1) {
+                List<PostIngredient> ingredients = new ArrayList<>();
+                for (Map<String, String> ingredient : (List<Map<String, String>>) request.get("ingredients")) {
+                    PostIngredient postIngredient = new PostIngredient();
+                    postIngredient.setName(ingredient.get("name"));
+                    postIngredient.setUrl(ingredient.get("url"));
+                    ingredients.add(postIngredient);
+                }
+                post.setIngredients(ingredients);
+            } else {
+                post.setUrl((String)request.get("url"));
+            }
+
+            post.setPrice((String)request.get("price"));
+            post.setGroupSize(Integer.parseInt((String)request.get("group_size")));
+            post.setLocationAddress((String)request.get("location_address"));
+            post.setLocationBcode((String)request.get("location_bcode"));
+            post.setLocationLongitude((String)request.get("location_longitude"));
+            post.setLocationLatitude((String)request.get("location_latitude"));
+            post.setClosedAt(new SimpleDateFormat("yyyy-MM-dd").parse((String)request.get("closed_at")));
+
+            // 채팅방 생성
+            String chatId = chatService.save(userId, ((Long)repository.count()).intValue() + 1);
+            post.setChatId(chatId);
+
+            repository.save(post);
+
+            return chatId;
+        }
+        return "";
+    }
+
+    // 이미지 저장
+    public String saveImage(MultipartFile imageFile) {
+        String fileext = imageFile.getOriginalFilename().split("\\.")[1];
+        String path = imageUploadDir + "/" + UUID.randomUUID() + "." + fileext;
+        File file = new File(path);
+        try {
+            imageFile.transferTo(file);
+        } catch (IOException e) {
+            log.error(e);
+        }
+        return path;
     }
 
 
@@ -149,7 +217,7 @@ public class PostService {
         List<Map<String, Object>> linkedRecipes = new ArrayList<>();
         if (post.getType() == 0) {
             // 재료 이름으로 레시피 검색
-            List<RecipeIngredient> ingredients = ingredientRepo.findRecipeIngredientByName(post.getTitle());
+            List<RecipeIngredient> ingredients = recipeIngredientRepo.findRecipeIngredientByName(post.getTitle());
 
             if (!ingredients.isEmpty()) {
                 Recipe recipe = ingredients.get(ingredients.size() - 1).getRecipe();

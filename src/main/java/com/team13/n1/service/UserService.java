@@ -1,6 +1,10 @@
 package com.team13.n1.service;
 
 import com.team13.n1.entity.User;
+import com.team13.n1.entity.UserLikesPost;
+import com.team13.n1.entity.UserLikesRecipe;
+import com.team13.n1.repository.UserLikesPostRepository;
+import com.team13.n1.repository.UserLikesRecipeRepository;
 import com.team13.n1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -13,6 +17,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository repository;
+    private final UserLikesPostRepository likesPostRepo;
+    private final UserLikesRecipeRepository likesRecipeRepo;
 
     // 해당 유저 ID가 있는지 여부
     public boolean existsById(String userId) {
@@ -63,5 +69,32 @@ public class UserService {
         user.put("nickname", getNicknameById(userId));
         user.put("user_rating", getUserRatingById(userId));
         return user;
+    }
+
+    // 유저의 공동구매 좋아요 추가
+    public void likesPost(int postId, String userId) {
+        UserLikesPost userLikesPost = new UserLikesPost();
+        userLikesPost.setUser(getUserById(userId));
+        userLikesPost.setPostId(postId);
+        likesPostRepo.save(userLikesPost);
+    }
+
+    // 유저의 레시피 좋아요 추가
+    public void likesRecipe(int recipeId, String userId) {
+        UserLikesRecipe userLikesRecipe = new UserLikesRecipe();
+        userLikesRecipe.setUser(getUserById(userId));
+        userLikesRecipe.setRecipeId(recipeId);
+        likesRecipeRepo.save(userLikesRecipe);
+    }
+
+    // 유저 객체 가져오기
+    private User getUserById(String userId) {
+        if (existsById(userId)) {
+            Optional<User> user = repository.findById(userId);
+            if (user.isPresent()) {
+                return user.get();
+            }
+        }
+        return new User();
     }
 }

@@ -52,10 +52,7 @@ public class ChatController {
     public String createNewChat(@RequestBody Map<String, String> request) {
         if (sessService.existsById(request.get("session_id"))) {
             String userId = sessService.getUserIdBySessionId(request.get("session_id"));
-            String chatId = chatService.save(userId); // chatService.save()에서 채팅방 ID 반환값을 그대로 클라이언트로 전달
-            joinedChatsService.addChatIdInUser(userId, chatId);
-            chatBriefService.save(new ChatBrief(chatId, -1, ""));
-            return chatId;
+            return chatService.save(userId, 1);
         }
         return "";
     }
