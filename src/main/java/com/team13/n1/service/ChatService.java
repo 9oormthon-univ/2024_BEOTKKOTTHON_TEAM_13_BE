@@ -2,6 +2,7 @@ package com.team13.n1.service;
 
 import com.team13.n1.dto.MessageDto;
 import com.team13.n1.entity.Chat;
+import com.team13.n1.entity.ChatBrief;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -17,6 +18,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatService {
     private final MongoTemplate template;
+
+    private final UserJoinedChatsService userJoinedChatsService;
+    private final ChatBriefService briefService;
 
     // 채팅방에 유저 ID 추가
     public void addUserIdInChat(String chatId, String userId) {
@@ -51,6 +55,15 @@ public class ChatService {
         return messages;
     }
 
+    // 채팅방에 연결된 게시글 ID 반환
+    public int getPostIdById(String chatId) {
+        Chat chat = template.findById(chatId, Chat.class, "chat");
+        if (chat != null) {
+            return chat.getPostId();
+        }
+        return -1;
+    }
+
     // 채팅방 메시지 추가
     public void addMessage(String chatId, MessageDto message) {
         Chat chat = template.findById(chatId, Chat.class, "chat");
@@ -80,6 +93,7 @@ public class ChatService {
 
             if (userIds.isEmpty()) {
                 template.remove(Query.query(Criteria.where("_id").is(chatId)), "chat");
+                return;
             }
 
             template.updateFirst(Query.query(Criteria.where("_id").is(chatId)),
@@ -101,13 +115,16 @@ public class ChatService {
     }
 
     // 해당 유저의 ID가 포함된 채팅방 생성
-    public String save(String userId) {
+    public String save(String userId, int postId) {
         String chatId = UUID.randomUUID().toString();
 
         List<String> userIds = new ArrayList<>();
         userIds.add(userId);
 
-        save(new Chat(chatId, "", userIds, new ArrayList<>()));
+        save(new Chat(chatId, postId, userIds, new ArrayList<>()));
+        userJoinedChatsService.addChatIdInUser(userId, chatId);
+        briefService.save(new ChatBrief(chatId, postId, ""));
+
         return chatId;
     }
 }

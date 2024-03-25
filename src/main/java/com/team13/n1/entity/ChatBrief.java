@@ -11,6 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @AllArgsConstructor
 public class ChatBrief {
     @Id private String chatId;
-    @Field("post_id") private String postId;            // 채팅방과 연결된 글 ID
+    @Field("post_id") private int postId;            // 채팅방과 연결된 글 ID
     @Field("last_message") private String lastMessage;  // 해당 채팅방의 마지막 메시지
 }

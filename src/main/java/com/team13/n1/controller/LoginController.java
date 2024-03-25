@@ -18,7 +18,7 @@ public class LoginController {
     // 사용자 로그인
     @PostMapping("/login")
     public String doLogin(@RequestBody Map<String, String> request) {
-        if (request.get("id").equals("ypjun100") || request.get("id").equals("ypjun101")) {
+        if (request.get("id").equals("ypjun100") || request.get("id").equals("ypjun101") || request.get("id").equals("testid")) {
             String sessionId = UUID.randomUUID().toString();
             userSessionRepo.save(new UserSession(sessionId, request.get("id")));
             return sessionId;
