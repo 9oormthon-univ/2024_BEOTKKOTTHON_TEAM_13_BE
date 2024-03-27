@@ -1,12 +1,15 @@
 package com.team13.n1.service;
 
 import com.team13.n1.entity.Recipe;
+import com.team13.n1.entity.RecipeComment;
 import com.team13.n1.entity.RecipeIngredient;
+import com.team13.n1.entity.RecipeProcess;
 import com.team13.n1.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-
+import java.text.ParseException;
+import java.time.Instant;
 import java.util.*;
 
 @Log4j2
@@ -19,6 +22,7 @@ public class RecipeService {
 
     private final UserService userService;
     private final PostService postService;
+
 
     // 10개의 랜덤 레시피 가져오기
     public List<Map<String, Object>> getBriefList() {
@@ -111,4 +115,46 @@ public class RecipeService {
 
         return hashmap;
     }
+
+    public String saveRecipe(Map<String, Object> request) throws ParseException {
+        Recipe recipe = new Recipe();
+        recipe.setUserId((String) request.get("userId"));
+        recipe.setThumbnailImage((String) request.get("thumbnailImage"));
+        recipe.setTitle((String) request.get("title"));
+        recipe.setLikesCount(Integer.parseInt((String) request.get("likesCount")));
+        recipe.setCommentsCount(Integer.parseInt((String) request.get("commentsCount")));
+        recipe.setCreatedAt(Date.from(Instant.parse((String) request.get("createdAt"))));
+
+
+        List<Map<String, String>> ingredientDataList = (List<Map<String, String>>) request.get("ingredients");
+        for (Map<String, String> ingredientData : ingredientDataList) {
+            RecipeIngredient ingredient = new RecipeIngredient();
+            ingredient.setName(ingredientData.get("name"));
+            ingredient.setAmount(ingredientData.get("amount"));
+            ingredient.setRecipe(recipe);
+            recipe.addIngredient(ingredient);
+        }
+
+        List<Map<String, String>> processList = (List<Map<String, String>>) request.get("processes");
+        for (Map<String, String> processData : processList) {
+            RecipeProcess process = new RecipeProcess();
+            process.setImage(processData.get("image"));
+            process.setContents(processData.get("contents"));
+            process.setRecipe(recipe);
+            recipe.addProcess(process);
+        }
+
+        List<Map<String, String>> commentList = (List<Map<String, String>>) request.get("comments");
+        for (Map<String, String> commentData : commentList) {
+            RecipeComment comment = new RecipeComment();
+            comment.setUserId(commentData.get("userId"));
+            comment.setComment(commentData.get("comment"));
+            comment.setRecipe(recipe);
+            recipe.addComment(comment);
+        }
+
+        repository.save(recipe);
+        return "Recipe saved successfully.";
+    }
+
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,15 +24,27 @@ public class Recipe {
     private int commentsCount;
     @CreationTimestamp private Date createdAt;
 
-    @OneToMany
-    @JoinColumn(name="recipe_id")
-    private List<RecipeIngredient> ingredients;
 
-    @OneToMany
-    @JoinColumn(name="recipe_id")
-    private List<RecipeProcess> processes;
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    private List<RecipeIngredient> ingredients = new ArrayList<>(); // 리스트를 초기화합니다.
+    public void addIngredient(RecipeIngredient ingredient) {
+        this.ingredients.add(ingredient);
+        ingredient.setRecipe(this); // 양방향 관계 설정
+    }
 
-    @OneToMany
-    @JoinColumn(name="recipe_id")
-    private List<RecipeComment> comments;
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    private List<RecipeProcess> processes = new ArrayList<>();
+    public void addProcess(RecipeProcess process) {
+        this.processes.add(process);
+        process.setRecipe(this);
+    }
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    private List<RecipeComment> comments = new ArrayList<>();
+
+    public void addComment(RecipeComment comment) {
+        this.comments.add(comment);
+        comment.setRecipe(this);
+    }
+
 }
