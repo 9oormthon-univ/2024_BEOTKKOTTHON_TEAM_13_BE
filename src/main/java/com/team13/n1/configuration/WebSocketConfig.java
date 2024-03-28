@@ -17,6 +17,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         // url path 뒤에 '/ws'가 있는 경우 WebSocket으로 연결
-        registry.addHandler(handler, "/ws").setAllowedOrigins("*");
+        registry.addHandler(handler, "/wss").setAllowedOrigins("*");
     }
 }
