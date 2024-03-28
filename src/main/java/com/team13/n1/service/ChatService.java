@@ -4,6 +4,7 @@ import com.team13.n1.dto.MessageDto;
 import com.team13.n1.entity.Chat;
 import com.team13.n1.entity.ChatBrief;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Log4j2
 @RequiredArgsConstructor
 public class ChatService {
     private final MongoTemplate template;
