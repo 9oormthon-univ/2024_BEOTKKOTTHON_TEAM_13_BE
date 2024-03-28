@@ -25,7 +25,7 @@
                 .then((res) => res.json())
                 .then((res) => {
                     // 초기 메시지 데이터 수신
-                    res.forEach((message) => {
+                    res.messages.forEach((message) => {
                         // 메시지의 type 중 'MESSAGE_TEXT', 'MESSAGE_IMAGE'인 경우 말풍선을 추가합니다.
                         if (message.type.startsWith("MESSAGE_")) {
                             if (message.userId === sessionStorage.getItem("user_id")) { // my message
@@ -60,7 +60,7 @@
                 });
 
             // 웹소켓 초기화
-            websocket = new WebSocket("ws://" + window.location.host + "/ws");
+            websocket = new WebSocket("wss://" + window.location.host + "/wss");
             websocket.onopen = (e) => onSocketOpen(e);        // 웹소켓이 열렸을 때 (연결 수립)
             websocket.onclose = (e) => onSocketClose(e);      // 웹소켓이 닫혔을 때 (연결 종료)
             websocket.onmessage = (e) => onSocketMessage(e);  // 웹소켓 메시지가 들어왔을 때
