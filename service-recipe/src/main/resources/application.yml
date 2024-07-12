@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: service-recipe
+
+server:
+  port: 4338
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:3743/eureka/

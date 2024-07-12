@@ -1,0 +1,6 @@
+rootProject.name = 'n1'
+
+include 'service-chat'
+include 'service-post'
+include 'service-recipe'
+include 'service-user'

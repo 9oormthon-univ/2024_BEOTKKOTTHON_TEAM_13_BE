@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: service-chat
+
+server:
+  port: 3615
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:3743/eureka/
