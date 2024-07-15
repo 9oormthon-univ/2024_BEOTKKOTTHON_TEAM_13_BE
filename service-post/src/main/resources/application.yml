@@ -1,9 +1,11 @@
+server:
+  port: 925
+
 spring:
   application:
     name: service-post
-
-server:
-  port: 925
+  config:
+    import: optional:configserver:http://localhost:3964
 
 eureka:
   client:

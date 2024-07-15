@@ -1,9 +1,11 @@
+server:
+  port: 7234
+
 spring:
   application:
     name: service-user
-
-server:
-  port: 7234
+  config:
+    import: optional:configserver:http://localhost:3964
 
 eureka:
   client:
