@@ -1,5 +1,8 @@
 rootProject.name = 'n1'
 
+include 'server-config'
+include 'server-eureka'
+
 include 'service-chat'
 include 'service-post'
 include 'service-recipe'

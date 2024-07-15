@@ -1,9 +1,11 @@
+server:
+  port: 3615
+
 spring:
   application:
     name: service-chat
-
-server:
-  port: 3615
+  config:
+    import: optional:configserver:http://localhost:3964
 
 eureka:
   client:
