@@ -23,7 +23,7 @@ public class IndexController {
 
     @GetMapping("/service-connection-test")
     public ResponseDto serviceConnectionTest() {
-        return new ResponseDto("Greeting!");
+        return new ResponseDto("Greeting!!");
     }
 
 }
