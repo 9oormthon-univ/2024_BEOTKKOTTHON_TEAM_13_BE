@@ -6,6 +6,13 @@ spring:
     name: service-chat
   config:
     import: optional:configserver:http://localhost:3964
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connect-timeout: 5000
+            read-timeout: 5000
 
 eureka:
   client:

@@ -1,5 +1,6 @@
 package com.team13.serviceuser.controller;
 
+import com.team13.serviceuser.dto.ResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,5 +20,10 @@ public class IndexController {
 
     @GetMapping("/config")
     public String getConfig() { return configTestString; }
+
+    @GetMapping("/service-connection-test")
+    public ResponseDto serviceConnectionTest() {
+        return new ResponseDto("Greeting!");
+    }
 
 }
