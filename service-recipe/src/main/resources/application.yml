@@ -1,3 +1,7 @@
+app:
+  config-host: localhost:3964
+  eureka-host: localhost:3743
+
 server:
   port: 4338
 
@@ -5,7 +9,7 @@ spring:
   application:
     name: service-recipe
   config:
-    import: optional:configserver:http://localhost:3964
+    import: optional:configserver:http://${app.config-host}
   cloud:
     openfeign:
       client:
@@ -17,4 +21,4 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:3743/eureka/
+      defaultZone: http://${app.eureka-host}/eureka/
