@@ -10,7 +10,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                dir('server-config') {
+                dir('server-eureka') {
                     sh 'chmod +x ./gradlew'
                     sh './gradlew build'
                     sh 'docker build -t ${DOCKER_IMAGE_NAME} .'
