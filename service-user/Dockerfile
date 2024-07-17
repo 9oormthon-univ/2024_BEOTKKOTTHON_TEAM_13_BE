@@ -1,4 +1,5 @@
 FROM openjdk:17-jdk-alpine
-ARG JAR_FILE=build/*.jar
+ARG JAR_FILE=build/libs/*SNAPSHOT.jar
 COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENV PROFILE prod
+ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILE}", "-jar","/app.jar"]
