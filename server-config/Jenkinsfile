@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git branch: '${GIT_BRANCH_NAME}', url: '${GIT_BRANCH_URL}'
+                checkout scm
             }
         }
 
