@@ -16,6 +16,9 @@ pipeline {
                     sh 'docker build -t ${DOCKER_IMAGE_NAME} .'
                     deleteDir()
                 }
+                dir('.git') {
+                    deleteDir()
+                }
             }
         }
 
