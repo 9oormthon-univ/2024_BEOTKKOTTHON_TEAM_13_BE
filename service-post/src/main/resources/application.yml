@@ -1,3 +1,9 @@
+app:
+  config-server:
+    url: http://localhost:3964
+  eureka:
+    url: http://localhost:3743/eureka/
+
 server:
   port: 925
 
@@ -5,7 +11,7 @@ spring:
   application:
     name: service-post
   config:
-    import: optional:configserver:http://localhost:3964
+    import: optional:configserver:${app.config-server.url}
   cloud:
     openfeign:
       client:
@@ -17,4 +23,4 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:3743/eureka/
+      defaultZone: ${app.eureka.url}
