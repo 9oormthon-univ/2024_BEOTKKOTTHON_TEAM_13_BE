@@ -1,5 +1,6 @@
 app:
-  config-host: localhost:3964
+  config-server:
+    url: http://localhost:3964
 
 server:
   port: 3743
@@ -8,7 +9,7 @@ spring:
   application:
     name: server-eureka
   config:
-    import: optional:configserver:http://${app.config-host}
+    import: optional:configserver:${app.config-server.url}
 
 eureka:
   client:
