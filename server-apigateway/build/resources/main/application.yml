@@ -1,0 +1,53 @@
+server:
+  port: 9001
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: service-chat
+          uri: lb://service-chat
+          predicates:
+            - Path=/api/chats/**
+          filters:
+            - RewritePath=/api/chats(?<segment>.*),${segment}
+
+
+        - id: service-post
+          uri: lb://service-post
+          predicates:
+            - Path=/api/posts/**
+          filters:
+            - RewritePath=/api/posts(?<segment>.*),${segment}
+
+        - id: service-recipe
+          uri: lb://service-recipe
+          predicates:
+            - Path=/api/recipes/**
+          filters:
+            - RewritePath=/api/recipes(?<segment>.*),${segment}
+
+        - id: service-user
+          uri: lb://service-user
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - RewritePath=/api/users(?<segment>.*),${segment}
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: http://localhost:3743/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

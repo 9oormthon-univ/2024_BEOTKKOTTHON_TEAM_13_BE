@@ -7,3 +7,5 @@ include 'service-chat'
 include 'service-post'
 include 'service-recipe'
 include 'service-user'
+include 'server-apigateway'
+
