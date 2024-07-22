@@ -46,8 +46,10 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:3743/eureka
 
+
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+#apigateway
