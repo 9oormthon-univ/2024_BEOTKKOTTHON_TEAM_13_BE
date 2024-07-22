@@ -2,6 +2,7 @@ rootProject.name = 'n1'
 
 include 'server-config'
 include 'server-eureka'
+include 'server-apigateway'
 
 include 'service-chat'
 include 'service-post'
