@@ -12,6 +12,7 @@ spring:
     import: optional:configserver:${app.config-server.url}
 
 
+
 eureka:
   client:
     register-with-eureka: false
