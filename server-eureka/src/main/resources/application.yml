@@ -11,15 +11,9 @@ spring:
   config:
     import: optional:configserver:${app.config-server.url}
 
-
-
 eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
     service-url:
       defaultZone: http://localhost:${server.port}/eureka/
-
-#설정 본인 url 표기
-
-
