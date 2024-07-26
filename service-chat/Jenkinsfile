@@ -14,7 +14,9 @@ pipeline {
                     sh 'chmod +x ./gradlew'
                     sh './gradlew build'
                     sh 'docker build -t ${DOCKER_IMAGE_NAME} .'
+                    deleteDir()
                 }
+                sh 'rm -rf .git'
             }
         }
 
