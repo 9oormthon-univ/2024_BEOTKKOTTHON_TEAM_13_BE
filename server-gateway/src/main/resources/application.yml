@@ -1,7 +1,7 @@
 app:
-  config-server:
+  server-config:
     url: http://localhost:3964
-  eureka:
+  server-eureka:
     url: http://localhost:3743/eureka/
 
 server:
@@ -41,7 +41,7 @@ spring:
           filters:
             - RewritePath=/api/users(?<segment>.*),${segment}
   config:
-    import: optional:configserver:${app.config-server.url}
+    import: optional:configserver:${app.server-config.url}
 
 eureka:
   instance:
@@ -50,7 +50,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     serviceUrl:
-      defaultZone: ${app.eureka.url}
+      defaultZone: ${app.server-eureka.url}
 
 management:
   endpoints:
