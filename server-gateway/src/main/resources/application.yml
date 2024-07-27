@@ -1,9 +1,11 @@
 app:
   config-server:
     url: http://localhost:3964
+  eureka:
+    url: http://localhost:3743/eureka/
 
 server:
-  port: 1085
+  port: 5153
 
 spring:
   application:
@@ -48,11 +50,10 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     serviceUrl:
-      defaultZone: http://localhost:3743/eureka
+      defaultZone: ${app.eureka.url}
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-#apigateway

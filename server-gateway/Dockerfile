@@ -2,6 +2,7 @@ FROM openjdk:17-jdk-alpine
 ARG JAR_FILE=build/libs/*SNAPSHOT.jar
 COPY ${JAR_FILE} app.jar
 ENV PROFILE prod
-ENV APPLICATION_PORT 1085
+ENV APPLICATION_PORT 5153
 ENV CONFIG_SERVER_URL http://localhost:3964
-ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILE}", "-Dserver.port=${APPLICATION_PORT}", "-Dapp.config-server.url=${CONFIG_SERVER_URL}", "-jar","/app.jar"]
+ENV EUREKA_URL http://localhost:3743/eureka/
+ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILE}", "-Dapp.config-server.url=${CONFIG_SERVER_URL}", "-Dapp.eureka-server.url=${EUREKA_URL}", "-jar","/app.jar"]
