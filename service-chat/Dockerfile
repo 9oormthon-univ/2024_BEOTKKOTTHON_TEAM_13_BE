@@ -5,4 +5,4 @@ ENV PROFILE prod
 ENV APPLICATION_PORT 3615
 ENV CONFIG_SERVER_URL http://localhost:3964
 ENV EUREKA_URL http://localhost:3743/eureka/
-ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILE}", "-Dapp.config-server.url=${CONFIG_SERVER_URL}", "-Dapp.eureka-server.url=${EUREKA_URL}", "-jar","/app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILE}", "-Dapp.server-config.url=${CONFIG_SERVER_URL}", "-Dapp.server-eureka.url=${EUREKA_URL}", "-jar","/app.jar"]
