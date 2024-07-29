@@ -1,12 +1,42 @@
 server:
   port: 7234
+  servlet:
+    session:
+      tracking-modes: cookie
+      timeout: 1800  # session timeout in seconds
+
+  forward-headers-strategy: native
 
 spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/login
+    username: root
+    password: 1234
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+
   application:
     name: service-user
   config:
     import: optional:configserver:http://localhost:3964
   cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
     openfeign:
       client:
         config:
@@ -14,7 +44,13 @@ spring:
             connect-timeout: 5000
             read-timeout: 5000
 
+  security:
+    jwt:
+      secret: your-secret-key
+
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:3743/eureka/
+
+

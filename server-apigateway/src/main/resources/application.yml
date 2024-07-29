@@ -6,6 +6,18 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
       routes:
         - id: service-chat
           uri: lb://service-chat
@@ -13,7 +25,6 @@ spring:
             - Path=/api/chats/**
           filters:
             - RewritePath=/api/chats(?<segment>.*),${segment}
-
 
         - id: service-post
           uri: lb://service-post
@@ -34,8 +45,9 @@ spring:
           predicates:
             - Path=/api/users/**
           filters:
-            - RewritePath=/api/users(?<segment>.*),${segment}
-
+#            - RewritePath=/api/users(?<segment>.*),${segment}
+            - AddRequestHeader=X-Forwarded-Host, localhost:1085
+            - AddRequestHeader=X-Forwarded-Proto, http
 
 eureka:
   instance:
@@ -46,10 +58,8 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:3743/eureka
 
-
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-#apigateway
