@@ -1,9 +1,15 @@
+app:
+  config-server:
+    url: http://localhost:3964
+  eureka:
+    url: http://localhost:3743/eureka/
+
 server:
-  port: 1085
+  port: 5153
 
 spring:
   application:
-    name: api-gateway
+    name: server-gateway
   cloud:
     gateway:
       routes:
@@ -13,7 +19,6 @@ spring:
             - Path=/api/chats/**
           filters:
             - RewritePath=/api/chats(?<segment>.*),${segment}
-
 
         - id: service-post
           uri: lb://service-post
@@ -35,7 +40,8 @@ spring:
             - Path=/api/users/**
           filters:
             - RewritePath=/api/users(?<segment>.*),${segment}
-
+  config:
+    import: optional:configserver:${app.config-server.url}
 
 eureka:
   instance:
@@ -44,12 +50,10 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     serviceUrl:
-      defaultZone: http://localhost:3743/eureka
-
+      defaultZone: ${app.eureka.url}
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-#apigateway
