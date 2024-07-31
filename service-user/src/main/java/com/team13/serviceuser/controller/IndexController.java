@@ -6,6 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,17 +32,22 @@ public class IndexController {
     @PostMapping("/signin")
     public ResponseEntity<String> signin(@RequestBody Map<String, String> loginInfo,
                                          HttpServletResponse response) {
-        String token = "";
-        if (loginInfo.containsKey("user_id") && loginInfo.containsKey("password")) {
-            token = signInService.login(loginInfo.get("user_id"), loginInfo.get("password"));
+        // 존재하는 계정이라면, 로그인 토큰을 쿠키에 저장하여 전송함
+        if (signInService.verifyLoginInfo(loginInfo)) {
+            String token = signInService.createToken(loginInfo.get("user_id"));
+
+            // 토큰 쿠키 생성
+            Cookie cookie = new Cookie("LTK", token);
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(tokenKeepDuration);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+
+            return ResponseEntity.ok().build();
         }
 
-        Cookie cookie = new Cookie("LTK", token);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(tokenKeepDuration);
-        response.addCookie(cookie);
-
-        return ResponseEntity.ok().build();
+        // 존재하지 않는 계정인 경우, 클라이언트로 401 코드를 전송함
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @GetMapping("/config")

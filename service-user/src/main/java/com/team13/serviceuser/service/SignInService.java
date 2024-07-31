@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 
 @Service
 public class SignInService {
@@ -26,13 +27,17 @@ public class SignInService {
         this.tokenKeepDuration = tokenKeepDuration * 1000; // 초를 밀리초로 변환
     }
 
-    // 로그인
-    public String login(String userId, String password) {
-        return createToken(userId);
+    // 유저 로그인 정보 검증
+    public boolean verifyLoginInfo(Map<String, String> loginInfo) {
+        if (loginInfo.containsKey("user_id") && loginInfo.containsKey("password")) {
+            // 유저 인증 메커니즘 추가
+            return true;
+        }
+        return false;
     }
 
     // 토큰 생성
-    private String createToken(String userId) {
+    public String createToken(String userId) {
         long now = (new Date()).getTime();
 
         return Jwts.builder()
