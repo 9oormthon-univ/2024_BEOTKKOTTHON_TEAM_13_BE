@@ -16,34 +16,34 @@ spring:
         - id: service-chat
           uri: lb://service-chat
           predicates:
-            - Path=/api/chat/**
+            - Path=/api2/chat/**
           filters:
             - JwtAuthFilter
-            - RewritePath=/api/chat(?<segment>.*),${segment}
+            - RewritePath=/api2/chat(?<segment>.*),${segment}
 
         - id: service-post
           uri: lb://service-post
           predicates:
-            - Path=/api/post/**
+            - Path=/api2/post/**
           filters:
             - JwtAuthFilter
-            - RewritePath=/api/post(?<segment>.*),${segment}
+            - RewritePath=/api2/post(?<segment>.*),${segment}
 
         - id: service-recipe
           uri: lb://service-recipe
           predicates:
-            - Path=/api/recipe/**
+            - Path=/api2/recipe/**
           filters:
             - JwtAuthFilter
-            - RewritePath=/api/recipe(?<segment>.*),${segment}
+            - RewritePath=/api2/recipe(?<segment>.*),${segment}
 
         - id: service-user
           uri: lb://service-user
           predicates:
-            - Path=/api/user/**
+            - Path=/api2/user/**
           filters:
             - JwtAuthFilter
-            - RewritePath=/api/user(?<segment>.*),${segment}
+            - RewritePath=/api2/user(?<segment>.*),${segment}
   config:
     import: optional:configserver:${app.server-config.url}
 
