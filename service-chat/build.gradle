@@ -21,6 +21,12 @@ jar {
     enabled = false
 }
 
+configurations {
+    configureEach {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging' // exclude default logger
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -37,6 +43,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'com.corundumstudio.socketio:netty-socketio:1.7.17'
+    implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.23.1'
 }
 
 dependencyManagement {
