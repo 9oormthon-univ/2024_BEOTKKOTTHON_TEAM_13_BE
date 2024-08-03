@@ -21,6 +21,13 @@ spring:
             - JwtAuthFilter
             - RewritePath=/api2/chat(?<segment>.*),${segment}
 
+        - id: service-chat-ws
+          uri: lb:ws://service-chat
+          predicates:
+            - Path=/ws/chat/**
+          filters:
+            - RewritePath=/ws/chat(?<segment>.*),/ws${segment}
+
         - id: service-post
           uri: lb://service-post
           predicates:
