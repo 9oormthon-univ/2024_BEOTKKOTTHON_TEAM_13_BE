@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <title>채팅 예제</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <link rel="stylesheet" href="chat.css"/>
+    <script>
+        // 로그인 후 받은 로그인 토큰 쿠기값을 채팅 시에 매번 보내줘야 함
+        const LOGIN_TOKEN = 'LTK=eyJhbGciOiJIUzM4NCJ9.eyJlbWFpbCI6InlwanVuMTAwQG5hdmVyLmNvbSIsImV4cCI6MTcyMjg0NDg5NX0.rHiEAQx2tAD7AXwr-um5fWIoOhsvsHCASC0O1ovsJ2lYNgcBj23b08TBFwnqySUl';
+        // 채팅방 ID ('test-chatroom-id'는 테스트용 채팅방)
+        const chatroomId = 'test-chatroom-id';
+        // 웹소켓 통신용 클라이언트 (해당 클라이언트를 바탕으로 웹소켓 통신을 진행하게 됨)
+        let client;
+
+        window.onload = function() {
+            /*
+            // 초기 채팅방 메시지 데이터 수신
+            // 해당 채팅방 내의 모든 메시지들을 불러옵니다.
+            fetch("/chat/init-messages?id=" + chatId + "&session_id=" + sessionStorage.getItem("session_id"), {
+                method: "GET"
+            })
+                .then((res) => res.json())
+                .then((res) => {
+                    // 초기 메시지 데이터 수신
+                    res.messages.forEach((message) => {
+                        // 메시지의 type 중 'MESSAGE_TEXT', 'MESSAGE_IMAGE'인 경우 말풍선을 추가합니다.
+                        if (message.type.startsWith("MESSAGE_")) {
+                            if (message.userId === sessionStorage.getItem("user_id")) { // my message
+                                let messageElement = document.createElement("div");
+                                messageElement.className = "message-to";
+                                messageElement.innerHTML = "<span>" + message.message + "</span>";
+                                document.getElementsByClassName("message-container")[0].appendChild(messageElement);
+                            } else {
+                                let messageElement = document.createElement("div");
+                                messageElement.className = "message-from";
+                                messageElement.innerHTML = "<span>" + message.message + "</span>";
+                                document.getElementsByClassName("message-container")[0].appendChild(messageElement);
+                            }
+                        } else if (message.type === "NOTICE") { // 채팅방 내의 공지는 다른 UI 사용
+                            let messageElement = document.createElement("div");
+                            messageElement.className = "message-alert";
+                            messageElement.innerHTML = "<span>" + message.message + "</span>";
+                            document.getElementsByClassName("message-container")[0].appendChild(messageElement);
+                        } else if (message.type === "COMPLETE") { // 모든 공동구매 거래가 종료된 경우 실행됩니다.
+                            console.log("리뷰 작성 시작");
+                            // 최종 공동구매 종료를 위해서 유저를 삭제를 서버에 요청해야 합니다.
+                            fetch("/chat/exit-user", {
+                                method: "POST",
+                                headers: {"Content-type": "application/json; charset=UTF-8"},
+                                body: JSON.stringify({
+                                    session_id: sessionStorage.getItem("session_id"),
+                                    chat_id: chatId
+                                })
+                            });
+                        }
+                    });
+                });
+            */
+
+            // 웹소켓 초기화
+            const socket = new SockJS("/ws/chat/"); // 소켓 통신 연결
+            client = StompJs.Stomp.over(socket); // 소켓 통신을 담당할 클라이언트
+
+            // 웹소켓 연결 (Authorization에 로그인 토큰을 넣어줘야 함)
+            client.connect({ Authorization: LOGIN_TOKEN }, onSocketOpen, onSocketError, onSocketClose);
+        }
+
+        function onSocketOpen() {
+            // subscribe로 구독을 해야만 채팅방 메시지를 수신할 수 있음
+            client.subscribe('/ws/subscribe/chatroom/' + chatroomId, onSocketMessage,
+                { Authorization: LOGIN_TOKEN });
+
+            // 웹 소켓 연결이 수립되면, 채팅방에 들어왔다고 알리기 위해 아래와 같이 ENTER 패킷을 전송함
+            client.send('/ws/publish/chatroom/' + chatroomId, { Authorization: LOGIN_TOKEN },
+                JSON.stringify({
+                    type: "ENTER"
+                }));
+        }
+
+        function onSocketClose(e) {
+            console.log(e);
+        }
+
+        function onSocketMessage(e) {
+            // 웹 소켓의 데이터는 json을 문자열로 변환한 데이터가 송수신되기 때문에 메시지가 들어오면 먼저 변환을 진행합니다.
+            let message = JSON.parse(e.body);
+
+            if (message.type.startsWith("MESSAGE_")) {
+                // 자신이 메시지를 보내도 똑같은 메시지 내용이 그대로 돌아옵니다. 따라서, 클라이언트 쪽에서 닉네임을 저장해뒀다가
+                // 들어온 메시지의 발신자의 nickname이 저장된 nickname과 같은 경우, 해당 메시지를 자신이 보낸 메시지로 표시합니다.
+                if (message.nickname === sessionStorage.getItem("nickname")) { // 내가 보낸 메시지
+                    let messageElement = document.createElement("div");
+                    messageElement.className = "message-to";
+                    messageElement.innerHTML = "<span>" + message.message + "</span>";
+                    document.getElementsByClassName("message-container")[0].appendChild(messageElement);
+                } else { // 다른 사람이 보낸 메시지
+                    let messageElement = document.createElement("div");
+                    messageElement.className = "message-from";
+                    messageElement.innerHTML = "<span>" + message.message + "</span>";
+                    document.getElementsByClassName("message-container")[0].appendChild(messageElement);
+                }
+            } else if (message.type === "NOTICE") { // 공지 ex) '~님이 들어왔습니다.', '~님이 퇴장하였습니다.'...
+                let messageElement = document.createElement("div");
+                messageElement.className = "message-alert";
+                messageElement.innerHTML = "<span>" + message.message + "</span>";
+                document.getElementsByClassName("message-container")[0].appendChild(messageElement);
+            } else if (message.type === "COMPLETE") { // 모든 공동구매 거래가 종료된 경우 실행됩니다.
+                console.log("리뷰 작성 시작");
+
+                // 최종 공동구매 종료를 위해서 유저를 삭제를 서버에 요청해야 합니다.
+                // fetch("/chat/exit-user", {
+                //     method: "POST",
+                //     headers: { "Content-type": "application/json; charset=UTF-8" },
+                //     body: JSON.stringify({
+                //         session_id: sessionStorage.getItem("session_id"),
+                //         chat_id: chatId
+                //     })
+                // });
+            } else if (message.type === "ERROR") { // 에러 발생
+                alert(message.message);
+            }
+        }
+
+        function onSocketError(error) {
+            alert("서버와 통신을 할 수 없습니다. 처음부터 다시 시도해 주세요.");
+            console.error(error);
+        }
+
+        // 메시지 전송
+        function doSend() {
+            let userText = document.getElementsByClassName("sending-text")[0].value;
+            if (userText === "")
+                return
+
+            document.getElementsByClassName("sending-text")[0].value = "";
+
+            // 웹소켓을 통해 메시지 전송
+            client.send('/ws/publish/chatroom/' + chatroomId, { Authorization: LOGIN_TOKEN },
+                JSON.stringify({
+                    type: "MESSAGE_TEXT",
+                    message: userText
+                }));
+        }
+
+        // 유저가 공동구매를 포기한 경우
+        function doExit() {
+            // fetch("/chat/exit-user", {
+            //     method: "POST",
+            //     headers: { "Content-type": "application/json; charset=UTF-8" },
+            //     body: JSON.stringify({
+            //         session_id: sessionStorage.getItem("session_id"),
+            //         chat_id: chatId
+            //     })
+            // });
+            // location.href = "/test/";
+        }
+
+        // 공동구매가 정상적으로 성사된 경우
+        // 공동구매 게시자만 해당 패킷을 전송할 수 있습니다.
+        function doComplete() {
+            // websocket.send(JSON.stringify({
+            //     type: "COMPLETE",
+            //     sessionId: sessionStorage.getItem("session_id"),
+            //     chatId: chatId
+            // }));
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="header" style="margin-bottom: 10px;">
+        <button class="go-back" onclick="doExit()">공동구매 포기하기</button>
+        <button class="go-back" onclick="doComplete()">공동구매 완료</button>
+    </div>
+    <div class="message-container">
+    </div>
+    <div class="sending-container">
+        <input class="sending-text" type="text" placeholder="내용을 입력해주세요." onkeyup="if(window.event.keyCode===13){doSend()}"/>
+        <input type="button" value="전송" onclick="doSend()"/>
+    </div>
+</div>
+</body>
+</html>
