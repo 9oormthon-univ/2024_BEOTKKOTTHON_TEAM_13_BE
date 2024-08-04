@@ -34,7 +34,7 @@ public class IndexController {
                                          HttpServletResponse response) {
         // 존재하는 계정이라면, 로그인 토큰을 쿠키에 저장하여 전송함
         if (signInService.verifyLoginInfo(loginInfo)) {
-            String token = signInService.createToken(loginInfo.get("user_id"));
+            String token = signInService.createToken(loginInfo.get("email"));
 
             // 토큰 쿠키 생성
             Cookie cookie = new Cookie("LTK", token);

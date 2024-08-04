@@ -29,7 +29,7 @@ public class SignInService {
 
     // 유저 로그인 정보 검증
     public boolean verifyLoginInfo(Map<String, String> loginInfo) {
-        if (loginInfo.containsKey("user_id") && loginInfo.containsKey("password")) {
+        if (loginInfo.containsKey("email") && loginInfo.containsKey("password")) {
             // 유저 인증 메커니즘 추가
             return true;
         }
@@ -37,11 +37,11 @@ public class SignInService {
     }
 
     // 토큰 생성
-    public String createToken(String userId) {
+    public String createToken(String email) {
         long now = (new Date()).getTime();
 
         return Jwts.builder()
-                .claim("userId", userId)
+                .claim("email", email)
                 .setExpiration(new Date(now + tokenKeepDuration))
                 .signWith(tokenKey)
                 .compact();
