@@ -55,11 +55,13 @@ public class WebSocketInterceptor implements ChannelInterceptor {
                 // JWT 토큰을 기반으로 유저 ID 불러오기
                 String userEmail = getEmailInToken(token);
 
-                // TODO: 에메일을 유저 ID로 변환시키는 코드 추가
+                // TODO: 유저의 이메일을 가지고 유저 ID와 유저 이름을 가져오는 코드 추가
                 String userId = String.valueOf(userEmail.hashCode());
+                String userName = String.valueOf(userId.hashCode());
 
-                // STOMP 패킷 헤더에 유저 ID 추가
+                // STOMP 패킷 헤더에 유저 ID와 유저 이름 추가
                 accessor.addNativeHeader("userId", userId);
+                accessor.addNativeHeader("userName", userName);
 
                 // 유저 ID를 추가한 새로운 메시지를 생성하고 이를 반환함
                 message = MessageBuilder.createMessage(message.getPayload(), accessor.toMessageHeaders());

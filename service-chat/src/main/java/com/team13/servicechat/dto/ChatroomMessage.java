@@ -1,10 +1,12 @@
 package com.team13.servicechat.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatroomMessage {
@@ -18,7 +20,8 @@ public class ChatroomMessage {
     // COMPLETE - 공동구매 완료
     // ERROR - 에러 메시지
 
-    private MessageType type;     // 메시지 타입
-    private String message;       // 메시지 내용
-    private String senderUserId;  // 메시지 발신자 유저 ID
+    private MessageType type;       // 메시지 타입
+    private String message;         // 메시지 내용
+    private String senderUserId;    // 메시지 발신자 유저 ID
+    private String senderUserName;  // 메시지 발신자 유저 이름
 }
