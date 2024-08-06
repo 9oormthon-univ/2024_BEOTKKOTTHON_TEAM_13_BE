@@ -7,7 +7,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -46,11 +45,24 @@ public class ChatroomController {
         // 메시지 타입에 따른 서비스 라우팅
         if (message.getType() == ChatroomMessage.MessageType.ENTER) {
             response = service.messageEnter(chatroomId, message);
+
+        } else if (message.getType() == ChatroomMessage.MessageType.MESSAGE_TEXT ||
+                   message.getType() == ChatroomMessage.MessageType.MESSAGE_IMAGE ) {
+            response = service.messageTextAndImage(chatroomId, message);
+
+        } else if (message.getType() == ChatroomMessage.MessageType.EXIT_USER) {
+            response = service.messageExitUser(chatroomId, message);
+
+        } else if (message.getType() == ChatroomMessage.MessageType.COMPLETE) {
+            response = service.messageComplete(chatroomId, message);
+
         }
 
-        // 유효한 메시지인 경우에만 채팅방 내 사용자에게 메시지를 전달함
+        // 전달할 메시지가 있는 경우에만 채팅방 내 사용자에게 메시지를 전달함
         if (response.isPresent()) {
             log.info("OUT : " + response);
+
+            // TODO: DB에 메시지 저장
 
             template.convertAndSend("/ws/subscribe/chatroom/" + chatroomId, response);
         }
