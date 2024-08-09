@@ -1,7 +1,7 @@
 USE service_posts;
-DROP TABLE IF EXISTS posts;
+-- DROP TABLE IF EXISTS posts;
 CREATE TABLE posts (
-                       id BIGINT PRIMARY KEY NOT NULL,
+                       id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
                        users_id BIGINT NOT NULL,
                        status INT NOT NULL,
                        group_size INT NOT NULL,

@@ -1,6 +1,5 @@
-# CREATE DATABASE IF NOT EXISTS n1;
 USE service_users;
-DROP TABLE IF EXISTS users;
+-- DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users(
                        id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
                        login_id VARCHAR(50) NOT NULL,
