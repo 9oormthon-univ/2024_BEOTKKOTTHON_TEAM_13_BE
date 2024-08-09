@@ -1,6 +1,8 @@
 package com.team13.servicechat.controller.ws;
 
 import com.team13.servicechat.dto.ChatroomMessage;
+import com.team13.servicechat.entity.ChatroomMessages;
+import com.team13.servicechat.service.ChatroomMessagesService;
 import com.team13.servicechat.service.ws.ChatroomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +21,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChatroomController {
 
-    private final ChatroomService service;
+    private final ChatroomService service;                    // 채팅방 웹 소켓 서비스
+    private final ChatroomMessagesService messagesService;    // 채팅방 메시지 서비스
 
     private final SimpMessagingTemplate template;
 
@@ -62,7 +65,16 @@ public class ChatroomController {
         if (response.isPresent()) {
             log.info("OUT : " + response);
 
-            // TODO: DB에 메시지 저장
+            // MySQL 서버에 메시지 저장
+            ChatroomMessages savedMessage = messagesService.saveMessage(ChatroomMessages.builder()
+                            .chatroomsId(chatroomId)
+                            .type(response.get().getType().toString())
+                            .message(response.get().getMessage())
+                            .senderUsersId(Long.parseLong(message.getSenderUserId()))
+                            .build());
+
+            // MongoDB 서버에 해당 메시지의 ID 저장
+            service.addMessageIdInChatroom(chatroomId, savedMessage);
 
             template.convertAndSend("/ws/subscribe/chatroom/" + chatroomId, response);
         }

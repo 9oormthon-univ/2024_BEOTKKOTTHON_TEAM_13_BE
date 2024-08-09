@@ -59,6 +59,16 @@ public class WebSocketInterceptor implements ChannelInterceptor {
                 String userId = String.valueOf(userEmail.hashCode());
                 String userName = String.valueOf(userId.hashCode());
 
+                // 테스트용 코드
+                if (userEmail.equals("ypjun100@naver.com")) {
+                    userId = "1";
+                    userName = "로미오";
+                }
+                if (userEmail.equals("ypjun101@naver.com")) {
+                    userId = "2";
+                    userName = "줄리엣";
+                }
+
                 // STOMP 패킷 헤더에 유저 ID와 유저 이름 추가
                 accessor.addNativeHeader("userId", userId);
                 accessor.addNativeHeader("userName", userName);

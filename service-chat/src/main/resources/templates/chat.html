@@ -9,13 +9,17 @@
     <link rel="stylesheet" href="chat.css"/>
     <script>
         // 로그인 후 받은 로그인 토큰 쿠기값을 채팅 시에 매번 보내줘야 함
-        const LOGIN_TOKEN = 'LTK=eyJhbGciOiJIUzM4NCJ9.eyJlbWFpbCI6InlwanVuMTAwQG5hdmVyLmNvbSIsImV4cCI6MTcyNTQ1MjgzNX0.Vu7MrazHC3o5fxjcgPgqPfmp7uhP4fNpFL2EuihRbXccV1cInieheIxL66MEc7vE';
+        let LOGIN_TOKEN = 'LTK=eyJhbGciOiJIUzM4NCJ9.eyJlbWFpbCI6InlwanVuMTAwQG5hdmVyLmNvbSIsImV4cCI6MTcyNTQ1MjgzNX0.Vu7MrazHC3o5fxjcgPgqPfmp7uhP4fNpFL2EuihRbXccV1cInieheIxL66MEc7vE';
         // 채팅방 ID ('test-chatroom-id'는 테스트용 채팅방)
         const chatroomId = 'test-chatroom';
         // 웹소켓 통신용 클라이언트 (해당 클라이언트를 바탕으로 웹소켓 통신을 진행하게 됨)
         let client;
 
         window.onload = function() {
+            if (localStorage.getItem("LTK")) {
+                LOGIN_TOKEN  = localStorage.getItem("LTK").replaceAll("\n", "");
+                console.log(LOGIN_TOKEN);
+            }
             /*
             // 초기 채팅방 메시지 데이터 수신
             // 해당 채팅방 내의 모든 메시지들을 불러옵니다.
