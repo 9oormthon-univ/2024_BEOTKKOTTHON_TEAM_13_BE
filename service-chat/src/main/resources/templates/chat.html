@@ -75,12 +75,6 @@
             // subscribe로 구독을 해야만 채팅방 메시지를 수신할 수 있음 (Authorization에 로그인 토큰을 넣어줘야 함)
             client.subscribe('/ws/subscribe/chatroom/' + chatroomId, onSocketMessage,
                 { Authorization: LOGIN_TOKEN });
-
-            // 웹 소켓 연결이 수립되면, 채팅방에 들어왔다고 알리기 위해 아래와 같이 ENTER 패킷을 전송함
-            client.send('/ws/publish/chatroom/' + chatroomId, { Authorization: LOGIN_TOKEN },
-                JSON.stringify({
-                    type: "ENTER"
-                }));
         }
 
         function onSocketClose(e) {
