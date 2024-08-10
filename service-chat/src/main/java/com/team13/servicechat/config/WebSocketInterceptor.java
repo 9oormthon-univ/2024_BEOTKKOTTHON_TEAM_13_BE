@@ -37,10 +37,8 @@ public class WebSocketInterceptor implements ChannelInterceptor {
     public Message<?> preSend(@NonNull  Message<?> message, @NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        // 특정 패킷에 한해서만 JWT 검증
-        if (accessor.getCommand() == StompCommand.CONNECT ||
-                accessor.getCommand() == StompCommand.SEND ||
-                accessor.getCommand() == StompCommand.SUBSCRIBE) {
+        // SUBSCRIBE 메시지만 JWT 검증 진행
+        if (accessor.getCommand() == StompCommand.SUBSCRIBE) {
 
             // JWT 토큰 가져오기
             String token = accessor.getFirstNativeHeader("Authorization");
@@ -50,32 +48,29 @@ public class WebSocketInterceptor implements ChannelInterceptor {
                 throw new RuntimeException("Access 토큰이 필요합니다.");
             }
 
-            // 클라이언트가 메시지를 보낸 경우 해당 메시지 패킷에 유저 ID 추가
-            if (accessor.getCommand() == StompCommand.SEND) {
-                // JWT 토큰을 기반으로 유저 ID 불러오기
-                String userEmail = getEmailInToken(token);
+            // JWT 토큰을 기반으로 유저 ID 불러오기
+            String userEmail = getEmailInToken(token);
 
-                // TODO: 유저의 이메일을 가지고 유저 ID와 유저 이름을 가져오는 코드 추가
-                String userId = String.valueOf(userEmail.hashCode());
-                String userName = String.valueOf(userId.hashCode());
+            // TODO: 유저의 이메일을 가지고 유저 ID와 유저 이름을 가져오는 코드 추가
+            String userId = String.valueOf(userEmail.hashCode());
+            String userName = String.valueOf(userId.hashCode());
 
-                // 테스트용 코드
-                if (userEmail.equals("ypjun100@naver.com")) {
-                    userId = "1";
-                    userName = "로미오";
-                }
-                if (userEmail.equals("ypjun101@naver.com")) {
-                    userId = "2";
-                    userName = "줄리엣";
-                }
-
-                // STOMP 패킷 헤더에 유저 ID와 유저 이름 추가
-                accessor.addNativeHeader("userId", userId);
-                accessor.addNativeHeader("userName", userName);
-
-                // 유저 ID를 추가한 새로운 메시지를 생성하고 이를 반환함
-                message = MessageBuilder.createMessage(message.getPayload(), accessor.toMessageHeaders());
+            // 테스트용 코드
+            if (userEmail.equals("ypjun100@naver.com")) {
+                userId = "1";
+                userName = "로미오";
             }
+            if (userEmail.equals("ypjun101@naver.com")) {
+                userId = "2";
+                userName = "줄리엣";
+            }
+
+            // STOMP 패킷 헤더에 유저 ID와 유저 이름 추가
+            accessor.addNativeHeader("userId", userId);
+            accessor.addNativeHeader("userName", userName);
+
+            // 유저 ID를 추가한 새로운 메시지를 생성하고 이를 반환함
+            message = MessageBuilder.createMessage(message.getPayload(), accessor.toMessageHeaders());
         }
 
         return message;

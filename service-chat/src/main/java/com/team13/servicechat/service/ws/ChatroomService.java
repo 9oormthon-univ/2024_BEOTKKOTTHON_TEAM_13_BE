@@ -4,7 +4,6 @@ import com.team13.servicechat.dto.ChatroomMessage;
 import com.team13.servicechat.entity.ChatroomMessages;
 import com.team13.servicechat.entity.Chatrooms;
 import com.team13.servicechat.repository.ChatroomsRepository;
-import com.team13.servicechat.service.ChatroomMessagesService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 

@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/ws/subscribe/");
-        config.setApplicationDestinationPrefixes("/ws/publish/");
+        config.setApplicationDestinationPrefixes("/ws/publish/", "/ws/subscribe/");
     }
 
     @Override
