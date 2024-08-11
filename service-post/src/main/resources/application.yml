@@ -19,6 +19,7 @@ spring:
           default:
             connect-timeout: 5000
             read-timeout: 5000
+
   datasource:
     url: jdbc:mysql://localhost:3307/service_posts
     username: root
