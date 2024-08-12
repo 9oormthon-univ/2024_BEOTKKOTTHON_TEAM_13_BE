@@ -24,6 +24,10 @@ public class ChatMessage {
 
     @Column(name = "sender_users_id")
     private long senderUserId;
+
+    @Column(name = "sender_users_nickname")
+    private String senderUserName;
+
     private String type;
 
     @Column(columnDefinition = "TEXT")

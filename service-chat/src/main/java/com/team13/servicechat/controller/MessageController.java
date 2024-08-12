@@ -1,6 +1,6 @@
 package com.team13.servicechat.controller;
 
-import com.team13.servicechat.dto.ChatMessageDto;
+import com.team13.servicechat.dto.MessageDto;
 import com.team13.servicechat.entity.ChatMessage;
 import com.team13.servicechat.service.ChatMessageService;
 import com.team13.servicechat.service.MessageService;
@@ -46,23 +46,23 @@ public class MessageController {
     // 전체 메시지 관리 핸들러
     @MessageMapping("/{chatroomId}")  // 클라이언트 -> 서버 ('/ws/publish/chatroom/{chatroomId}')
     public void message(@DestinationVariable String chatroomId,
-                        @Payload ChatMessageDto message,
+                        @Payload MessageDto message,
                         SimpMessageHeaderAccessor accessor) {
 
         log.info("IN : " + message);
 
         // 채팅방 내의 사용자들에게 전달될 메시지
-        Optional<ChatMessageDto> response = Optional.empty();
+        Optional<MessageDto> response = Optional.empty();
 
         // 메시지 타입에 따른 서비스 라우팅
-        if (message.getType() == ChatMessageDto.MessageType.MESSAGE_TEXT ||
-            message.getType() == ChatMessageDto.MessageType.MESSAGE_IMAGE ) {
+        if (message.getType() == MessageDto.MessageType.MESSAGE_TEXT ||
+            message.getType() == MessageDto.MessageType.MESSAGE_IMAGE ) {
             response = service.messageTextAndImage(chatroomId, message, accessor.getSessionId());
 
-        } else if (message.getType() == ChatMessageDto.MessageType.EXIT_USER) {
+        } else if (message.getType() == MessageDto.MessageType.EXIT_USER) {
             response = service.messageExitUser(chatroomId, message, accessor.getSessionId());
 
-        } else if (message.getType() == ChatMessageDto.MessageType.COMPLETE) {
+        } else if (message.getType() == MessageDto.MessageType.COMPLETE) {
             response = service.messageComplete(chatroomId, message, accessor.getSessionId());
 
         }
@@ -75,6 +75,7 @@ public class MessageController {
                             .type(response.get().getType().toString())
                             .message(response.get().getMessage())
                             .senderUserId(response.get().getSenderUserId())
+                            .senderUserName(response.get().getSenderUserName())
                             .build());
 
             // MongoDB 서버에 해당 메시지의 ID 저장

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessageDto {
+public class MessageDto {
 
     // 메시지 타입 설명
     // MESSAGE_TEXT  - 사용자 텍스트 메시지

@@ -5,17 +5,18 @@ import com.team13.servicechat.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
 
-    private final ChatMessageRepository repository;
+    private final ChatMessageRepository repository;  // 채팅방 메시지를 저장하기 위한 레포지토리
 
-    // 특정 채팅방의 메시지 목록 가져오기
-    public List<ChatMessage> getAllMessagesByChatroomId(String chatroomId) {
-        return List.of();
+
+    // 특정 ID를 가진 채팅 메시지 가져오기
+    public Optional<ChatMessage> getMessageById(Long id) {
+        return repository.findById(id);
     }
 
     // 채팅방 메시지 저장

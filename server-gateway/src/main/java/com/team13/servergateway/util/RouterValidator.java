@@ -11,6 +11,9 @@ public class RouterValidator {
     // 로그인 토큰이 요구되는 path
     private final List<List<String>> securedApiEndpoints = List.of(
             List.of("GET", "/user/config")
+            // 채팅 관련 API는 모두 토큰 요구
+//            List.of("GET", "/chat"),
+//            List.of("POST", "/chat")
     );
 
     // 만약 request의 path가 securedApiEndpoints 중 하나인 경우 true를 반환하고, 그렇지 않으면 false를 반환함
