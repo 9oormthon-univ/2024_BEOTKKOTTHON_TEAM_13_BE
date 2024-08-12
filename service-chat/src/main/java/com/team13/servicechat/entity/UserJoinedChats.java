@@ -13,8 +13,8 @@ import java.util.List;
 @Document(collection = "user_joined_chats")
 public class UserJoinedChats {
     @Id
-    private String usersId;
+    private String userId;
 
     @Field("chatrooms_ids")
-    private List<String> chatroomsIds;
+    private List<String> chatroomIds;
 }

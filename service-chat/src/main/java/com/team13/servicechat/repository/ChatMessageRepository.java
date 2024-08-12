@@ -1,9 +1,9 @@
 package com.team13.servicechat.repository;
 
-import com.team13.servicechat.entity.ChatroomMessages;
+import com.team13.servicechat.entity.ChatMessage;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ChatroomMessagesRepository extends CrudRepository<ChatroomMessages, Long> {
+public interface ChatMessageRepository extends CrudRepository<ChatMessage, Long> {
 }

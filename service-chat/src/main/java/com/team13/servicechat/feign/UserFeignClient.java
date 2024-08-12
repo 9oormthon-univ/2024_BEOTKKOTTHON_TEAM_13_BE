@@ -1,6 +1,6 @@
 package com.team13.servicechat.feign;
 
-import com.team13.servicechat.dto.UserResponse;
+import com.team13.servicechat.dto.UserResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.GetMapping;
 @FeignClient(name = "service-chat", url = "http://localhost:7234")
 public interface UserFeignClient {
     @GetMapping("/service-connection-test")
-    UserResponse serviceConnectionTest();
+    UserResponseDto serviceConnectionTest();
 }

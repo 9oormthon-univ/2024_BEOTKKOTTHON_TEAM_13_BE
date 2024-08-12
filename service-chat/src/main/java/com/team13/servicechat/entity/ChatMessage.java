@@ -10,17 +10,20 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.util.Date;
 
 @Data
-@Entity
+@Entity(name = "chat_messages")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatroomMessages {
+public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String chatroomsId;
-    private long senderUsersId;
+    @Column(name = "chatrooms_id")
+    private String chatroomId;
+
+    @Column(name = "sender_users_id")
+    private long senderUserId;
     private String type;
 
     @Column(columnDefinition = "TEXT")

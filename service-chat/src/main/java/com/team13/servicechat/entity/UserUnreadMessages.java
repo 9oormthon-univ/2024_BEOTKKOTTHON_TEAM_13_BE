@@ -13,7 +13,7 @@ import java.util.List;
 @Document(collection = "user_unread_messages")
 public class UserUnreadMessages {
     @Id
-    private String usersId;
+    private String userId;
 
     @Field("unread_message")
     private List<Long> unreadMessages;

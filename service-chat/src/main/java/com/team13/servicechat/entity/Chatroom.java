@@ -13,15 +13,15 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Document(collection = "chatrooms")
-public class Chatrooms {
+public class Chatroom {
     @Id
     private String id;
 
     @Field("posts_id")
-    private long postsId;
+    private long postId;
 
     @Field("users_ids")
-    private List<Long> usersIds;
+    private List<Long> userIds;
 
     @Field("last_message")
     private String lastMessage;
@@ -32,7 +32,7 @@ public class Chatrooms {
     // 유저 목록에 유저 ID 저장
     public void addUserId(Long userId) {
         if (userId != null) {
-            usersIds.add(userId);
+            userIds.add(userId);
         }
     }
 }

@@ -1,9 +1,9 @@
-package com.team13.servicechat.controller.ws;
+package com.team13.servicechat.controller;
 
-import com.team13.servicechat.dto.ChatroomMessage;
-import com.team13.servicechat.entity.ChatroomMessages;
-import com.team13.servicechat.service.ChatroomMessagesService;
-import com.team13.servicechat.service.ws.ChatroomService;
+import com.team13.servicechat.dto.ChatMessageDto;
+import com.team13.servicechat.entity.ChatMessage;
+import com.team13.servicechat.service.ChatMessageService;
+import com.team13.servicechat.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -20,15 +20,15 @@ import java.util.Optional;
 @Log4j2
 @Controller
 @RequiredArgsConstructor
-public class ChatroomController {
+public class MessageController {
 
-    private final ChatroomService service;                    // 채팅방 웹 소켓 서비스
-    private final ChatroomMessagesService messagesService;    // 채팅방 메시지 서비스
+    private final MessageService service;                    // 채팅방 웹 소켓 서비스
+    private final ChatMessageService messagesService;    // 채팅방 메시지 서비스
 
     private final SimpMessagingTemplate template;             // 소켓 메시지 전송을 위한 템플릿
 
-    @SubscribeMapping("/chatroom/{chatroomId}")
-    public void subscribeMessage(@DestinationVariable String chatroomId,
+    @SubscribeMapping("/{chatroomId}")
+    public void subscribe(@DestinationVariable String chatroomId,
                                  SimpMessageHeaderAccessor accessor) {
 
         // 유저 ID나 이름을 불러올 수 없다면 해당 메시지를 처리하지 않음
@@ -44,25 +44,25 @@ public class ChatroomController {
 
 
     // 전체 메시지 관리 핸들러
-    @MessageMapping("/chatroom/{chatroomId}")  // 클라이언트 -> 서버 ('/ws/publish/chatroom/{chatroomId}')
-    public void messageHandler(@DestinationVariable String chatroomId,
-                        @Payload ChatroomMessage message,
+    @MessageMapping("/{chatroomId}")  // 클라이언트 -> 서버 ('/ws/publish/chatroom/{chatroomId}')
+    public void message(@DestinationVariable String chatroomId,
+                        @Payload ChatMessageDto message,
                         SimpMessageHeaderAccessor accessor) {
 
         log.info("IN : " + message);
 
         // 채팅방 내의 사용자들에게 전달될 메시지
-        Optional<ChatroomMessage> response = Optional.empty();
+        Optional<ChatMessageDto> response = Optional.empty();
 
         // 메시지 타입에 따른 서비스 라우팅
-        if (message.getType() == ChatroomMessage.MessageType.MESSAGE_TEXT ||
-            message.getType() == ChatroomMessage.MessageType.MESSAGE_IMAGE ) {
+        if (message.getType() == ChatMessageDto.MessageType.MESSAGE_TEXT ||
+            message.getType() == ChatMessageDto.MessageType.MESSAGE_IMAGE ) {
             response = service.messageTextAndImage(chatroomId, message, accessor.getSessionId());
 
-        } else if (message.getType() == ChatroomMessage.MessageType.EXIT_USER) {
+        } else if (message.getType() == ChatMessageDto.MessageType.EXIT_USER) {
             response = service.messageExitUser(chatroomId, message, accessor.getSessionId());
 
-        } else if (message.getType() == ChatroomMessage.MessageType.COMPLETE) {
+        } else if (message.getType() == ChatMessageDto.MessageType.COMPLETE) {
             response = service.messageComplete(chatroomId, message, accessor.getSessionId());
 
         }
@@ -70,17 +70,17 @@ public class ChatroomController {
         // 전달할 메시지가 있는 경우에만 채팅방 내 사용자에게 메시지를 전달함
         if (response.isPresent()) {
             // MySQL 서버에 메시지 저장
-            ChatroomMessages savedMessage = messagesService.saveMessage(ChatroomMessages.builder()
-                            .chatroomsId(chatroomId)
+            ChatMessage savedMessage = messagesService.saveMessage(ChatMessage.builder()
+                            .chatroomId(chatroomId)
                             .type(response.get().getType().toString())
                             .message(response.get().getMessage())
-                            .senderUsersId(response.get().getSenderUserId())
+                            .senderUserId(response.get().getSenderUserId())
                             .build());
 
             // MongoDB 서버에 해당 메시지의 ID 저장
             service.addMessageIdInChatroom(chatroomId, savedMessage);
 
-            template.convertAndSend("/ws/subscribe/chatroom/" + chatroomId, response);
+            template.convertAndSend("/ws/subscribe/" + chatroomId, response);
 
             log.info("OUT : " + response);
         }

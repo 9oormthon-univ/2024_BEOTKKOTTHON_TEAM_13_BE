@@ -73,7 +73,7 @@
 
         function onSocketOpen() {
             // subscribe로 구독을 해야만 채팅방 메시지를 수신할 수 있음 (Authorization에 로그인 토큰을 넣어줘야 함)
-            client.subscribe('/ws/subscribe/chatroom/' + chatroomId, onSocketMessage,
+            client.subscribe('/ws/subscribe/' + chatroomId, onSocketMessage,
                 { Authorization: LOGIN_TOKEN });
         }
 
@@ -135,7 +135,7 @@
             document.getElementsByClassName("sending-text")[0].value = "";
 
             // 웹소켓을 통해 메시지 전송
-            client.send('/ws/publish/chatroom/' + chatroomId, { },
+            client.send('/ws/publish/' + chatroomId, { },
                 JSON.stringify({
                     type: "MESSAGE_TEXT",
                     message: userText
