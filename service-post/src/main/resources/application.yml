@@ -21,7 +21,7 @@ spring:
             read-timeout: 5000
 
   datasource:
-    url: jdbc:mysql://localhost:3307/service_posts
+    url: jdbc:mysql://localhost:3307/n1
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
