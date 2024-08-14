@@ -1,4 +1,4 @@
-USE service_posts;
+USE n1;
 # DROP TABLE IF EXISTS posts;
 CREATE TABLE IF NOT EXISTS posts (
                        id BIGINT PRIMARY KEY NOT NULL,
@@ -33,4 +33,11 @@ CREATE TABLE IF NOT EXISTS posts_images (
                               posts_id BIGINT NOT NULL,
                               image_path VARCHAR(200) NOT NULL,
                               FOREIGN KEY (posts_id) REFERENCES posts(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS likes_posts (
+                             id BIGINT PRIMARY KEY NOT NULL,
+                             posts_id BIGINT NOT NULL,
+                             users_id BIGINT NOT NULL,
+                             FOREIGN KEY (posts_id) REFERENCES posts(id) ON DELETE CASCADE
 );

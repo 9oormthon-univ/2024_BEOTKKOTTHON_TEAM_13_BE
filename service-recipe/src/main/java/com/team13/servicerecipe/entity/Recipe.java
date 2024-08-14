@@ -20,7 +20,7 @@ public class Recipe {
     private Long id;
 
     @Column(name = "users_id", nullable = false)
-    private Long userId;
+    private Long usersId;
 
     @Column(name = "title", nullable = false, length = 100)
     private String title;
