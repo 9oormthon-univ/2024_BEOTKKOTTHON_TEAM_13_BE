@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecipesComments {
+public class RecipeComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,10 +33,10 @@ public class RecipesComments {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comments_id")
-    private RecipesComments parentComment;
+    private RecipeComment parentComment;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
-    private List<RecipesComments> replies;
+    private List<RecipeComment> replies;
 
     @Column(name = "users_id", nullable = false)
     private Long usersId;

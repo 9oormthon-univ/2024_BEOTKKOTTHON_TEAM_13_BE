@@ -7,12 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="recipes_comments")
+@Table(name="reviews")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Reviews {
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
