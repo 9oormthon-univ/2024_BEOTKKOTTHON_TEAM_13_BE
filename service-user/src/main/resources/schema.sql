@@ -1,5 +1,5 @@
 USE n1;
-# DROP TABLE IF EXISTS users;
+
 CREATE TABLE IF NOT EXISTS users(
                        id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
                        email VARCHAR(50) NOT NULL,
