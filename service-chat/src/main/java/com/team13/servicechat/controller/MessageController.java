@@ -2,7 +2,7 @@ package com.team13.servicechat.controller;
 
 import com.team13.servicechat.dto.MessageDto;
 import com.team13.servicechat.entity.ChatMessage;
-import com.team13.servicechat.service.ChatMessageService;
+import com.team13.servicechat.service.ChatroomService;
 import com.team13.servicechat.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,9 +23,9 @@ import java.util.Optional;
 public class MessageController {
 
     private final MessageService service;                    // 채팅방 웹 소켓 서비스
-    private final ChatMessageService messagesService;    // 채팅방 메시지 서비스
+    private final ChatroomService chatroomService;           // 채팅방 관련 서비스
 
-    private final SimpMessagingTemplate template;             // 소켓 메시지 전송을 위한 템플릿
+    private final SimpMessagingTemplate template;            // 소켓 메시지 전송을 위한 템플릿
 
     @SubscribeMapping("/{chatroomId}")
     public void subscribe(@DestinationVariable String chatroomId,
@@ -70,7 +70,7 @@ public class MessageController {
         // 전달할 메시지가 있는 경우에만 채팅방 내 사용자에게 메시지를 전달함
         if (response.isPresent()) {
             // MySQL 서버에 메시지 저장
-            ChatMessage savedMessage = messagesService.saveMessage(ChatMessage.builder()
+            ChatMessage savedMessage = chatroomService.saveMessage(ChatMessage.builder()
                             .chatroomId(chatroomId)
                             .type(response.get().getType().toString())
                             .message(response.get().getMessage())

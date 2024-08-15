@@ -1,11 +1,10 @@
 package com.team13.servicechat.controller;
 
-import com.team13.servicechat.dto.ChatroomDto;
 import com.team13.servicechat.dto.MessageDto;
 import com.team13.servicechat.dto.RoomDataDto;
 import com.team13.servicechat.entity.ChatMessage;
+import com.team13.servicechat.entity.Chatroom;
 import com.team13.servicechat.feign.UserFeignClient;
-import com.team13.servicechat.service.ChatMessageService;
 import com.team13.servicechat.service.ChatroomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,7 +29,6 @@ public class IndexController {
 
     private final UserFeignClient userFeignClient; // 서비스 간 통신 테스트용 Feign Client
 
-    private final ChatMessageService chatMessageService;  // 채팅방 메시지를 가져오기 위한 서비스
     private final ChatroomService chatroomService;        // 채팅방 정보를 가져오기 위한 서비스
 
     @GetMapping
@@ -52,8 +50,8 @@ public class IndexController {
     public RoomDataDto getRoomData(@RequestParam String id) {
 
         // 채팅방 ID가 존재하는 경우에 실행
-        if (chatroomService.existsById(id)) {
-            ChatroomDto chatroom = chatroomService.getChatroomById(id); // 채팅방 정보
+        if (chatroomService.existsChatroomId(id)) {
+            Chatroom chatroom = chatroomService.getChatroomById(id); // 채팅방 정보
 
             // TODO: 채팅방 내에 현재 유저가 포함되는지 확인 (해당 채팅방에 권한이 있는지 확인)
 
@@ -61,7 +59,7 @@ public class IndexController {
             List<MessageDto> messages = new ArrayList<>();
 
             for (long messageId : chatroom.getMessageIds()) {
-                Optional<ChatMessage> opMessage = chatMessageService.getMessageById(messageId);
+                Optional<ChatMessage> opMessage = chatroomService.getMessageById(messageId);
 
                 opMessage.ifPresent(message -> messages.add(MessageDto.builder()
                                 .type(MessageDto.MessageType.valueOf(message.getType()))
