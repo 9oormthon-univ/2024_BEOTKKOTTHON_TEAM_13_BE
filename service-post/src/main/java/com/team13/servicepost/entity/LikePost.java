@@ -22,6 +22,6 @@ public class LikePost {
     private Post post;
 
     @Column(name = "users_id", nullable = false)
-    private Long usersId;
+    private Long userId;
 
 }
