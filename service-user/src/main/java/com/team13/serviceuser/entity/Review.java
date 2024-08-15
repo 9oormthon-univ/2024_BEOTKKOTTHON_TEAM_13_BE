@@ -19,15 +19,15 @@ public class Review {
     private Long id;
 
     @Column(name = "posts_id", nullable = false)
-    private Long postsId;
+    private Long postId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_users_id", nullable = false)
-    private User toUser;
+    private User toUserId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_users_id", nullable = false)
-    private User fromUser;
+    private User fromUserId;
 
     @Column(name = "text", nullable = false, length = 500)
     private String text;
