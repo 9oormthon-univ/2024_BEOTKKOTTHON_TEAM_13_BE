@@ -19,8 +19,9 @@ public class MessageService {
     // 접속되어 있는 유저의 정보를 담기위한 레코드
     private record User(@NonNull Long userId, @NonNull String userName, @NonNull String sessionId) { }
 
-    // 채팅방 메시지 데이터를 저장하는 레포지토리
-    private final ChatroomRepository repository;
+
+    // 채팅방 정보 및 메시지를 관리하는 서비스
+    private final ChatroomService chatroomService;
 
     // 각 채팅방 내에 접속 중인 유저 정보를 저장하는 해쉬맵
     private final Map<String, List<User>> chatrooms = new HashMap<>();
@@ -67,7 +68,7 @@ public class MessageService {
             message.setSenderUserName(sender.userName);
 
             // 채팅방 데이터를 가져옴
-            Chatroom chatroom = repository.findById(chatroomId).orElseThrow();
+            Chatroom chatroom = chatroomService.getChatroomById(chatroomId);
 
             // 해당 채팅방에서 유저가 포함되어 있는지 확인
             int userIndex = chatroom.getUserIds().indexOf(message.getSenderUserId());
@@ -78,12 +79,10 @@ public class MessageService {
 
                 // 만약 모든 유저가 채팅방에서 나간 경우, 해당 채팅방 제거
                 if (chatroom.getUserIds().isEmpty()) {
-                    repository.deleteById(chatroomId);
+                    chatroomService.deleteChatroom(chatroomId);
                     chatrooms.remove(chatroomId);
 
                     // TODO: feign을 통한 다른 서비스들에게도 채팅방 삭제 메시지 전달
-
-                    repository.deleteById(chatroomId);
 
                     return Optional.empty();
                 }
@@ -116,20 +115,6 @@ public class MessageService {
     // TODO: 공동구매 참여시 채팅방 내에 있는 유저들에게 '~님이 공동구매에 참여하였습니다.' 메시지 전달
 
 
-    // 채팅방에 해당 메시지 아이디 추가
-    public void addMessageIdInChatroom(String chatroomId, ChatMessage message) {
-        if (verifyChatroomId(chatroomId)) {
-            Chatroom chatroom = repository.findById(chatroomId).orElseThrow();
-
-            // 해당 메시지를 저장한 뒤, 채팅방의 마지막 메시지를 해당 메시지로 설정
-            chatroom.getMessageIds().add(message.getId());
-            chatroom.setLastMessage(message.getMessage());
-
-            repository.save(chatroom);
-        }
-    }
-
-
     /*
     verify~() 메서드는 올바른 채팅방인지 혹은 특정 채팅방에 권한이 있는 사용자인지를 판별합니다.
     이 메서드들은 먼저 클래스 내부에 선언된 chatrooms 해쉬맵을 통해 유효한지 판별하게 되고, 만약 해쉬맵을
@@ -143,7 +128,7 @@ public class MessageService {
 
         if (chatrooms.containsKey(chatroomId)) {
             return true;
-        } else if (repository.existsById(chatroomId)) {
+        } else if (chatroomService.existsChatroomId(chatroomId)) {
             chatrooms.put(chatroomId, new ArrayList<>());  // 유효한 채팅방인지 확인함과 동시에 chatrooms에 채팅방을 추가시킴
             return true;
         }
@@ -172,7 +157,7 @@ public class MessageService {
             }
 
             // repository 내에서 존재하는 유저 ID인지 확인
-            List<Long> users = repository.findById(chatroomId).orElseThrow().getUserIds();
+            List<Long> users = chatroomService.getChatroomById(chatroomId).getUserIds();
             if (users.contains(userId)) {
                 chatrooms.get(chatroomId).add(new User(userId, userName, sessionId));
                 return true;

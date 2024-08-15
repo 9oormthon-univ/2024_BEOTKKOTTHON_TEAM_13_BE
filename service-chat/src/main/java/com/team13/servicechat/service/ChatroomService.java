@@ -1,5 +1,6 @@
 package com.team13.servicechat.service;
 
+import com.team13.servicechat.dto.MessageDto;
 import com.team13.servicechat.entity.ChatMessage;
 import com.team13.servicechat.entity.Chatroom;
 import com.team13.servicechat.repository.ChatMessageRepository;
@@ -45,20 +46,51 @@ public class ChatroomService {
 
     // 채팅방 정보 가져오기
     // 해당 메서드 실행 전에 항상 채팅방 ID exists 여부 확인
-    public Chatroom getChatroomById(String id) {
-        return chatroomRepository.findById(id).orElseThrow();
+    public Chatroom getChatroomById(String chatroomId) {
+        return chatroomRepository.findById(chatroomId).orElseThrow();
     }
 
 
     // 채팅 메시지 가져오기
-    public Optional<ChatMessage> getMessageById(Long id) {
-        return chatMessageRepository.findById(id);
+    public Optional<ChatMessage> getMessageById(Long messageId) {
+        return chatMessageRepository.findById(messageId);
     }
 
 
-    // 채팅 메시지 저장 및 반환
-    public ChatMessage saveMessage(ChatMessage message) {
-        return chatMessageRepository.save(message);
+    // 채팅방 및 메시지 삭제
+    public void deleteChatroom(String chatroomId) {
+        if (existsChatroomId(chatroomId)) {
+            Chatroom chatroom = getChatroomById(chatroomId);
+
+            //  채팅방 내의 메시지 삭제
+            chatroom.getMessageIds().forEach(chatMessageRepository::deleteById);
+
+            // 채팅방 삭제
+            chatroomRepository.deleteById(chatroomId);
+        }
     }
 
+
+    // 채팅방 메시지 추가
+    public void saveMessage(String chatroomId, MessageDto message) {
+        if (existsChatroomId(chatroomId)) {
+            // 채팅방 메시지 저장
+            ChatMessage savedMessage = chatMessageRepository.save(ChatMessage.builder()
+                            .chatroomId(chatroomId)
+                            .type(message.getType().toString())
+                            .message(message.getMessage())
+                            .senderUserId(message.getSenderUserId())
+                            .senderUserName(message.getSenderUserName())
+                            .build());
+
+            Chatroom chatroom = getChatroomById(chatroomId);
+
+            // 해당 메시지를 채팅방에 저장한 뒤에 채팅방의 마지막 메시지를 해당 메시지로 설정
+            chatroom.getMessageIds().add(savedMessage.getId());
+            chatroom.setLastMessage(savedMessage.getMessage());
+
+            // 채팅방 정보 업데이트
+            chatroomRepository.save(chatroom);
+        }
+    }
 }

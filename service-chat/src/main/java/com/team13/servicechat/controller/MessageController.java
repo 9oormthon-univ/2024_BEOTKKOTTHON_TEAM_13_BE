@@ -69,17 +69,21 @@ public class MessageController {
 
         // 전달할 메시지가 있는 경우에만 채팅방 내 사용자에게 메시지를 전달함
         if (response.isPresent()) {
-            // MySQL 서버에 메시지 저장
-            ChatMessage savedMessage = chatroomService.saveMessage(ChatMessage.builder()
-                            .chatroomId(chatroomId)
-                            .type(response.get().getType().toString())
-                            .message(response.get().getMessage())
-                            .senderUserId(response.get().getSenderUserId())
-                            .senderUserName(response.get().getSenderUserName())
-                            .build());
 
-            // MongoDB 서버에 해당 메시지의 ID 저장
-            service.addMessageIdInChatroom(chatroomId, savedMessage);
+            // 메시지 저장
+            chatroomService.saveMessage(chatroomId, response.get());
+
+            // MySQL 서버에 메시지 저장
+//            ChatMessage savedMessage = chatroomService.saveMessage(ChatMessage.builder()
+//                            .chatroomId(chatroomId)
+//                            .type(response.get().getType().toString())
+//                            .message(response.get().getMessage())
+//                            .senderUserId(response.get().getSenderUserId())
+//                            .senderUserName(response.get().getSenderUserName())
+//                            .build());
+//
+//            // MongoDB 서버에 해당 메시지의 ID 저장
+//            service.addMessageIdInChatroom(chatroomId, savedMessage);
 
             template.convertAndSend("/ws/subscribe/" + chatroomId, response);
 
