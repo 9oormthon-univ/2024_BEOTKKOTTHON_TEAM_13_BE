@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LikesPosts {
+public class LikePost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
