@@ -66,6 +66,7 @@ public class IndexController {
                                 .message(message.getMessage())
                                 .senderUserId(message.getSenderUserId())
                                 .senderUserName(message.getSenderUserName())
+                                .createdAt(message.getCreatedAt())
                                 .build()));
 
                 log.info(opMessage);

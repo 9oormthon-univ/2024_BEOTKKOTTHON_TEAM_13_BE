@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -23,6 +25,7 @@ public class MessageDto {
 
     private MessageType type;       // 메시지 타입
     private String message;         // 메시지 내용
-    private Long senderUserId;    // 메시지 발신자 유저 ID
+    private Long senderUserId;      // 메시지 발신자 유저 ID
     private String senderUserName;  // 메시지 발신자 유저 이름
+    private Date createdAt;         // 채팅 메시지 생성 날짜 및 시간
 }
