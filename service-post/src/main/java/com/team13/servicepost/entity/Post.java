@@ -19,7 +19,7 @@ public class Post {
     private Long id;
 
     @Column(name = "users_id", nullable = false)
-    private Long usersId;
+    private Long userId;
 
     @Column(name = "status", nullable = false)
     private int status;
