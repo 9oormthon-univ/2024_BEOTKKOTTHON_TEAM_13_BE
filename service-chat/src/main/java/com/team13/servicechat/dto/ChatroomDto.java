@@ -8,7 +8,8 @@ import java.util.List;
 @Data
 @Builder
 public class ChatroomDto {
+    private String id;
     private long postId;
     private List<Long> userIds;
-    private List<Long> messageIds;
+    private List<ChatMessageDto> messages;
 }

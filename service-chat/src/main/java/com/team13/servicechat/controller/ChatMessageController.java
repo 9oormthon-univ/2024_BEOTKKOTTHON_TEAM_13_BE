@@ -1,9 +1,8 @@
 package com.team13.servicechat.controller;
 
-import com.team13.servicechat.dto.MessageDto;
-import com.team13.servicechat.entity.ChatMessage;
+import com.team13.servicechat.dto.ChatMessageDto;
 import com.team13.servicechat.service.ChatroomService;
-import com.team13.servicechat.service.MessageService;
+import com.team13.servicechat.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -20,9 +19,9 @@ import java.util.Optional;
 @Log4j2
 @Controller
 @RequiredArgsConstructor
-public class MessageController {
+public class ChatMessageController {
 
-    private final MessageService service;                    // 채팅방 웹 소켓 서비스
+    private final ChatMessageService service;                    // 채팅방 웹 소켓 서비스
     private final ChatroomService chatroomService;           // 채팅방 관련 서비스
 
     private final SimpMessagingTemplate template;            // 소켓 메시지 전송을 위한 템플릿
@@ -46,23 +45,23 @@ public class MessageController {
     // 전체 메시지 관리 핸들러
     @MessageMapping("/{chatroomId}")  // 클라이언트 -> 서버 ('/ws/publish/chatroom/{chatroomId}')
     public void message(@DestinationVariable String chatroomId,
-                        @Payload MessageDto message,
+                        @Payload ChatMessageDto message,
                         SimpMessageHeaderAccessor accessor) {
 
         log.info("IN : " + message);
 
         // 채팅방 내의 사용자들에게 전달될 메시지
-        Optional<MessageDto> response = Optional.empty();
+        Optional<ChatMessageDto> response = Optional.empty();
 
         // 메시지 타입에 따른 서비스 라우팅
-        if (message.getType() == MessageDto.MessageType.MESSAGE_TEXT ||
-            message.getType() == MessageDto.MessageType.MESSAGE_IMAGE ) {
+        if (message.getType() == ChatMessageDto.MessageType.MESSAGE_TEXT ||
+            message.getType() == ChatMessageDto.MessageType.MESSAGE_IMAGE ) {
             response = service.messageTextAndImage(chatroomId, message, accessor.getSessionId());
 
-        } else if (message.getType() == MessageDto.MessageType.EXIT_USER) {
+        } else if (message.getType() == ChatMessageDto.MessageType.EXIT_USER) {
             response = service.messageExitUser(chatroomId, message, accessor.getSessionId());
 
-        } else if (message.getType() == MessageDto.MessageType.COMPLETE) {
+        } else if (message.getType() == ChatMessageDto.MessageType.COMPLETE) {
             response = service.messageComplete(chatroomId, message, accessor.getSessionId());
 
         }

@@ -11,7 +11,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageDto {
+public class ChatMessageDto {
 
     // 메시지 타입 설명
     // MESSAGE_TEXT  - 사용자 텍스트 메시지

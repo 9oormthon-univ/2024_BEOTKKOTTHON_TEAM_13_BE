@@ -1,9 +1,7 @@
 package com.team13.servicechat.service;
 
-import com.team13.servicechat.dto.MessageDto;
-import com.team13.servicechat.entity.ChatMessage;
+import com.team13.servicechat.dto.ChatMessageDto;
 import com.team13.servicechat.entity.Chatroom;
-import com.team13.servicechat.repository.ChatroomRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -14,7 +12,7 @@ import java.util.*;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class MessageService {
+public class ChatMessageService {
 
     // 접속되어 있는 유저의 정보를 담기위한 레코드
     private record User(@NonNull Long userId, @NonNull String userName, @NonNull String sessionId) { }
@@ -35,9 +33,9 @@ public class MessageService {
 
 
     // 채팅 메시지
-    public Optional<MessageDto> messageTextAndImage(String chatroomId,
-                                                    MessageDto message,
-                                                    String sessionId) {
+    public Optional<ChatMessageDto> messageTextAndImage(String chatroomId,
+                                                        ChatMessageDto message,
+                                                        String sessionId) {
 
         // 유효한 채팅방 ID, 유저인 경우에만 메시지를 반환함 (반환한다는 의미는 이 메시지를 DB에 저장한다는 의미임)
         if (verify(chatroomId, message, sessionId)) {
@@ -56,9 +54,9 @@ public class MessageService {
 
 
     // 유저의 공동구매 포기
-    public Optional<MessageDto> messageExitUser(String chatroomId,
-                                                MessageDto message,
-                                                String sessionId) {
+    public Optional<ChatMessageDto> messageExitUser(String chatroomId,
+                                                    ChatMessageDto message,
+                                                    String sessionId) {
 
         // 유효한 채팅방 ID, 유저인 경우에만 메시지를 반환함 (반환한다는 의미는 이 메시지를 DB에 저장한다는 의미임)
         if (verify(chatroomId, message, sessionId)) {
@@ -87,8 +85,8 @@ public class MessageService {
                     return Optional.empty();
                 }
 
-                return Optional.of(MessageDto.builder()
-                                .type(MessageDto.MessageType.NOTICE)
+                return Optional.of(ChatMessageDto.builder()
+                                .type(ChatMessageDto.MessageType.NOTICE)
                                 .message(message.getSenderUserName() + "님이 공동구매를 포기하셨습니다.")
                                 .build());
             }
@@ -99,9 +97,9 @@ public class MessageService {
 
 
     // TODO: 공동구매 완료
-    public Optional<MessageDto> messageComplete(String chatroomId,
-                                                MessageDto message,
-                                                String sessionId) {
+    public Optional<ChatMessageDto> messageComplete(String chatroomId,
+                                                    ChatMessageDto message,
+                                                    String sessionId) {
        /*
        공동구매 완료 기능은 공동구매 게시자만 요청할 수 있으며, 게시자가 완료 요청시 해당 메시지를 전체 클라이언트에게 전송합니다.
        해당 메시지를 받은 다른 사용자들은 리뷰를 작성하면 messageExitUser() 메서드를 통해 채팅방을 나갈 수 있으며, 모든 유저가
@@ -139,7 +137,7 @@ public class MessageService {
 
     // 사용자가 전달한 chatroomId와 userId가 올바른 아이디인지 확인
     // 만약 존재하지 않는 채팅방이거나, 해당 채팅방에 대한 권한이 없는 유저의 경우 false를 반환함
-    private boolean verify(String chatroomId, MessageDto message, String sessionId) {
+    private boolean verify(String chatroomId, ChatMessageDto message, String sessionId) {
 
         Long userId = message.getSenderUserId();
         String userName = message.getSenderUserName();

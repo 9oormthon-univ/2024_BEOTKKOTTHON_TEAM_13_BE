@@ -1,10 +1,12 @@
 package com.team13.servicechat.service;
 
-import com.team13.servicechat.dto.MessageDto;
+import com.team13.servicechat.dto.ChatMessageDto;
 import com.team13.servicechat.entity.ChatMessage;
 import com.team13.servicechat.entity.Chatroom;
+import com.team13.servicechat.entity.UserJoinedChats;
 import com.team13.servicechat.repository.ChatMessageRepository;
 import com.team13.servicechat.repository.ChatroomRepository;
+import com.team13.servicechat.repository.UserJoinedChatRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ public class ChatroomService {
     // 채팅방 메시지를 저장하기 위한 레포지토리
     private final ChatMessageRepository chatMessageRepository;
 
+    // 사용자가 속한 채팅방 리스트를 관리하는 레포지토리
+    private final UserJoinedChatRepository userJoinedChatRepository;
+
 
     @PostConstruct
     private void init() {
@@ -34,6 +39,61 @@ public class ChatroomService {
                             .messageIds(new ArrayList<>())
                             .userIds(new ArrayList<>(List.of(1L, 2L)))
                             .build());
+        }
+    }
+
+
+    // 채팅방 생성 후 채팅방 ID 반환
+    public String createChatroom(String userId, Long postId) {
+        Chatroom savedChatroom = chatroomRepository.save(Chatroom.builder()
+                        .messageIds(new ArrayList<>())
+                        .lastMessage("")
+                        .userIds(new ArrayList<>(List.of(Long.parseLong(userId))))
+                        .postId(postId)
+                        .build());
+
+        // 해당 유저가 참여중인 채팅방 목록 생성
+        UserJoinedChats userJoinedChats = UserJoinedChats.builder()
+                .id(Long.parseLong(userId))
+                .chatroomIds(new ArrayList<>())
+                .build();
+
+        // 만약 이미 사용자 정보가 저장되어 있다면 해당 정보로 치환함
+        if (userJoinedChatRepository.existsById(Long.parseLong(userId))) {
+            userJoinedChats = userJoinedChatRepository.findById(Long.parseLong(userId)).orElseThrow();
+        }
+
+        // 생성된 채팅방 추가 후 변경내용 저장
+        userJoinedChats.addChatroomId(savedChatroom.getId());
+        userJoinedChatRepository.save(userJoinedChats);
+
+        return savedChatroom.getId();
+    }
+
+
+    // 채팅방 사용자 추가
+    public void joinChatroom(String chatroomId, String userId) {
+        if (existsChatroomId(chatroomId)) {
+            Chatroom chatroom = getChatroomById(chatroomId);
+
+            // 사용자 추가 후 변경내용 저장
+            chatroom.addUserId(Long.parseLong(userId));
+            chatroomRepository.save(chatroom);
+
+            // 해당 유저가 참여중인 채팅방 목록 생성
+            UserJoinedChats userJoinedChats = UserJoinedChats.builder()
+                    .id(Long.parseLong(userId))
+                    .chatroomIds(new ArrayList<>())
+                    .build();
+
+            // 만약 이미 사용자 정보가 저장되어 있다면 해당 정보로 치환함
+            if (userJoinedChatRepository.existsById(Long.parseLong(userId))) {
+                userJoinedChats = userJoinedChatRepository.findById(Long.parseLong(userId)).orElseThrow();
+            }
+
+            // 생성된 채팅방 추가 후 변경내용 저장
+            userJoinedChats.addChatroomId(chatroomId);
+            userJoinedChatRepository.save(userJoinedChats);
         }
     }
 
@@ -72,7 +132,7 @@ public class ChatroomService {
 
 
     // 채팅방 메시지 추가
-    public void saveMessage(String chatroomId, MessageDto message) {
+    public void saveMessage(String chatroomId, ChatMessageDto message) {
         if (existsChatroomId(chatroomId)) {
             // 채팅방 메시지 저장
             ChatMessage savedMessage = chatMessageRepository.save(ChatMessage.builder()

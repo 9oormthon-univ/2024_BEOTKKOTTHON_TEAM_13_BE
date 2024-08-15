@@ -29,6 +29,7 @@ public class Chatroom {
     @Field("messages")
     private List<Long> messageIds;
 
+
     // 유저 목록에 유저 ID 저장
     public void addUserId(Long userId) {
         if (userId != null) {
