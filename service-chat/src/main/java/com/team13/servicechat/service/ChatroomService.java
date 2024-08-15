@@ -39,17 +39,36 @@ public class ChatroomService {
                             .messageIds(new ArrayList<>())
                             .userIds(new ArrayList<>(List.of(1L, 2L)))
                             .build());
+
+            userJoinedChatRepository.save(UserJoinedChats.builder()
+                            .id(1L)
+                            .chatroomIds(List.of("test-chatroom"))
+                            .build());
+
+            userJoinedChatRepository.save(UserJoinedChats.builder()
+                    .id(2L)
+                    .chatroomIds(List.of("test-chatroom"))
+                    .build());
         }
     }
 
 
     // 채팅방 생성 후 채팅방 ID 반환
     public String createChatroom(String userId, Long postId) {
+
+        // 공동구매 개설 메시지 저장
+        ChatMessage message = chatMessageRepository.save(ChatMessage.builder()
+                .type("NOTICE")
+                .message("채팅방이 열렸습니다.")
+                .build());
+
+        // 채팅방 정보 저장
         Chatroom savedChatroom = chatroomRepository.save(Chatroom.builder()
                         .messageIds(new ArrayList<>())
-                        .lastMessage("")
                         .userIds(new ArrayList<>(List.of(Long.parseLong(userId))))
                         .postId(postId)
+                        .messageIds(List.of(message.getId()))
+                        .lastMessage(message.getMessage())
                         .build());
 
         // 해당 유저가 참여중인 채팅방 목록 생성
@@ -74,9 +93,17 @@ public class ChatroomService {
     // 채팅방 사용자 추가
     public void joinChatroom(String chatroomId, String userId) {
         if (existsChatroomId(chatroomId)) {
+            // 공동구매 참여 메시지 저장
+            ChatMessage message = chatMessageRepository.save(ChatMessage.builder()
+                    .type("NOTICE")
+                    .message("새로운 유저가 공동구매에 참여하였습니다.")
+                    .build());
+
             Chatroom chatroom = getChatroomById(chatroomId);
 
-            // 사용자 추가 후 변경내용 저장
+            // 메시지 및 사용자 추가 후 변경내용 저장
+            chatroom.addMessageId(message.getId());
+            chatroom.setLastMessage(message.getMessage());
             chatroom.addUserId(Long.parseLong(userId));
             chatroomRepository.save(chatroom);
 

@@ -36,4 +36,11 @@ public class Chatroom {
             userIds.add(userId);
         }
     }
+
+    // 메시지 ID 추가
+    public void addMessageId(Long messageId) {
+        if (messageId != null) {
+            messageIds.add(messageId);
+        }
+    }
 }
