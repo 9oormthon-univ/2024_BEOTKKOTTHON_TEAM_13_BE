@@ -39,6 +39,6 @@ public class RecipeComment {
     private List<RecipeComment> replies;
 
     @Column(name = "users_id", nullable = false)
-    private Long usersId;
+    private Long userId;
 
 }
