@@ -26,7 +26,7 @@ public class Reviews {
     private User toUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_users_id", nullable = false)
+    @JoinColumn(name = "from_users_id", nullable = false)
     private User fromUser;
 
     @Column(name = "text", nullable = false, length = 500)
@@ -34,8 +34,5 @@ public class Reviews {
 
     @Column(name = "score", nullable = false, length = 100)
     private String score;
-
-
-
 
 }
