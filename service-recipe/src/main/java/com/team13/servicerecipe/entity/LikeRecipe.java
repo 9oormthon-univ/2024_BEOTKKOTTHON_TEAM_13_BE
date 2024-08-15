@@ -23,5 +23,5 @@ public class LikeRecipe {
     private Recipe recipe;
 
     @Column(name = "users_id", nullable = false)
-    private Long usersId;
+    private Long userId;
 }
