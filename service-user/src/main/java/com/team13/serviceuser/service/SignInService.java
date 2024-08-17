@@ -29,6 +29,7 @@ public class SignInService {
         this.tokenKeepDuration = tokenKeepDuration * 1000; // 초를 밀리초로 변환
     }
 
+  
     // 유저 로그인 정보 검증
     public boolean verifyLoginInfo(String userEmail, String userPassword) {
 
@@ -41,7 +42,7 @@ public class SignInService {
         return false;
     }
 
-
+  
     // 유저 정보 반환
     public User getUserByEmail(String userEmail) {
 
@@ -87,6 +88,5 @@ public class SignInService {
         cookie.setPath("/");
 
         return cookie;
-
     }
 }
