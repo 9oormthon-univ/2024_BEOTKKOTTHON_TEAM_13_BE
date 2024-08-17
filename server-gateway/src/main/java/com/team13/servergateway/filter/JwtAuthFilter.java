@@ -20,7 +20,7 @@ import java.util.List;
 @Component
 public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Config> {
 
-    private final Key tokenKey; // JWT 토큰을 위한 키
+    private final Key jwtSecretKey; // JWT 토큰을 위한 암호키
 
     private final RouterValidator validator; // 로그인 토큰 path 검증자
 
@@ -32,7 +32,7 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
 
         // 암호키를 바탕으로 키 생성
         byte[] keyBytes = Decoders.BASE64.decode(tokenSecret);
-        this.tokenKey = Keys.hmacShaKeyFor(keyBytes);
+        this.jwtSecretKey = Keys.hmacShaKeyFor(keyBytes);
 
         // 로그인 토큰이 필요한 url path인지 확인을 위한 클래스
         this.validator = validator;
@@ -54,13 +54,13 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
                         throw new RuntimeException();
                     }
 
-                    // 애플리케이션에서 사용하는 쿠키는 로그인 쿠키밖에 없으므로, 첫 번째 쿠키를 가져옴
+                    // 애플리케이션에서 사용하는 쿠키는 로그인 쿠키밖에 없으므로, 항상 첫 번째 쿠키를 가져옴
                     // 쿠키 앞에 붙은 접두사 'LTK='를 제거
                     String token = cookies.get(0).substring(4);
 
                     // 해당 쿠키의 내용을 토대로 복호화 수행
                     Jwts.parserBuilder()
-                            .setSigningKey(tokenKey)
+                            .setSigningKey(jwtSecretKey)
                             .build()
                             .parseClaimsJws(token);
 
