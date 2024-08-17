@@ -23,9 +23,6 @@ public class IndexController {
     @Value("${app.test-string}")
     private String configTestString;
 
-    @Value("${app.jwt.keep}")
-    private int tokenKeepDuration;
-
     private final SignInService signInService;
 
     @GetMapping
