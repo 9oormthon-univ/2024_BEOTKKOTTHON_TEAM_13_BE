@@ -17,7 +17,6 @@ import java.security.Key;
 public class JwtService {
 
     // JWT 토큰을 위한 암호키
-    @Value("${app.jwt.secret}")
     private final Key jwtSecretKey;
 
     @Autowired
@@ -69,7 +68,7 @@ public class JwtService {
 
             // JWT 토큰 페이로드를 추출하여 Dto에 삽입함
             jwtPayloadDto.setUserId(claims.get("userId", String.class));
-            jwtPayloadDto.setUserId(claims.get("userEmail", String.class));
+            jwtPayloadDto.setUserNickname(claims.get("userNickname", String.class));
 
         } catch (Exception e) {
             log.error(e);

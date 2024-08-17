@@ -1,6 +1,7 @@
 package com.team13.servicechat.service;
 
 import com.team13.servicechat.dto.ChatMessageDto;
+import com.team13.servicechat.dto.ChatroomDto;
 import com.team13.servicechat.entity.ChatMessage;
 import com.team13.servicechat.entity.Chatroom;
 import com.team13.servicechat.entity.UserJoinedChats;
@@ -131,11 +132,54 @@ public class ChatroomService {
     }
 
 
+    // 채팅방 ID에 해당 유저가 속하는지 확인
+    // 입력되는 chatroomId는 존재하는 채팅방 ID이어야 함
+    public boolean verifyUserInChatroom(String userId, String chatroomId) {
+
+        Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow();
+
+        // 해당 유저 ID가 채팅방에 존재하는지 확인
+        return chatroom.getUserIds().contains(Long.parseLong(userId));
+    }
+
+
     // 채팅방 정보 가져오기
     // 해당 메서드 실행 전에 항상 채팅방 ID exists 여부 확인
     public Chatroom getChatroomById(String chatroomId) {
         return chatroomRepository.findById(chatroomId).orElseThrow();
     }
+
+
+    // 채팅방 Dto 불러오기 (채팅방 메시지 포함)
+    // 입력되는 chatroomId는 존재하는 채팅방 ID이어야 함
+    public ChatroomDto getChatroomDtoById(String chatroomId) {
+
+        Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow();
+
+        // 채팅방 정보 내에 저장된 메시지 ID 리스트로 메시지 내용을 불러옴
+        List<ChatMessageDto> messages = new ArrayList<>();
+
+        // 메시지를 순회하며 존재하는 메시지만 messages에 추가
+        for (long messageId : chatroom.getMessageIds()) {
+            Optional<ChatMessage> opMessage = getMessageById(messageId);
+
+            opMessage.ifPresent(message -> messages.add(ChatMessageDto.builder()
+                    .type(ChatMessageDto.MessageType.valueOf(message.getType()))
+                    .message(message.getMessage())
+                    .senderUserId(message.getSenderUserId())
+                    .senderUserName(message.getSenderUserName())
+                    .createdAt(message.getCreatedAt())
+                    .build()));
+        }
+
+        return ChatroomDto.builder()
+                .id(chatroom.getId())
+                .postId(chatroom.getPostId())
+                .userIds(chatroom.getUserIds())
+                .messages(messages)
+                .build();
+    }
+
 
 
     // 채팅 메시지 가져오기
