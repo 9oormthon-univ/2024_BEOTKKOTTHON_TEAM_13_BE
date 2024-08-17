@@ -12,4 +12,5 @@ public class ChatroomDto {
     private long postId;
     private List<Long> userIds;
     private List<ChatMessageDto> messages;
+    private String lastMessage;
 }

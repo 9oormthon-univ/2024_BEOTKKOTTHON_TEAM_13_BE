@@ -2,6 +2,7 @@ package com.team13.servicechat.controller;
 
 import com.team13.servicechat.dto.ChatroomDto;
 import com.team13.servicechat.dto.JwtPayloadDto;
+import com.team13.servicechat.entity.Chatroom;
 import com.team13.servicechat.feign.UserFeignClient;
 import com.team13.servicechat.service.ChatroomService;
 import com.team13.servicechat.service.JwtService;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -46,7 +48,7 @@ public class IndexController {
     // 채팅방 정보(공동구매 데이터 및 메시지 리스트) 반환
     @GetMapping("/chatroom")
     public ResponseEntity<ChatroomDto> getChatroom(@CookieValue("LTK") String loginToken,
-                                   @RequestParam("id") String chatroomId) {
+                                                   @RequestParam("id") String chatroomId) {
 
         JwtPayloadDto payload = jwtService.getPayloadFromToken(loginToken);
 
@@ -58,6 +60,16 @@ public class IndexController {
         }
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+
+    // 사용자가 속한 채팅방 리스트 반환
+    @GetMapping("/chatroom/list")
+    public List<ChatroomDto> getChatroomList(@CookieValue("LTK") String loginToken) {
+
+        JwtPayloadDto payload = jwtService.getPayloadFromToken(loginToken);
+
+        return chatroomService.getChatroomList(payload.getUserId());
     }
 
 

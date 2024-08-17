@@ -7,7 +7,7 @@ import com.team13.servicechat.entity.Chatroom;
 import com.team13.servicechat.entity.UserJoinedChats;
 import com.team13.servicechat.repository.ChatMessageRepository;
 import com.team13.servicechat.repository.ChatroomRepository;
-import com.team13.servicechat.repository.UserJoinedChatRepository;
+import com.team13.servicechat.repository.UserJoinedChatsRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class ChatroomService {
     private final ChatMessageRepository chatMessageRepository;
 
     // 사용자가 속한 채팅방 리스트를 관리하는 레포지토리
-    private final UserJoinedChatRepository userJoinedChatRepository;
+    private final UserJoinedChatsRepository userJoinedChatsRepository;
 
 
     @PostConstruct
@@ -41,12 +41,12 @@ public class ChatroomService {
                             .userIds(new ArrayList<>(List.of(1L, 2L)))
                             .build());
 
-            userJoinedChatRepository.save(UserJoinedChats.builder()
+            userJoinedChatsRepository.save(UserJoinedChats.builder()
                             .id(1L)
                             .chatroomIds(List.of("test-chatroom"))
                             .build());
 
-            userJoinedChatRepository.save(UserJoinedChats.builder()
+            userJoinedChatsRepository.save(UserJoinedChats.builder()
                     .id(2L)
                     .chatroomIds(List.of("test-chatroom"))
                     .build());
@@ -79,13 +79,13 @@ public class ChatroomService {
                 .build();
 
         // 만약 이미 사용자 정보가 저장되어 있다면 해당 정보로 치환함
-        if (userJoinedChatRepository.existsById(Long.parseLong(userId))) {
-            userJoinedChats = userJoinedChatRepository.findById(Long.parseLong(userId)).orElseThrow();
+        if (userJoinedChatsRepository.existsById(Long.parseLong(userId))) {
+            userJoinedChats = userJoinedChatsRepository.findById(Long.parseLong(userId)).orElseThrow();
         }
 
         // 생성된 채팅방 추가 후 변경내용 저장
         userJoinedChats.addChatroomId(savedChatroom.getId());
-        userJoinedChatRepository.save(userJoinedChats);
+        userJoinedChatsRepository.save(userJoinedChats);
 
         return savedChatroom.getId();
     }
@@ -115,13 +115,13 @@ public class ChatroomService {
                     .build();
 
             // 만약 이미 사용자 정보가 저장되어 있다면 해당 정보로 치환함
-            if (userJoinedChatRepository.existsById(Long.parseLong(userId))) {
-                userJoinedChats = userJoinedChatRepository.findById(Long.parseLong(userId)).orElseThrow();
+            if (userJoinedChatsRepository.existsById(Long.parseLong(userId))) {
+                userJoinedChats = userJoinedChatsRepository.findById(Long.parseLong(userId)).orElseThrow();
             }
 
             // 생성된 채팅방 추가 후 변경내용 저장
             userJoinedChats.addChatroomId(chatroomId);
-            userJoinedChatRepository.save(userJoinedChats);
+            userJoinedChatsRepository.save(userJoinedChats);
         }
     }
 
@@ -180,6 +180,35 @@ public class ChatroomService {
                 .build();
     }
 
+
+    // 사용자가 속한 채팅방 리스트 반환
+    public List<ChatroomDto> getChatroomList(String userId) {
+
+        Optional<UserJoinedChats> userJoinedChats = userJoinedChatsRepository.findById(Long.parseLong(userId));
+
+        // 사용자가 참여한 채팅방이 존재하는 경우에만 결과 반환
+        if (userJoinedChats.isPresent()) {
+            List<ChatroomDto> chatroomDtos = new ArrayList<>();
+
+            // 채팅방 ID를 추출하여 chatroomDtos에 채팅방 정보 추가
+            for (String chatroomId : userJoinedChats.get().getChatroomIds()) {
+
+                // 채팅방 정보 가져오기
+                Optional<Chatroom> opChatroom = chatroomRepository.findById(chatroomId);
+
+                // 존재하는 채팅방인 경우에만 chatroomDtos에 추가
+                opChatroom.ifPresent(chatroom -> chatroomDtos.add(ChatroomDto.builder()
+                                .id(chatroom.getId())
+                                .postId(chatroom.getPostId())
+                                .lastMessage(chatroom.getLastMessage())
+                                .build()));
+            }
+
+            return chatroomDtos;
+        }
+
+        return new ArrayList<>();
+    }
 
 
     // 채팅 메시지 가져오기
