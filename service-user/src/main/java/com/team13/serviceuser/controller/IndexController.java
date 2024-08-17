@@ -46,14 +46,8 @@ public class IndexController {
                 // 유저 이메일로 유저 정보를 가져옴
                 User user = signInService.getUserByEmail(loginInfo.get("email"));
 
-                // JWT 토큰 문자열 생성
-                String token = signInService.createTokenByUser(user);
-
-                // JWT 토큰 쿠키 생성
-                Cookie cookie = new Cookie("LTK", token);
-                cookie.setHttpOnly(true);
-                cookie.setMaxAge(tokenKeepDuration);
-                cookie.setPath("/");
+                // JWT 쿠키 생성 및 response에 쿠키 추가
+                Cookie cookie = signInService.createCookieFromUser(user);
                 response.addCookie(cookie);
 
                 return ResponseEntity.ok().build();

@@ -4,6 +4,7 @@ import com.team13.serviceuser.entity.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,10 @@ import java.util.Map;
 public class SignInService {
     private final Key jwtSecretKey; // JWT 토큰을 위한 암호키
 
-    private final long tokenKeepDuration; // 토큰 유지 기간(밀리초)
+    private final int tokenKeepDuration; // 토큰 유지 기간(밀리초)
 
     public SignInService(@Value("${app.jwt.secret}") String tokenSecret,
-                         @Value("${app.jwt.keep}") long tokenKeepDuration) {
+                         @Value("${app.jwt.keep}") int tokenKeepDuration) {
 
         // 암호키를 바탕으로 키 생성
         byte[] keyBytes = Decoders.BASE64.decode(tokenSecret);
@@ -65,15 +66,27 @@ public class SignInService {
     }
 
 
-    // 토큰 생성
-    public String createTokenByUser(User user) {
+    // JWT 쿠키 생성
+    public Cookie createCookieFromUser(User user) {
+
+        // 쿠키 만료 시간 설정을 위한 현재 시간 데이터
         long now = (new Date()).getTime();
 
-        return Jwts.builder()
-                .claim("userId", user.getId())
-                .claim("userNickname", user.getNickname())
-                .setExpiration(new Date(now + tokenKeepDuration))
-                .signWith(jwtSecretKey)
-                .compact();
+        // JWT 토큰 생성
+        String token = Jwts.builder()
+                            .claim("userId", user.getId())
+                            .claim("userNickname", user.getNickname())
+                            .setExpiration(new Date(now + tokenKeepDuration))
+                            .signWith(jwtSecretKey)
+                            .compact();
+
+        // JWT 쿠키 생성
+        Cookie cookie = new Cookie("LTK", token);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(tokenKeepDuration);
+        cookie.setPath("/");
+
+        return cookie;
+
     }
 }
