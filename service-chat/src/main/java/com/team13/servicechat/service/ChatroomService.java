@@ -36,7 +36,7 @@ public class ChatroomService {
         if (!chatroomRepository.existsById("test-chatroom")) {
             chatroomRepository.save(Chatroom.builder()
                             .id("test-chatroom")
-                            .postId(0)
+                            .postId(1)
                             .messageIds(new ArrayList<>())
                             .userIds(new ArrayList<>(List.of(1L, 2L)))
                             .build());

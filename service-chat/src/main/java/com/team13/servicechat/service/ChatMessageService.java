@@ -1,6 +1,7 @@
 package com.team13.servicechat.service;
 
 import com.team13.servicechat.dto.ChatMessageDto;
+import com.team13.servicechat.entity.ChatMessage;
 import com.team13.servicechat.entity.Chatroom;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +16,25 @@ import java.util.*;
 public class ChatMessageService {
 
     // 접속되어 있는 유저의 정보를 담기위한 레코드
-    private record User(@NonNull Long userId, @NonNull String userName, @NonNull String sessionId) { }
+    private record User(@NonNull Long userId, @NonNull String userName, @NonNull String sessionId) {
+
+        // 유저 ID가 동일한 경우 동일한 오브젝트로 판단
+        @Override
+        public boolean equals(Object object) {
+            if (!(object instanceof User))
+                return false;
+
+            return this.userId.equals(((User) object).userId);
+        }
+    }
 
 
     // 채팅방 정보 및 메시지를 관리하는 서비스
     private final ChatroomService chatroomService;
+
+    // 사용자가 읽지 않은 메시지 정보를 관리하는 서비스
+    private final UserUnreadMsgsService userUnreadMsgsService;
+
 
     // 각 채팅방 내에 접속 중인 유저 정보를 저장하는 해쉬맵
     private final Map<String, List<User>> chatrooms = new HashMap<>();
@@ -43,6 +58,27 @@ public class ChatMessageService {
             User sender = getUserInChatrooms(chatroomId, sessionId);
             message.setSenderUserId(sender.userId);
             message.setSenderUserName(sender.userName);
+
+            // 채팅방에 접속하지 않은 사용자에게 해당 메시지를 따로 전달함
+            Chatroom chatroom = chatroomService.getChatroomById(chatroomId);
+
+            // 채팅방 내에 참가 중인 사용자 ID 순회
+            chatroom.getUserIds().forEach((userId) -> {
+
+                // userId가 현재 접속해있지 않은 경우 실행
+                if (!chatrooms.get(chatroomId).contains(new User(userId, "", ""))) {
+
+                    ChatMessage unreadMessage = ChatMessage.builder()
+                            .id(-1L) // 메시지 ID는 저장되지 않음
+                            .chatroomId(chatroomId)
+                            .message(message.getMessage())
+                            .senderUserId(message.getSenderUserId())
+                            .senderUserName(message.getSenderUserName())
+                            .build();
+
+                    userUnreadMsgsService.addUnreadMessage(userId, unreadMessage);
+                }
+            });
 
             // TODO: feign을 통한 다른 서비스들에게도 채팅방 메시지 전달
 
