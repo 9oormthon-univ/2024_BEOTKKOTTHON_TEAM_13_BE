@@ -76,17 +76,17 @@
                     messageElement.className = "message-alert";
                     messageElement.innerHTML = "<span>" + message.message + "</span>";
                     document.getElementsByClassName("message-container")[0].appendChild(messageElement);
-                } else if (message.type === "COMPLETE") { // 모든 공동구매 거래가 종료된 경우 실행됨
+                } else if (message.type === "COMPLETE") { // 공동구매가 종료된 경우 실행됨
                     console.log("리뷰 작성 시작");
-                    // 최종 공동구매 종료를 위해서 유저를 삭제를 서버에 요청해야 합니다.
-                    // fetch("/chat/exit-user", {
-                    //     method: "POST",
-                    //     headers: {"Content-type": "application/json; charset=UTF-8"},
-                    //     body: JSON.stringify({
-                    //         session_id: sessionStorage.getItem("session_id"),
-                    //         chat_id: chatroomId
-                    //     })
-                    // });
+
+                    // 공동구매 종료를 위해서 유저 퇴장을 서버에 요청해야 함
+                    fetch("/api2/chat/chatroom/exit", {
+                        method: "POST",
+                        headers: {"Content-type": "application/json; charset=UTF-8"},
+                        body: JSON.stringify({
+                            chatroomId: chatroomId
+                        })
+                    });
                 }
             });
         }
@@ -130,18 +130,17 @@
                 messageElement.className = "message-alert";
                 messageElement.innerHTML = "<span>" + message.message + "</span>";
                 document.getElementsByClassName("message-container")[0].appendChild(messageElement);
-            } else if (message.type === "COMPLETE") { // 모든 공동구매 거래가 종료된 경우 실행됩니다.
+            } else if (message.type === "COMPLETE") { // 공동구매가 종료된 경우 실행됨
                 console.log("리뷰 작성 시작");
 
-                // 최종 공동구매 종료를 위해서 유저를 삭제를 서버에 요청해야 합니다.
-                // fetch("/chat/exit-user", {
-                //     method: "POST",
-                //     headers: { "Content-type": "application/json; charset=UTF-8" },
-                //     body: JSON.stringify({
-                //         session_id: sessionStorage.getItem("session_id"),
-                //         chat_id: chatId
-                //     })
-                // });
+                // 공동구매 종료를 위해서 유저 퇴장을 서버에 요청해야 함
+                fetch("/api2/chat/chatroom/exit", {
+                    method: "POST",
+                    headers: {"Content-type": "application/json; charset=UTF-8"},
+                    body: JSON.stringify({
+                        chatroomId: chatroomId
+                    })
+                });
             } else if (message.type === "ERROR") { // 에러 발생
                 alert(message.message);
             }
@@ -168,27 +167,24 @@
                 }));
         }
 
-        // 유저가 공동구매를 포기한 경우
+        // 유저가 공동구매를 포기하여 채팅방을 나가는 경우
         function doExit() {
-            // fetch("/chat/exit-user", {
+            // fetch("/api2/chat/chatroom/exit", {
             //     method: "POST",
-            //     headers: { "Content-type": "application/json; charset=UTF-8" },
+            //     headers: {"Content-type": "application/json; charset=UTF-8"},
             //     body: JSON.stringify({
-            //         session_id: sessionStorage.getItem("session_id"),
-            //         chat_id: chatId
+            //         chatroomId: chatroomId
             //     })
             // });
             // location.href = "/test/";
         }
 
-        // 공동구매가 정상적으로 성사된 경우
-        // 공동구매 게시자만 해당 패킷을 전송할 수 있습니다.
+        // 공동구매가 완료되어 채팅방을 종료하는 경우
         function doComplete() {
-            // websocket.send(JSON.stringify({
-            //     type: "COMPLETE",
-            //     sessionId: sessionStorage.getItem("session_id"),
-            //     chatId: chatId
-            // }));
+            // client.send('/ws/publish/' + chatroomId, { },
+            //     JSON.stringify({
+            //         type: "COMPLETE"
+            //     }));
         }
     </script>
 </head>
