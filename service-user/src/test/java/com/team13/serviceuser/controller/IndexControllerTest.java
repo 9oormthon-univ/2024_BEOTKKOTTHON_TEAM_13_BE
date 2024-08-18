@@ -2,6 +2,7 @@ package com.team13.serviceuser.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team13.serviceuser.service.SignInService;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -28,6 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 @TestPropertySource(properties = {
+        "spring.profiles.active=dev",
         "app.test-string=test",
         "app.jwt.keep=1800"
 })
@@ -51,36 +53,31 @@ class IndexControllerTest {
 
     @Test
     public void IndexController_SignIn_Success() throws Exception {
+        Map<String, String> loginInfo = new HashMap<>();
+        loginInfo.put("email", "ypjun100@gmail.com");
+        loginInfo.put("password", "");
 
-        // SignInService 수정에 따른 테스트 수정 필요
+        when(signInService.verifyLoginInfo(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        when(signInService.createCookieFromUser(Mockito.any())).thenReturn(new Cookie("LTK", ""));
 
-//        Map<String, String> loginInfo = new HashMap<>();
-//        loginInfo.put("user_id", "ypjun100");
-//
-//        when(signInService.verifyLoginInfo(Mockito.anyMap())).thenReturn(true);
-//        when(signInService.createToken(Mockito.anyString())).thenReturn("test");
-//
-//        ResultActions response = mockMvc.perform(post("/signin")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(loginInfo)));
-//
-//        response.andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.cookie().exists("LTK"));
+        ResultActions response = mockMvc.perform(post("/signin")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginInfo)));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.cookie().exists("LTK"));
     }
 
     @Test
     public void IndexController_SignIn_Unauthorized() throws Exception {
+        Map<String, String> loginInfo = new HashMap<>();
 
-        // SignInService 수정에 따른 테스트 수정 필요
+        when(signInService.verifyLoginInfo(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
 
-//        Map<String, String> loginInfo = new HashMap<>();
-//
-//        when(signInService.verifyLoginInfo(Mockito.anyMap())).thenReturn(false);
-//
-//        ResultActions response = mockMvc.perform(post("/signin")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(loginInfo)));
-//
-//        response.andExpect(MockMvcResultMatchers.status().isUnauthorized());
+        ResultActions response = mockMvc.perform(post("/signin")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginInfo)));
+
+        response.andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 }
