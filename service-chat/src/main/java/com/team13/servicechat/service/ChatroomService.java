@@ -29,6 +29,9 @@ public class ChatroomService {
     // 사용자가 속한 채팅방 리스트를 관리하는 레포지토리
     private final UserJoinedChatsRepository userJoinedChatsRepository;
 
+    // 사용자가 읽지 않은 메시지 정보를 관리하는 서비스
+    private final UserUnreadMsgsService userUnreadMsgsService;
+
 
     @PostConstruct
     private void init() {
@@ -152,7 +155,7 @@ public class ChatroomService {
 
     // 채팅방 Dto 불러오기 (채팅방 메시지 포함)
     // 입력되는 chatroomId는 존재하는 채팅방 ID이어야 함
-    public ChatroomDto getChatroomDtoById(String chatroomId) {
+    public ChatroomDto getChatroomDtoById(String chatroomId, Long userId) {
 
         Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow();
 
@@ -172,6 +175,9 @@ public class ChatroomService {
                     .build()));
         }
 
+        // 현재 채탕방에서 사용자가 읽지 않은 메시지 삭제
+        userUnreadMsgsService.removeUnreadMessagesInChatroom(userId, chatroomId);
+
         return ChatroomDto.builder()
                 .id(chatroom.getId())
                 .postId(chatroom.getPostId())
@@ -182,9 +188,9 @@ public class ChatroomService {
 
 
     // 사용자가 속한 채팅방 리스트 반환
-    public List<ChatroomDto> getChatroomList(String userId) {
+    public List<ChatroomDto> getChatroomList(Long userId) {
 
-        Optional<UserJoinedChats> userJoinedChats = userJoinedChatsRepository.findById(Long.parseLong(userId));
+        Optional<UserJoinedChats> userJoinedChats = userJoinedChatsRepository.findById(userId);
 
         // 사용자가 참여한 채팅방이 존재하는 경우에만 결과 반환
         if (userJoinedChats.isPresent()) {
@@ -196,10 +202,14 @@ public class ChatroomService {
                 // 채팅방 정보 가져오기
                 Optional<Chatroom> opChatroom = chatroomRepository.findById(chatroomId);
 
+                // 해당 유저가 채팅방에서 읽지 않은 메시지들을 불러옴
+                List<ChatMessage> unreadMessages = userUnreadMsgsService.getUnreadMsgsInChatroom(userId, chatroomId);
+
                 // 존재하는 채팅방인 경우에만 chatroomDtos에 추가
                 opChatroom.ifPresent(chatroom -> chatroomDtos.add(ChatroomDto.builder()
                                 .id(chatroom.getId())
                                 .postId(chatroom.getPostId())
+                                .unreadMsgsCounter(unreadMessages.size())
                                 .lastMessage(chatroom.getLastMessage())
                                 .build()));
             }

@@ -13,4 +13,5 @@ public class ChatroomDto {
     private List<Long> userIds;
     private List<ChatMessageDto> messages;
     private String lastMessage;
+    private int unreadMsgsCounter;
 }

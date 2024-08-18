@@ -56,7 +56,8 @@ public class IndexController {
         if (chatroomService.existsChatroomId(chatroomId) &&
             chatroomService.verifyUserInChatroom(payload.getUserId(), chatroomId)) {
 
-            return ResponseEntity.ok(chatroomService.getChatroomDtoById(chatroomId));
+            return ResponseEntity.ok(chatroomService.getChatroomDtoById(chatroomId,
+                    Long.parseLong(payload.getUserId())));
         }
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -69,7 +70,7 @@ public class IndexController {
 
         JwtPayloadDto payload = jwtService.getPayloadFromToken(loginToken);
 
-        return chatroomService.getChatroomList(payload.getUserId());
+        return chatroomService.getChatroomList(Long.parseLong(payload.getUserId()));
     }
 
 
