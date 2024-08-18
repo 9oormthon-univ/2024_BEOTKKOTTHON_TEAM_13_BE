@@ -10,16 +10,15 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.Map;
 
 @Service
 public class SignInService {
     private final Key jwtSecretKey; // JWT 토큰을 위한 암호키
 
-    private final int tokenKeepDuration; // 토큰 유지 기간(밀리초)
+    private final long tokenKeepDuration; // 토큰 유지 기간(밀리초)
 
     public SignInService(@Value("${app.jwt.secret}") String tokenSecret,
-                         @Value("${app.jwt.keep}") int tokenKeepDuration) {
+                         @Value("${app.jwt.keep}") long tokenKeepDuration) {
 
         // 암호키를 바탕으로 키 생성
         byte[] keyBytes = Decoders.BASE64.decode(tokenSecret);
@@ -29,6 +28,7 @@ public class SignInService {
         this.tokenKeepDuration = tokenKeepDuration * 1000; // 초를 밀리초로 변환
     }
 
+  
     // 유저 로그인 정보 검증
     public boolean verifyLoginInfo(String userEmail, String userPassword) {
 
@@ -41,7 +41,7 @@ public class SignInService {
         return false;
     }
 
-
+  
     // 유저 정보 반환
     public User getUserByEmail(String userEmail) {
 
@@ -74,19 +74,18 @@ public class SignInService {
 
         // JWT 토큰 생성
         String token = Jwts.builder()
-                .claim("userId", user.getId())
-                .claim("userNickname", user.getNickname())
-                .setExpiration(new Date(now + tokenKeepDuration))
-                .signWith(jwtSecretKey)
-                .compact();
+                            .claim("userId", user.getId().toString())  // ID는 개발 편의상 문자열로 저장
+                            .claim("userNickname", user.getNickname())
+                            .setExpiration(new Date(now + tokenKeepDuration))
+                            .signWith(jwtSecretKey)
+                            .compact();
 
         // JWT 쿠키 생성
         Cookie cookie = new Cookie("LTK", token);
         cookie.setHttpOnly(true);
-        cookie.setMaxAge(tokenKeepDuration);
+        cookie.setMaxAge((int) tokenKeepDuration / 1000);
         cookie.setPath("/");
 
         return cookie;
-
     }
 }
