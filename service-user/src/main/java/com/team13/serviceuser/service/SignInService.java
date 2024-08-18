@@ -82,7 +82,6 @@ public class SignInService {
 
         // JWT 쿠키 생성
         Cookie cookie = new Cookie("LTK", token);
-        cookie.setHttpOnly(true);
         cookie.setMaxAge((int) tokenKeepDuration / 1000);
         cookie.setPath("/");
 
