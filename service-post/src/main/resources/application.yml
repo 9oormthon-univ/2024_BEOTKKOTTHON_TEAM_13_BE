@@ -28,8 +28,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
-
 eureka:
   client:
     service-url:
       defaultZone: ${app.server-eureka.url}
+
+logging:
+  config: classpath:log4j2/log4j2-${spring.profiles.active}.properties
