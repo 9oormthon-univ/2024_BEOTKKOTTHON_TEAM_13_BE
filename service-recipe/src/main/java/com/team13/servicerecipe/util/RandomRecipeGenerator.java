@@ -11,27 +11,28 @@ public class RandomRecipeGenerator {
 
     private static Random random = new Random();
 
-    // 유저 프로파일 이미지 리스트
+    // 유저 프로필 이미지 리스트
     private static final List<String> PROFILE_IMAGES = List.of(
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
+            "/img/profile/1c4f606b86c2c2bdee09bc767c786c6e1.jpg",
+            "/img/profile/1e41fad1add10fcf191979d2f85d928f1.jpg",
+            "/img/profile/3ebaebc5e49f53dd2f66b71932e5a33d1.jpg",
+            "/img/profile/05a3826f9317b517e0fa6fd3caac70b71.png",
+            "/img/profile/6b2858cbcf0b4ab92605e77014e7efda1.jpg",
+            "/img/profile/7ce1004e04f7fcccfd61210535d5a2941.jpg",
+            "/img/profile/7fa54357c0cec9db527d74947830e2e01.jpg",
+            "/img/profile/30c5155151be45497a383bca6a26097a1.jpg",
+            "/img/profile/67ddfaa604c5c8a208002479a9289a6a1.jpg",
+            "/img/profile/73f5cbe0cd134dead1015e5c0c625a2a1.jpg",
+            "/img/profile/8273030fbd7be90a65ac82e1fae1df361.jpg",
+            "/img/profile/a641a392fe9f455cac9350a7cff6af3e1.jpg",
+            "/img/profile/af312d35a0857a4ee1d33d4c3b3368691.jpg",
+            "/img/profile/b323b298ee0088316a0c58b655dcd8be1.jpg",
+            "/img/profile/bfc0cd09089788d14684886e906365a01.png",
+            "/img/profile/ce079f263a8305734466cdb1badba7bc1.jpg",
+            "/img/profile/d5df3425ae205d7c98d45a531ea9e2e91.jpg",
+            "/img/profile/e78da4586c411cd6d75a001b8e8d0a5f1.jpg",
+            "/img/profile/f477e1d171e87b02accfd939cdb17c9e1.jpg",
+            "/img/profile/pf_100_100.png"
     );
 
     // 형용사 리스트
@@ -96,26 +97,26 @@ public class RandomRecipeGenerator {
 
     // 썸네일 이미지 리스트
     private static final List<String> THUMBNAILS = List.of(
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
+            "/img/recipe/0c852122b2b74b76bf78cc0c1527a0e21_s.jpg",
+            "/img/recipe/0f676d2a6c8259d172f39729513198311_s.jpg",
+            "/img/recipe/01c34d651f44c14fe5a09a310ea5607f1_s.jpg",
+            "/img/recipe/1f29443138fa0cb79109b08a6d60d5ab1_s.jpg",
+            "/img/recipe/2cad62498784efd2b97c0f80abebfcff1_s.jpg",
+            "/img/recipe/2ff2c525219ce285392c7404e8df3b2c1_s.jpg",
+            "/img/recipe/4f573fef12f96ef7576c9d0f9603e1b51_s.jpg",
+            "/img/recipe/6f5dd265c79d6dd7a81e286c717fe5ca1_s.jpg",
+            "/img/recipe/24b85da64bc678c4cee2122611a667841_f.jpg",
+            "/img/recipe/66a5a9223f092ebefad7d5b2018d297b1_s.jpg",
+            "/img/recipe/618a24ce32629db81188a670a65ac4841_s.jpg",
+            "/img/recipe/28043e649feeb6413bbb8a5285fddd1b1_s.jpg",
+            "/img/recipe/32775e06923a4bef0cb6093ff84d28ef1_s.jpg",
+            "/img/recipe/c3e2a76338282c7a32cab50b4c5437b21_s.jpg",
+            "/img/recipe/c37e0db0e0386d453eda2be45e26b9c01_s.jpg",
+            "/img/recipe/ceb6aad8259b5dde6ea5bfc9a76957591_s.jpg",
+            "/img/recipe/d9510262b90bf7b3a1fde8ebe200eb0e1_s.jpg",
+            "/img/recipe/db0fb535f6298cd76ded5a502874343a1_s.jpg",
+            "/img/recipe/f51404dc513ccc76be4b5668f5dd350b1_s.jpg",
+            "/img/recipe/fb0f23c725292de5811aff08b02dfe711_s.jpg"
     );
 
     // 재료 리스트
@@ -144,26 +145,26 @@ public class RandomRecipeGenerator {
 
     // 레시피 단계 리스트
     private static final List<RecipeProcess> PROCESSES = List.of(
-            new RecipeProcess(1L, "", "밥을 지어 그릇에 담아 둡니다."),
-            new RecipeProcess(2L, "", "고사리, 시금치, 당근, 호박 등의 채소를 각각 데치거나 볶아 준비합니다."),
-            new RecipeProcess(3L, "", "달걀을 프라이해서 반숙으로 만듭니다."),
-            new RecipeProcess(4L, "", "그릇에 담긴 밥 위에 준비한 채소와 달걀프라이, 그리고 고기(불고기나 다진 쇠고기)를 올립니다."),
-            new RecipeProcess(5L, "", "고추장과 참기름을 뿌려 잘 비벼 먹습니다."),
-            new RecipeProcess(6L, "", "소갈비를 찬물에 담가 핏물을 빼고, 끓는 물에 살짝 데쳐 불순물을 제거합니다."),
-            new RecipeProcess(7L, "", "간장, 설탕, 다진 마늘, 참기름, 후추, 배즙 등을 섞어 양념장을 만듭니다."),
-            new RecipeProcess(8L, "", "데친 갈비에 양념장을 넣고 고루 버무린 후, 30분 정도 재워둡니다."),
-            new RecipeProcess(9L, "", "재운 갈비를 냄비에 넣고 물을 부어 중약불에서 1시간 정도 끓입니다."),
-            new RecipeProcess(10L, "", "당근, 무, 밤 등을 넣고 갈비가 부드럽게 익을 때까지 더 끓입니다."),
-            new RecipeProcess(11L, "", "당면을 끓는 물에 6-7분 정도 삶은 후 찬물에 헹궈 물기를 빼줍니다."),
-            new RecipeProcess(12L, "", "당근, 양파, 시금치, 버섯 등을 채 썰어 각각 볶아줍니다."),
-            new RecipeProcess(13L, "", "삶은 당면에 간장, 설탕, 참기름을 넣고 잘 섞어줍니다."),
-            new RecipeProcess(14L, "", "볶아둔 채소와 당면을 함께 넣고 다시 한번 볶아줍니다."),
-            new RecipeProcess(15L, "", "깨소금을 뿌려 마무리합니다."),
-            new RecipeProcess(16L, "", "냄비에 물을 붓고, 다시마와 멸치를 넣어 10분간 끓여 육수를 만듭니다."),
-            new RecipeProcess(17L, "", "육수에서 다시마와 멸치를 건져낸 후 된장을 풀어 넣습니다."),
-            new RecipeProcess(18L, "", "감자, 양파, 호박, 두부 등을 먹기 좋게 썰어 넣고 끓입니다."),
-            new RecipeProcess(19L, "", "마지막으로 대파와 청양고추를 넣어 5분 더 끓여줍니다."),
-            new RecipeProcess(20L, "", "불을 끄고, 참기름을 약간 넣어 마무리합니다.")
+            new RecipeProcess(1L, "/img/recipe/387ef46d08a38d15fa6d01ae2a9d14df1.jpg", "밥을 지어 그릇에 담아 둡니다."),
+            new RecipeProcess(2L, "/img/recipe/f35f08f6d4706057eb335b953b7e2f8b1.jpg", "고사리, 시금치, 당근, 호박 등의 채소를 각각 데치거나 볶아 준비합니다."),
+            new RecipeProcess(3L, "/img/recipe/42db83c6618c3d0d6f09e0a05507e3d71.jpg", "달걀을 프라이해서 반숙으로 만듭니다."),
+            new RecipeProcess(4L, "/img/recipe/5b087e4b9d83c3d906197327e2c769421.jpg", "그릇에 담긴 밥 위에 준비한 채소와 달걀프라이, 그리고 고기(불고기나 다진 쇠고기)를 올립니다."),
+            new RecipeProcess(5L, "/img/recipe/38fce1650d0a0854c50a39f047e598fa1.jpg", "고추장과 참기름을 뿌려 잘 비벼 먹습니다."),
+            new RecipeProcess(6L, "/img/recipe/fde8c740e4a0aea5fdb8a1874997e84d1.jpg", "소갈비를 찬물에 담가 핏물을 빼고, 끓는 물에 살짝 데쳐 불순물을 제거합니다."),
+            new RecipeProcess(7L, "/img/recipe/f4de8187aadd872a226827f3881dfde21.jpg", "간장, 설탕, 다진 마늘, 참기름, 후추, 배즙 등을 섞어 양념장을 만듭니다."),
+            new RecipeProcess(8L, "/img/recipe/c153e5f1f00ed4b012256d691afae17f1.jpg", "데친 갈비에 양념장을 넣고 고루 버무린 후, 30분 정도 재워둡니다."),
+            new RecipeProcess(9L, "/img/recipe/bbb98f0d36fff0b3cf50705247cc7be31.jpg", "재운 갈비를 냄비에 넣고 물을 부어 중약불에서 1시간 정도 끓입니다."),
+            new RecipeProcess(10L, "/img/recipe/ccc71f36a73d689f61b1311b8aa213ce1.jpg", "당근, 무, 밤 등을 넣고 갈비가 부드럽게 익을 때까지 더 끓입니다."),
+            new RecipeProcess(11L, "/img/recipe/cc4b502be013caa61f2bcc7b53fcbfa11.jpg", "당면을 끓는 물에 6-7분 정도 삶은 후 찬물에 헹궈 물기를 빼줍니다."),
+            new RecipeProcess(12L, "/img/recipe/5ee74766cb614dc3c96a1a184f7de9f91.jpg", "당근, 양파, 시금치, 버섯 등을 채 썰어 각각 볶아줍니다."),
+            new RecipeProcess(13L, "/img/recipe/beb34e66acd580c40c70dbe4f4bb02d61.jpg", "삶은 당면에 간장, 설탕, 참기름을 넣고 잘 섞어줍니다."),
+            new RecipeProcess(14L, "/img/recipe/c8371ede348ea411ac274ce97d9624261.jpg", "볶아둔 채소와 당면을 함께 넣고 다시 한번 볶아줍니다."),
+            new RecipeProcess(15L, "/img/recipe/4d9277c9639d8169301880f5429e42281.jpg", "깨소금을 뿌려 마무리합니다."),
+            new RecipeProcess(16L, "/img/recipe/5d3d04eed38be8dbfd74550cc9cf70bc1.jpg", "냄비에 물을 붓고, 다시마와 멸치를 넣어 10분간 끓여 육수를 만듭니다."),
+            new RecipeProcess(17L, "/img/recipe/5b44a7849cc30e27c92b7a8a74c8ea371.jpg", "육수에서 다시마와 멸치를 건져낸 후 된장을 풀어 넣습니다."),
+            new RecipeProcess(18L, "/img/recipe/efc68708c267d6b415bbc279430fd1f21.jpg", "감자, 양파, 호박, 두부 등을 먹기 좋게 썰어 넣고 끓입니다."),
+            new RecipeProcess(19L, "/img/recipe/97aafe77cbd010035ec88dc29641e0651.jpg", "마지막으로 대파와 청양고추를 넣어 5분 더 끓여줍니다."),
+            new RecipeProcess(20L, "/img/recipe/4d8afc1abf4c2b0c33be016df99b984a1.jpg", "불을 끄고, 참기름을 약간 넣어 마무리합니다.")
     );
 
 
@@ -199,8 +200,10 @@ public class RandomRecipeGenerator {
 
 
     // 내용 생성
-    public static String contents(int index) {
-        return TITLES.get(index);
+    public static String contents() {
+        int randIndex = random.nextInt(20);
+
+        return CONTENTS.get(randIndex);
     }
 
 
