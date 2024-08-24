@@ -9,6 +9,8 @@ public class JoinRequest {
     private String password;
     private String passwordCheck;
     private String nickname;
+    private float userRating;
+    private String profileImageUrl;
 
     // 비밀번호 암호화
     public User toEntity(String encodedPassword) {
@@ -16,6 +18,8 @@ public class JoinRequest {
                 .email(this.email)
                 .password(encodedPassword)
                 .nickname(this.nickname)
+                .userRating(0L)
+                .profileImageUrl("profileImage.png")
                 .build();
     }
 }

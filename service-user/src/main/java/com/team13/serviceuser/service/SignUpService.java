@@ -2,20 +2,15 @@ package com.team13.serviceuser.service;
 
 import com.team13.serviceuser.dto.JoinRequest;
 import com.team13.serviceuser.repository.UserRepository;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.security.Key;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserService {
+public class SignUpService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;

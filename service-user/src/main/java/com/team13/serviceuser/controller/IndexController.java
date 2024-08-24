@@ -1,7 +1,9 @@
 package com.team13.serviceuser.controller;
 
+import com.team13.serviceuser.dto.JoinRequest;
 import com.team13.serviceuser.dto.ResponseDto;
 import com.team13.serviceuser.service.SignInService;
+import com.team13.serviceuser.service.SignUpService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +27,32 @@ public class IndexController {
 
     private final SignInService signInService;
 
+    private final SignUpService signUpService;
+
+
     @GetMapping
     public String index() { return "Index page of service-user"; }
+
+    //회원가입 요청
+    @PostMapping("/join")
+    public String join(@RequestBody JoinRequest joinRequest) {
+
+        // loginId 중복 체크
+        if (signUpService.checkEmailDuplicate(joinRequest.getEmail())) {
+            return "로그인 아이디가 중복됩니다.";
+        }
+        // 닉네임 중복 체크
+        if (signUpService.checkNicknameDuplicate(joinRequest.getNickname())) {
+            return "닉네임이 중복됩니다.";
+        }
+        // password와 passwordCheck가 같은지 체크
+        if (!joinRequest.getPassword().equals(joinRequest.getPasswordCheck())) {
+            return "바밀번호가 일치하지 않습니다.";
+        }
+
+        signUpService.join(joinRequest);
+        return "회원가입 성공";
+    }
 
     // 로그인 요청
     @PostMapping("/signin")
