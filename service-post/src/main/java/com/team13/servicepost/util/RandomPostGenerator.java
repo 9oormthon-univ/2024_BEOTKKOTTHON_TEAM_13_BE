@@ -96,26 +96,26 @@ public class RandomPostGenerator {
 
     // 이미지 리스트
     private static final List<PostImage> IMAGES = List.of(
-            new PostImage(1L, ""),
-            new PostImage(2L, ""),
-            new PostImage(3L, ""),
-            new PostImage(4L, ""),
-            new PostImage(5L, ""),
-            new PostImage(6L, ""),
-            new PostImage(7L, ""),
-            new PostImage(8L, ""),
-            new PostImage(9L, ""),
-            new PostImage(10L, ""),
-            new PostImage(11L, ""),
-            new PostImage(12L, ""),
-            new PostImage(13L, ""),
-            new PostImage(14L, ""),
-            new PostImage(15L, ""),
-            new PostImage(16L, ""),
-            new PostImage(17L, ""),
-            new PostImage(18L, ""),
-            new PostImage(19L, ""),
-            new PostImage(20L, "")
+            new PostImage(1L, "/img/post/0dc8cf3c-d0ae-4a1b-bcf6-86a6a12c7bf0.jpeg"),
+            new PostImage(2L, "/img/post/0e73779c-be7e-4784-ba61-303e9b4d5b78.jpg"),
+            new PostImage(3L, "/img/post/1ca094dd-294d-43e0-8d7f-5ce9dcf92260.jpeg"),
+            new PostImage(4L, "/img/post/9dfc0c12-fabc-46b9-bb89-f48dd740997a.jpg"),
+            new PostImage(5L, "/img/post/474ada2e-e09d-49d1-92c2-542ab2e18cbc.jpeg"),
+            new PostImage(6L, "/img/post/523c90ab-d681-40cf-bfc4-a4df93bc220b.jpg"),
+            new PostImage(7L, "/img/post/4436fdec-039d-4683-b8f3-7ebf677ad190.jpg"),
+            new PostImage(8L, "/img/post/06191e9a-85b8-41d1-ba4c-2444cc1571a6.jpg"),
+            new PostImage(9L, "/img/post/7929c030-978c-4d2d-8862-8c8222180b0c.jpg"),
+            new PostImage(10L, "/img/post/3421441c-4f0f-4fe2-a397-ffb6e2971140.jpg"),
+            new PostImage(11L, "/img/post/147918052537l0.jpg"),
+            new PostImage(12L, "/img/post/1568959908860l0.jpg"),
+            new PostImage(13L, "/img/post/1583220729606l0.jpg"),
+            new PostImage(14L, "/img/post/1653037915850l0.jpeg"),
+            new PostImage(15L, "/img/post/1653038353558l0.jpeg"),
+            new PostImage(16L, "/img/post/1653038616850l0.jpeg"),
+            new PostImage(17L, "/img/post/1656563327799l0.jpg"),
+            new PostImage(18L, "/img/post/a695cf27-81b4-4ac2-8683-da431feedb75.jpeg"),
+            new PostImage(19L, "/img/post/c11e3b6e-5dee-47d0-8a7b-7df11a620867.jpg"),
+            new PostImage(20L, "/img/post/e5e8f113-c75e-4104-b4fb-5206c8b1d9b8.jpg")
     );
 
 
