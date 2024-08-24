@@ -20,6 +20,7 @@ public class User {
     @Column(name = "email", nullable = false, length = 50)
     private String email;
 
+    //bcrypt때문에 60으로 고정
     @Column(name = "password", nullable = false, length = 60)
     private String password;
 

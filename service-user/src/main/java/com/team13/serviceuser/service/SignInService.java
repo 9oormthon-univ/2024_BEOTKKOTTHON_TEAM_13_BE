@@ -1,24 +1,35 @@
 package com.team13.serviceuser.service;
 
+import com.team13.serviceuser.dto.LoginRequest;
 import com.team13.serviceuser.entity.User;
+import com.team13.serviceuser.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class SignInService {
     private final Key jwtSecretKey; // JWT 토큰을 위한 암호키
-
     private final long tokenKeepDuration; // 토큰 유지 기간(밀리초)
+    private final UserRepository userRepository;
+
+    //비밀번호 인코딩
+    private final BCryptPasswordEncoder encoder;
 
     public SignInService(@Value("${app.jwt.secret}") String tokenSecret,
-                         @Value("${app.jwt.keep}") long tokenKeepDuration) {
+                         @Value("${app.jwt.keep}") long tokenKeepDuration,
+                         UserRepository userRepository, BCryptPasswordEncoder encoder) {
 
         // 암호키를 바탕으로 키 생성
         byte[] keyBytes = Decoders.BASE64.decode(tokenSecret);
@@ -26,49 +37,33 @@ public class SignInService {
 
         // 토큰 유지 기간
         this.tokenKeepDuration = tokenKeepDuration * 1000; // 초를 밀리초로 변환
+
+        this.userRepository = userRepository;
+        this.encoder = encoder;
     }
 
-  
-    // 유저 로그인 정보 검증
-    public boolean verifyLoginInfo(String userEmail, String userPassword) {
+    public User login(LoginRequest req) {
+        //email에 대한 유효성 확인
+        Optional<User> optionalUser = userRepository.findByEmail(req.getEmail());
+        if (optionalUser.isEmpty()) {
+            System.out.println("Login ID not found");
+            return null;
+        }
+        User user = optionalUser.get();
+        System.out.println("User found: " + user.getEmail());
 
-        // TODO: 유저 인증 메커니즘 추가 (아래는 테스트용 코드)
-        if (userEmail.equals("ypjun100@gmail.com") ||
-                userEmail.equals("ypjun101@gmail.com")) {
-            return true;
+        //비밀번호에 대한 유효성
+        if (!encoder.matches(req.getPassword(), user.getPassword())) {
+            System.out.println("Password does not match");
+            return null;
         }
 
-        return false;
+        System.out.println("Password matches");
+        return user;
     }
-
-  
-    // 유저 정보 반환
-    public User getUserByEmail(String userEmail) {
-
-        // TODO: 유저 이메일로 유저 정보 가져오는 코드 추가 (아래는 테스트용 코드)
-        if (userEmail.equals("ypjun100@gmail.com")) {
-
-            return User.builder()
-                    .id(1L)
-                    .nickname("ypjun100")
-                    .build();
-
-        } else if (userEmail.equals("ypjun101@gmail.com")) {
-
-            return User.builder()
-                    .id(2L)
-                    .nickname("ypjun101")
-                    .build();
-
-        }
-
-        return User.builder().build();
-    }
-
 
     // JWT 쿠키 생성
     public Cookie createCookieFromUser(User user) {
-
         // 쿠키 만료 시간 설정을 위한 현재 시간 데이터
         long now = (new Date()).getTime();
 

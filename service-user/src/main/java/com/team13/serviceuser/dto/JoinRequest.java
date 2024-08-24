@@ -34,8 +34,8 @@ public class JoinRequest {
                 .email(this.email)
                 .password(encodedPassword)
                 .nickname(this.nickname)
-                .userRating(0L)
-                .profileImageUrl("profileImage.png")
+                .userRating(0L) //초깃값 0L
+                .profileImageUrl("profileImage.png") //초깃값 url
                 .build();
     }
 }

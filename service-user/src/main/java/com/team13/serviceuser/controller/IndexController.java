@@ -1,6 +1,7 @@
 package com.team13.serviceuser.controller;
 
 import com.team13.serviceuser.dto.JoinRequest;
+import com.team13.serviceuser.dto.LoginRequest;
 import com.team13.serviceuser.dto.ResponseDto;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.service.SignInService;
@@ -28,7 +29,6 @@ public class IndexController {
     private String configTestString;
 
     private final SignInService signInService;
-
     private final SignUpService signUpService;
 
     @GetMapping
@@ -37,8 +37,9 @@ public class IndexController {
     //회원가입 요청
     // 회원가입 요청
     @PostMapping("/join")
-        // loginId 중복 체크
-        public ResponseEntity<String> join (@Valid @RequestBody JoinRequest joinRequest, BindingResult bindingResult) {
+        public ResponseEntity<String> join (@Valid @RequestBody JoinRequest joinRequest,
+                                            BindingResult bindingResult) {
+        //request전달 값 조건 에러시 메세지
             if (bindingResult.hasErrors()) {
                 String errorMessages = bindingResult.getAllErrors()
                         .stream()
@@ -47,16 +48,18 @@ public class IndexController {
                         .orElse("Validation failed.");
                 return ResponseEntity.badRequest().body(errorMessages);
             }
+
+            //이메일 중복 체크
             if (signUpService.checkEmailDuplicate(joinRequest.getEmail())) {
                 return ResponseEntity.badRequest().body("이메일이 중복됩니다.");
             }
-            // 닉네임 중복 체크
 
+            // 닉네임 중복 체크
             if (signUpService.checkNicknameDuplicate(joinRequest.getNickname())) {
                 return ResponseEntity.badRequest().body("닉네임이 중복됩니다.");
             }
-            // password와 passwordCheck가 같은지 체크
 
+            // password와 passwordCheck가 같은지 체크
             if (!joinRequest.getPassword().equals(joinRequest.getPasswordCheck())) {
                 return ResponseEntity.badRequest().body("비밀번호가 일치하지 않습니다.");
             }
@@ -65,33 +68,18 @@ public class IndexController {
             return ResponseEntity.ok("회원가입 성공");
         }
 
-
     // 로그인 요청
     // 로그인 성공 시 클라이언트에게 JWT 토큰을 반환함
-    @PostMapping("/signin")
-    public ResponseEntity<String> signIn(@RequestBody Map<String, String> loginInfo,
-                                         HttpServletResponse response) {
-
-        // 사용자가 email과 password를 모두 전송했는지 확인
-        if (loginInfo.containsKey("email") && loginInfo.containsKey("password")) {
-
-            // 사용자가 전송한 유저 데이터가 DB에 있는 데이터인지 확인
-            if (signInService.verifyLoginInfo(loginInfo.get("email"), loginInfo.get("password"))) {
-
-                // 유저 이메일로 유저 정보를 가져옴
-                User user = signInService.getUserByEmail(loginInfo.get("email"));
-
-                // JWT 쿠키 생성 및 response에 쿠키 추가
-                Cookie cookie = signInService.createCookieFromUser(user);
-                response.addCookie(cookie);
-
-                return ResponseEntity.ok().build();
-            }
-
+    @PostMapping("/login")
+    public  ResponseEntity<String> login (@RequestBody LoginRequest loginRequest,
+                                          HttpServletResponse response) {
+        User user = signInService.login(loginRequest);
+        if (user == null) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
-        // 존재하지 않는 계정인 경우, 클라이언트로 401 코드를 전송함
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        Cookie cookie = signInService.createCookieFromUser(user);
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/config")
