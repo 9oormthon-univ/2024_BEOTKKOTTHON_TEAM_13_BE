@@ -47,15 +47,15 @@ public class IndexController {
 
         List<PostDto> posts = new ArrayList<>();
 
-        int type = strType.equals("all") ? RandomPostGenerator.type() :
-                        strType.equals("ingd") ? 0 :
-                        strType.equals("r_ingd") ? 1 : -1;
-
-        if (type == -1) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         for (int i = 0; i < 20; i++) {
+
+            int type = strType.equals("all") ? RandomPostGenerator.type() :
+                    strType.equals("ingd") ? 0 :
+                            strType.equals("r_ingd") ? 1 : -1;
+
+            if (type == -1) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
 
             int groupSize = RandomPostGenerator.groupSize();
             int curGroupSize = RandomPostGenerator.curGroupSize(groupSize);
