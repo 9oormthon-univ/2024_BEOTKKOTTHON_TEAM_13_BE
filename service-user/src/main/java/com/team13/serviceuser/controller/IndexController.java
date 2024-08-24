@@ -6,12 +6,14 @@ import com.team13.serviceuser.service.SignInService;
 import com.team13.serviceuser.service.SignUpService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.validation.ObjectError;
 import java.util.Map;
 
 @RestController
@@ -21,38 +23,41 @@ public class IndexController {
 
     @Value("${app.test-string}")
     private String configTestString;
-
     @Value("${app.jwt.keep}")
     private int tokenKeepDuration;
-
     private final SignInService signInService;
-
     private final SignUpService signUpService;
-
 
     @GetMapping
     public String index() { return "Index page of service-user"; }
 
-    //회원가입 요청
+    // 회원가입 요청
     @PostMapping("/join")
-    public String join(@RequestBody JoinRequest joinRequest) {
-
-        // loginId 중복 체크
+    public ResponseEntity<String> join(@Valid @RequestBody JoinRequest joinRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessages = bindingResult.getAllErrors()
+                    .stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .reduce((message1, message2) -> message1 + "; " + message2)
+                    .orElse("Validation failed.");
+            return ResponseEntity.badRequest().body(errorMessages);
+        }
         if (signUpService.checkEmailDuplicate(joinRequest.getEmail())) {
-            return "로그인 아이디가 중복됩니다.";
+            return ResponseEntity.badRequest().body("이메일이 중복됩니다.");
         }
-        // 닉네임 중복 체크
+
         if (signUpService.checkNicknameDuplicate(joinRequest.getNickname())) {
-            return "닉네임이 중복됩니다.";
+            return ResponseEntity.badRequest().body("닉네임이 중복됩니다.");
         }
-        // password와 passwordCheck가 같은지 체크
+
         if (!joinRequest.getPassword().equals(joinRequest.getPasswordCheck())) {
-            return "바밀번호가 일치하지 않습니다.";
+            return ResponseEntity.badRequest().body("비밀번호가 일치하지 않습니다.");
         }
 
         signUpService.join(joinRequest);
-        return "회원가입 성공";
+        return ResponseEntity.ok("회원가입 성공");
     }
+
 
     // 로그인 요청
     @PostMapping("/signin")
@@ -68,7 +73,6 @@ public class IndexController {
             cookie.setMaxAge(tokenKeepDuration);
             cookie.setPath("/");
             response.addCookie(cookie);
-
             return ResponseEntity.ok().build();
         }
 
