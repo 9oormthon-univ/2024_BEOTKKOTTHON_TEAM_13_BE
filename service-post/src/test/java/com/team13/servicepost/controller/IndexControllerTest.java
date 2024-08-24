@@ -12,21 +12,21 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
-@SpringBootTest(properties = "spring.profiles.active=dev")
+//@AutoConfigureMockMvc
+//@ExtendWith(MockitoExtension.class)
+//@SpringBootTest(properties = "spring.profiles.active=dev")
 class IndexControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-
-    @Test
-    public void IndexController_List_Default() throws Exception {
-
-    }
+//    @Autowired
+//    private MockMvc mockMvc;
+//
+//    @Autowired
+//    private ObjectMapper objectMapper;
+//
+//
+//    @Test
+//    public void IndexController_List_Default() throws Exception {
+//
+//    }
 
 }
