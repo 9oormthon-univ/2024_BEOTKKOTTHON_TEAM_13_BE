@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
@@ -65,4 +66,12 @@ public class Post {
 
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
+
+    @OneToMany
+    @JoinColumn(name = "posts_id")
+    List<PostIngredient> ingredients;
+
+    @OneToMany
+    @JoinColumn(name = "posts_id")
+    List<PostImage> images;
 }

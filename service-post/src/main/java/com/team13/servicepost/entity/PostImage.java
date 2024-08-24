@@ -1,0 +1,26 @@
+package com.team13.servicepost.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "posts_images")
+public class PostImage {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "image_path", nullable = false)
+    private String imagePath;
+
+//    @ManyToOne
+//    @Column(name = "posts_id", nullable = false)
+//    private Post post;
+}
