@@ -119,7 +119,7 @@ public class RandomPostGenerator {
     );
 
 
-    // 사용자 ID 생성
+    // 게시글 ID 생성
     public static Long id() {
         return (long)(random.nextInt(20) + 1);
     }
@@ -184,6 +184,12 @@ public class RandomPostGenerator {
         int randIndex = random.nextInt(20);
 
         return TITLES.get(randIndex);
+    }
+
+
+    // 내용 생성
+    public static String contents(int index) {
+        return TITLES.get(index);
     }
 
 
