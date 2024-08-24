@@ -26,15 +26,15 @@ public class User {
     @Column(name = "nickname", nullable = false, length = 20)
     private String nickname;
 
-    @Column(name = "user_rating", nullable = false)
-    private float userRating;
-
-    @Column(name = "location_bcode", nullable = false)
-    private int locationBcode;
-
-    @Column(name = "location_address", nullable = false, length = 100)
-    private String locationAddress;
-
-    @Column(name = "profile_image_url", nullable = false, length = 200)
-    private String profileImageUrl;
+//    @Column(name = "user_rating", nullable = false)
+//    private float userRating;
+//
+//    @Column(name = "location_bcode", nullable = false)
+//    private int locationBcode;
+//
+//    @Column(name = "location_address", nullable = false, length = 100)
+//    private String locationAddress;
+//
+//    @Column(name = "profile_image_url", nullable = false, length = 200)
+//    private String profileImageUrl;
 }
