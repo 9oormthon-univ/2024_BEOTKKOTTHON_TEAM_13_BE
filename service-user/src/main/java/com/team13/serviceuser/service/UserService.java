@@ -2,9 +2,15 @@ package com.team13.serviceuser.service;
 
 import com.team13.serviceuser.dto.JoinRequest;
 import com.team13.serviceuser.repository.UserRepository;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.security.Key;
 
 @Service
 @Transactional
@@ -12,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder encoder;
 
     public boolean checkEmailDuplicate(String email) {
         return userRepository.existsByEmail(email);
@@ -20,8 +27,8 @@ public class UserService {
     public boolean checkNicknameDuplicate(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
-
+    //비밀번호 암호화
     public void join(JoinRequest req) {
-        userRepository.save(req.toEntity());
+        userRepository.save(req.toEntity(encoder.encode(req.getPassword())));
     }
 }
