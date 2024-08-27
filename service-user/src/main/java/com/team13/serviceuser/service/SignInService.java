@@ -1,6 +1,6 @@
 package com.team13.serviceuser.service;
 
-import com.team13.serviceuser.dto.LoginRequest;
+import com.team13.serviceuser.dto.LoginRequestDto;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
@@ -41,7 +41,7 @@ public class SignInService {
         this.encoder = encoder;
     }
 
-    public User login(LoginRequest req) {
+    public User login(LoginRequestDto req) {
         //email에 대한 유효성 확인
         Optional<User> optionalUser = userRepository.findByEmail(req.getEmail());
         if (optionalUser.isEmpty()) {

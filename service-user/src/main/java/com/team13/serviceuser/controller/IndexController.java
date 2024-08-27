@@ -1,7 +1,7 @@
 package com.team13.serviceuser.controller;
 
-import com.team13.serviceuser.dto.JoinRequest;
-import com.team13.serviceuser.dto.LoginRequest;
+import com.team13.serviceuser.dto.JoinRequestDto;
+import com.team13.serviceuser.dto.LoginRequestDto;
 import com.team13.serviceuser.dto.ResponseDto;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.service.SignInService;
@@ -36,7 +36,7 @@ public class IndexController {
     //회원가입 요청
     // 회원가입 요청
     @PostMapping("/join")
-        public ResponseEntity<String> join (@Valid @RequestBody JoinRequest joinRequest,
+        public ResponseEntity<String> join (@Valid @RequestBody JoinRequestDto joinRequestDto,
                                             BindingResult bindingResult) {
         //request전달 값 조건 에러시 메세지
             if (bindingResult.hasErrors()) {
@@ -49,30 +49,30 @@ public class IndexController {
             }
 
             //이메일 중복 체크
-            if (signUpService.checkEmailDuplicate(joinRequest.getEmail())) {
+            if (signUpService.checkEmailDuplicate(joinRequestDto.getEmail())) {
                 return ResponseEntity.badRequest().body("이메일이 중복됩니다.");
             }
 
             // 닉네임 중복 체크
-            if (signUpService.checkNicknameDuplicate(joinRequest.getNickname())) {
+            if (signUpService.checkNicknameDuplicate(joinRequestDto.getNickname())) {
                 return ResponseEntity.badRequest().body("닉네임이 중복됩니다.");
             }
 
             // password와 passwordCheck가 같은지 체크
-            if (!joinRequest.getPassword().equals(joinRequest.getPasswordCheck())) {
+            if (!joinRequestDto.getPassword().equals(joinRequestDto.getPasswordCheck())) {
                 return ResponseEntity.badRequest().body("비밀번호가 일치하지 않습니다.");
             }
 
-            signUpService.join(joinRequest);
+            signUpService.join(joinRequestDto);
             return ResponseEntity.ok("회원가입 성공");
         }
 
     // 로그인 요청
     // 로그인 성공 시 클라이언트에게 JWT 토큰을 반환함
     @PostMapping("/login")
-    public  ResponseEntity<String> login (@RequestBody LoginRequest loginRequest,
+    public  ResponseEntity<String> login (@RequestBody LoginRequestDto loginRequestDto,
                                           HttpServletResponse response) {
-        User user = signInService.login(loginRequest);
+        User user = signInService.login(loginRequestDto);
         if (user == null) {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

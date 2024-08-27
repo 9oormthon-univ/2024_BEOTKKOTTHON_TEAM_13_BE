@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class JoinRequest {
+public class JoinRequestDto {
 
     @Email(message = "이메일은 유효해야합니다")
     @NotBlank(message = "이메일을 입력하세요")

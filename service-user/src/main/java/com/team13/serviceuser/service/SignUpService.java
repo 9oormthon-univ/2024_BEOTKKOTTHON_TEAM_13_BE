@@ -1,6 +1,6 @@
 package com.team13.serviceuser.service;
 
-import com.team13.serviceuser.dto.JoinRequest;
+import com.team13.serviceuser.dto.JoinRequestDto;
 import com.team13.serviceuser.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class SignUpService {
     }
 
     //비밀번호 암호화
-    public void join(JoinRequest req) {
+    public void join(JoinRequestDto req) {
         userRepository.save(req.toEntity(encoder.encode(req.getPassword())));
     }
 }
