@@ -1,18 +1,22 @@
 package com.team13.serviceuser.controller;
 
+import com.team13.serviceuser.dto.JoinRequestDto;
+import com.team13.serviceuser.dto.LoginRequestDto;
 import com.team13.serviceuser.dto.ResponseDto;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.service.SignInService;
+import com.team13.serviceuser.service.SignUpService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @Log4j2
 @RestController
@@ -24,36 +28,57 @@ public class IndexController {
     private String configTestString;
 
     private final SignInService signInService;
+    private final SignUpService signUpService;
 
     @GetMapping
     public String index() { return "Index page of service-user"; }
 
-    // 로그인 요청
-    // 로그인 성공 시 클라이언트에게 JWT 토큰을 반환함
-    @PostMapping("/signin")
-    public ResponseEntity<String> signIn(@RequestBody Map<String, String> loginInfo,
-                                         HttpServletResponse response) {
-
-        // 사용자가 email과 password를 모두 전송했는지 확인
-        if (loginInfo.containsKey("email") && loginInfo.containsKey("password")) {
-
-            // 사용자가 전송한 유저 데이터가 DB에 있는 데이터인지 확인
-            if (signInService.verifyLoginInfo(loginInfo.get("email"), loginInfo.get("password"))) {
-
-                // 유저 이메일로 유저 정보를 가져옴
-                User user = signInService.getUserByEmail(loginInfo.get("email"));
-
-                // JWT 쿠키 생성 및 response에 쿠키 추가
-                Cookie cookie = signInService.createCookieFromUser(user);
-                response.addCookie(cookie);
-
-                return ResponseEntity.ok().build();
+    //회원가입 요청
+    // 회원가입 요청
+    @PostMapping("/join")
+        public ResponseEntity<String> join (@Valid @RequestBody JoinRequestDto joinRequestDto,
+                                            BindingResult bindingResult) {
+        //request전달 값 조건 에러시 메세지
+            if (bindingResult.hasErrors()) {
+                String errorMessages = bindingResult.getAllErrors()
+                        .stream()
+                        .map(ObjectError::getDefaultMessage)
+                        .reduce((message1, message2) -> message1 + "; " + message2)
+                        .orElse("Validation failed.");
+                return ResponseEntity.badRequest().body(errorMessages);
             }
 
+            //이메일 중복 체크
+            if (signUpService.checkEmailDuplicate(joinRequestDto.getEmail())) {
+                return ResponseEntity.badRequest().body("이메일이 중복됩니다.");
+            }
+
+            // 닉네임 중복 체크
+            if (signUpService.checkNicknameDuplicate(joinRequestDto.getNickname())) {
+                return ResponseEntity.badRequest().body("닉네임이 중복됩니다.");
+            }
+
+            // password와 passwordCheck가 같은지 체크
+            if (!joinRequestDto.getPassword().equals(joinRequestDto.getPasswordCheck())) {
+                return ResponseEntity.badRequest().body("비밀번호가 일치하지 않습니다.");
+            }
+
+            signUpService.join(joinRequestDto);
+            return ResponseEntity.ok("회원가입 성공");
         }
 
-        // 존재하지 않는 계정인 경우, 클라이언트로 401 코드를 전송함
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    // 로그인 요청
+    // 로그인 성공 시 클라이언트에게 JWT 토큰을 반환함
+    @PostMapping("/login")
+    public  ResponseEntity<String> login (@RequestBody LoginRequestDto loginRequestDto,
+                                          HttpServletResponse response) {
+        User user = signInService.login(loginRequestDto);
+        if (user == null) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Cookie cookie = signInService.createCookieFromUser(user);
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/config")
