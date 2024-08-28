@@ -4,6 +4,7 @@ import com.team13.servicepost.dto.PostImageDto;
 import com.team13.servicepost.dto.PostResponseDto;
 import com.team13.servicepost.entity.Post;
 import com.team13.servicepost.entity.PostImage;
+import com.team13.servicepost.service.LikePostService;
 import com.team13.servicepost.service.PostImageService;
 import com.team13.servicepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class PostController {
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private LikePostService likePostService;
 
 //    @PostMapping
 //    public ResponseEntity<Post> createPost(@RequestBody Post post) {
@@ -42,4 +46,22 @@ public class PostController {
         }
     }
 
+    // localhost:925:1/like?userId=2
+    //userId가 2인 사람이 Post1번 글 좋아요를 누른다.
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<String> toggleLikePost(@PathVariable Long postId, @RequestParam Long userId) {
+        boolean success = likePostService.toggleLikePost(postId, userId);
+        if (success) {
+            return ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
+        }
+    }
+
+    //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
+    @GetMapping("/{postId}/likes")
+    public ResponseEntity<Long> getLikesCount(@PathVariable Long postId) {
+        Long likesCount = likePostService.getLikesCount(postId);
+        return ResponseEntity.ok(likesCount);
+    }
 }

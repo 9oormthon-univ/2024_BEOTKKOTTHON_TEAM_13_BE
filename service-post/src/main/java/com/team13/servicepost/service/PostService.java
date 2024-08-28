@@ -33,6 +33,9 @@ public class PostService {
     @Autowired
     private UserServiceClient userServiceClient;
 
+    @Autowired
+    private LikePostService likePostService;
+
     public Post savePost(Post post) {
         return postRepository.save(post);
     }
@@ -74,6 +77,9 @@ public class PostService {
                 .map(postIngredientService::convertToDto)
                 .collect(Collectors.toList());
 
+        //좋아요 수 가져오기
+        Long likesCount = likePostService.getLikesCount(postId);
+
         PostResponseDto postResponseDto = new PostResponseDto();
         postResponseDto.setId(post.getId());
         postResponseDto.setUserId(post.getUserId());
@@ -94,7 +100,7 @@ public class PostService {
         postResponseDto.setUserNickname(user.getNickname());  //feign을 이용한 같은 userId에 대한 nickname불러오기
         postResponseDto.setImages(imageDto); //list형식으로 불러오기
         postResponseDto.setIngredients(ingredientDto);
-
+        postResponseDto.setLikesCount(likesCount);
 
         return Optional.of(postResponseDto);
     }

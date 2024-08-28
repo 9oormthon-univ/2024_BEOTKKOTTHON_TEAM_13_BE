@@ -31,4 +31,5 @@ public class PostResponseDto {
     private String userNickname;
     private List<PostImageDto> images;
     private List<PostIngredientDto> ingredients;
+    private Long likesCount;
 }

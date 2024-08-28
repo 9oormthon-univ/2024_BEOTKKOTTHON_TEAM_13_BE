@@ -29,31 +29,31 @@ public class LikePostService {
 
     @Transactional
     public boolean toggleLikePost(Long postId, Long userId) {
-        // Check if the post exists
+        //해당 Post가 있는지 확인
         Optional<Post> postOptional = postRepository.findById(postId);
         if (postOptional.isEmpty()) {
-            return false; // Post does not exist
+            return false;
         }
 
-        // Check if the user exists using Feign client
+        //좋아요 누르는 유저가 존재하는지 확인
         ResponseEntity<UserDto> userResponse = userServiceClient.getUserById(userId);
         if (userResponse.getStatusCode() != HttpStatus.OK || userResponse.getBody() == null) {
-            return false; // User does not exist or UserService call failed
+            return false;
         }
 
-        // Check if the user has already liked the post
+        //이미 예전에 좋아요 눌렀는지 확인
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndUserId(postId, userId);
         if (existingLike.isPresent()) {
-            // If like exists, unlike the post
+            //이전에 좋아요 기록있다면 좋아요 취소 기능
             likePostRepository.delete(existingLike.get());
-            return true; // Successfully unliked the post
+            return true; // 좋아요 취소 성공
         } else {
-            // If like does not exist, like the post
+            // 이전 좋아요 없다면 좋아요 추가 기능
             LikePost likePost = new LikePost();
             likePost.setPost(postOptional.get());
             likePost.setUserId(userId);
             likePostRepository.save(likePost);
-            return true; // Successfully liked the post
+            return true; // 좋아요 추가 성공
         }
     }
 
