@@ -14,12 +14,12 @@ public class LikePostController {
     private final LikePostService likePostService;
 
     @PostMapping("/{postId}/like")
-    public ResponseEntity<String> likePost(@PathVariable Long postId, @RequestParam Long userId) {
-        boolean success = likePostService.likePost(postId, userId);
+    public ResponseEntity<String> toggleLikePost(@PathVariable Long postId, @RequestParam Long userId) {
+        boolean success = likePostService.toggleLikePost(postId, userId);
         if (success) {
-            return ResponseEntity.ok("Post liked successfully.");
+            return ResponseEntity.ok("Post liked/unliked successfully.");
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You have already liked this post, post not found, or user not found.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Operation failed: Post not found or user not found.");
         }
     }
 

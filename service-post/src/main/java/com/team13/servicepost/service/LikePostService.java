@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+
 @Service
 public class LikePostService {
 
@@ -24,10 +25,10 @@ public class LikePostService {
     private PostRepository postRepository;
 
     @Autowired
-    private UserServiceClient userServiceClient;  // Feign client to call UserService
+    private UserServiceClient userServiceClient;
 
     @Transactional
-    public boolean likePost(Long postId, Long userId) {
+    public boolean toggleLikePost(Long postId, Long userId) {
         // Check if the post exists
         Optional<Post> postOptional = postRepository.findById(postId);
         if (postOptional.isEmpty()) {
@@ -43,17 +44,17 @@ public class LikePostService {
         // Check if the user has already liked the post
         Optional<LikePost> existingLike = likePostRepository.findByPostIdAndUserId(postId, userId);
         if (existingLike.isPresent()) {
-            return false; // User has already liked the post, do not allow another like
+            // If like exists, unlike the post
+            likePostRepository.delete(existingLike.get());
+            return true; // Successfully unliked the post
+        } else {
+            // If like does not exist, like the post
+            LikePost likePost = new LikePost();
+            likePost.setPost(postOptional.get());
+            likePost.setUserId(userId);
+            likePostRepository.save(likePost);
+            return true; // Successfully liked the post
         }
-
-        // Create a new LikePost entry
-        LikePost likePost = new LikePost();
-        likePost.setPost(postOptional.get());
-        likePost.setUserId(userId);
-
-        // Save the like
-        likePostRepository.save(likePost);
-        return true; // Successfully liked the post
     }
 
     public Long getLikesCount(Long postId) {
