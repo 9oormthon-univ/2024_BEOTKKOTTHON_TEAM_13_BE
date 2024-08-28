@@ -17,12 +17,11 @@ public class PostImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "posts_id", nullable = false)
-    private Post post;
-
     @Column(name = "image_path", nullable = false)
     private String imagePath;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "posts_id", nullable = false)
+    private Post post;
 
 }

@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS posts (
                        location_longitude VARCHAR(100) NOT NULL,
                        location_latitude VARCHAR(100) NOT NULL,
                        title VARCHAR(100) NOT NULL,
-                       price INT NOT NULL,
                        price_per_user INT NOT NULL,
                        type INT NOT NULL,
                        contents VARCHAR(500) NOT NULL

@@ -1,7 +1,7 @@
 package com.team13.servicepost.controller;
 
-import com.team13.servicepost.dto.PostImageDTO;
-import com.team13.servicepost.dto.PostWithUserDetails;
+import com.team13.servicepost.dto.PostImageDto;
+import com.team13.servicepost.dto.PostTestDto;
 import com.team13.servicepost.entity.Post;
 import com.team13.servicepost.entity.PostImage;
 import com.team13.servicepost.service.PostImageService;
@@ -42,11 +42,21 @@ public class PostController {
 //                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
 //    }
 
+//    @GetMapping("/{id}")
+//    public ResponseEntity<PostWithUserDetails> getPostById(@PathVariable Long id) {
+//        return postService.getPostWithUserDetails(id)
+//                .map(ResponseEntity::ok)
+//                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+//    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<PostWithUserDetails> getPostById(@PathVariable Long id) {
-        return postService.getPostWithUserDetails(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    public ResponseEntity<PostTestDto> getPostById(@PathVariable Long id) {
+        Optional<PostTestDto> postWithDetails = postService.getPostWithUserDetails(id);
+        if (postWithDetails.isPresent()) {
+            return ResponseEntity.ok(postWithDetails.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
 
@@ -68,9 +78,9 @@ public class PostController {
 //    }
 
     @GetMapping("/{postId}/images")
-    public ResponseEntity<List<PostImageDTO>> getImagesByPostId(@PathVariable Long postId) {
+    public ResponseEntity<List<PostImageDto>> getImagesByPostId(@PathVariable Long postId) {
         List<PostImage> images = postImageService.getImagesByPostId(postId);
-        List<PostImageDTO> imagesDTO = images.stream()
+        List<PostImageDto> imagesDTO = images.stream()
                 .map(postImageService::convertToDto)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(imagesDTO, HttpStatus.OK);
