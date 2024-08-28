@@ -1,10 +1,12 @@
 package com.team13.servicepost.service;
 
 import com.team13.servicepost.dto.PostImageDto;
-import com.team13.servicepost.dto.PostTestDto;
-import com.team13.servicepost.dto.User;
+import com.team13.servicepost.dto.PostIngredientDto;
+import com.team13.servicepost.dto.PostResponseDto;
+import com.team13.servicepost.dto.UserDto;
 import com.team13.servicepost.entity.Post;
 import com.team13.servicepost.entity.PostImage;
+import com.team13.servicepost.entity.PostIngredient;
 import com.team13.servicepost.feign.UserServiceClient;
 import com.team13.servicepost.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class PostService {
     private PostImageService postImageService;
 
     @Autowired
+    private  PostIngredientService postIngredientService;
+
+    @Autowired
     private UserServiceClient userServiceClient;
 
     public Post savePost(Post post) {
@@ -37,23 +42,23 @@ public class PostService {
     }
 
     public boolean checkUserExists(Long userId) {
-        ResponseEntity<User> response = userServiceClient.getUserById(userId);
+        ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
         return response.getStatusCode() == HttpStatus.OK;
     }
 
-    public Optional<PostTestDto> getPostWithUserDetails(Long postId) {
+    public Optional<PostResponseDto> getPostWithUserDetails(Long postId) {
         Optional<Post> postOptional = postRepository.findById(postId);
         if (!postOptional.isPresent()) {
             return Optional.empty();
         }
 
         Post post = postOptional.get();
-        ResponseEntity<User> response = userServiceClient.getUserById(post.getUserId());
+        ResponseEntity<UserDto> response = userServiceClient.getUserById(post.getUserId());
         if (response.getStatusCode() != HttpStatus.OK) {
             return Optional.empty();
         }
 
-        User user = response.getBody();
+        UserDto user = response.getBody();
         if (user == null) {
             return Optional.empty();
         }
@@ -64,27 +69,34 @@ public class PostService {
                 .map(postImageService::convertToDto)
                 .collect(Collectors.toList());
 
-        PostTestDto postTestDto = new PostTestDto();
-        postTestDto.setId(post.getId());
-        postTestDto.setUserId(post.getUserId());
-        postTestDto.setStatus(post.getStatus());
-        postTestDto.setGroupSize(post.getGroupSize());
-        postTestDto.setCurGroupSize(post.getCurGroupSize());
-        postTestDto.setChatId(post.getChatId());
-        postTestDto.setCreatedAt(post.getCreatedAt());
-        postTestDto.setClosedAt(post.getClosedAt());
-        postTestDto.setLocationBcode(post.getLocationBcode());
-        postTestDto.setLocationAddress(post.getLocationAddress());
-        postTestDto.setLocationLongitude(post.getLocationLongitude());
-        postTestDto.setLocationLatitude(post.getLocationLatitude());
-        postTestDto.setTitle(post.getTitle());
-        postTestDto.setPricePerUser(post.getPricePerUser());
-        postTestDto.setType(post.getType());
-        postTestDto.setContents(post.getContents());
-        postTestDto.setUserNickname(user.getNickname());  //feign을 이용한 같은 userId에 대한 nickname불러오기
-        postTestDto.setImages(imageDto); //list형식으로 불러오기
+        List<PostIngredient> ingredients = postIngredientService.getIngredientsByPostId(postId);
+        List<PostIngredientDto> ingredientDto = ingredients.stream()
+                .map(postIngredientService::convertToDto)
+                .collect(Collectors.toList());
 
-        return Optional.of(postTestDto);
+        PostResponseDto postResponseDto = new PostResponseDto();
+        postResponseDto.setId(post.getId());
+        postResponseDto.setUserId(post.getUserId());
+        postResponseDto.setStatus(post.getStatus());
+        postResponseDto.setGroupSize(post.getGroupSize());
+        postResponseDto.setCurGroupSize(post.getCurGroupSize());
+        postResponseDto.setChatId(post.getChatId());
+        postResponseDto.setCreatedAt(post.getCreatedAt());
+        postResponseDto.setClosedAt(post.getClosedAt());
+        postResponseDto.setLocationBcode(post.getLocationBcode());
+        postResponseDto.setLocationAddress(post.getLocationAddress());
+        postResponseDto.setLocationLongitude(post.getLocationLongitude());
+        postResponseDto.setLocationLatitude(post.getLocationLatitude());
+        postResponseDto.setTitle(post.getTitle());
+        postResponseDto.setPricePerUser(post.getPricePerUser());
+        postResponseDto.setType(post.getType());
+        postResponseDto.setContents(post.getContents());
+        postResponseDto.setUserNickname(user.getNickname());  //feign을 이용한 같은 userId에 대한 nickname불러오기
+        postResponseDto.setImages(imageDto); //list형식으로 불러오기
+        postResponseDto.setIngredients(ingredientDto);
+
+
+        return Optional.of(postResponseDto);
     }
 }
 

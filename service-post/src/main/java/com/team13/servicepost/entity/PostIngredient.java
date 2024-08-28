@@ -23,7 +23,7 @@ public class PostIngredient {
     @Column(name = "url", nullable = false)
     private String url;
 
-//    @ManyToOne
-//    @Column(name = "posts_id", nullable = false)
-//    private Post post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "posts_id", nullable = false)
+    private Post post;
 }
