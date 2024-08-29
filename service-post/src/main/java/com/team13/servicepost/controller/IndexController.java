@@ -2,16 +2,11 @@ package com.team13.servicepost.controller;
 
 import com.team13.servicepost.dto.PostDto;
 import com.team13.servicepost.entity.Post;
-import com.team13.servicepost.entity.PostIngredient;
 import com.team13.servicepost.feign.UserFeignClient;
-import com.team13.servicepost.repository.PostIngredientRepository;
-import com.team13.servicepost.repository.PostRepository;
 import com.team13.servicepost.util.RandomPostGenerator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.ArrayList;
