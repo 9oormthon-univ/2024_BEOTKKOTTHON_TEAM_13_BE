@@ -72,4 +72,8 @@ public class Post {
     @JoinColumn(name = "posts_id")
     List<PostImage> images;
 
+
+    public Post(Long id) {
+        this.id = id;
+    }
 }

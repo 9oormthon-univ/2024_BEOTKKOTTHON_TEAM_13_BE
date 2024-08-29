@@ -1,9 +1,11 @@
 package com.team13.servicepost.util;
 
+import com.team13.servicepost.entity.Post;
 import com.team13.servicepost.entity.PostImage;
 import com.team13.servicepost.entity.PostIngredient;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 
 public class RandomPostGenerator {
@@ -72,50 +74,50 @@ public class RandomPostGenerator {
 
     // 재료 리스트
     private static final List<PostIngredient> INGREDIENTS = List.of(
-            new PostIngredient(1L, "고추장", "https://www.kurly.com/goods/5156563"),
-            new PostIngredient(2L, "된장", "https://www.coupang.com/vp/products/7235480382?itemId=13507099803&vendorItemId=3000138235&pickType=COU_PICK&q=%EB%90%9C%EC%9E%A5&itemsCount=27&searchId=fd5785e3e3cc4bf5bd9564acaefc85d1&rank=0&isAddedCart="),
-            new PostIngredient(3L, "간장", "https://www.kurly.com/goods/5156583"),
-            new PostIngredient(4L, "참기름", "https://www.coupang.com/vp/products/7235432441?itemId=3019599468&vendorItemId=84993756491&pickType=COU_PICK&q=%EC%B0%B8%EA%B8%B0%EB%A6%84&itemsCount=27&searchId=e16ef9ad8dbd45e3b24539697e3d7080&rank=0&isAddedCart="),
-            new PostIngredient(5L, "마늘", "https://www.kurly.com/goods/5027318"),
-            new PostIngredient(6L, "양파", "https://www.coupang.com/vp/products/1074470755?itemId=2573048645&vendorItemId=70565380605&pickType=COU_PICK&q=%EC%96%91%ED%8C%8C&itemsCount=27&searchId=258a059f4f854434ad9ff92317d20c74&rank=0&isAddedCart="),
-            new PostIngredient(7L, "깐대파", "https://www.kurly.com/goods/5027320"),
-            new PostIngredient(8L, "고춧가루", "https://www.coupang.com/vp/products/188717799?itemId=2089138674&vendorItemId=70088115437&pickType=COU_PICK&q=%EA%B3%A0%EC%B6%A7%EA%B0%80%EB%A3%A8&itemsCount=27&searchId=b4d36fa793be43de8cef583ee0c4f36f&rank=0&isAddedCart="),
-            new PostIngredient(9L, "쌀", "https://www.kurly.com/goods/5003169"),
-            new PostIngredient(10L, "김", "https://www.coupang.com/vp/products/266254917?itemId=834542714&vendorItemId=5124578637&q=%EA%B9%80&itemsCount=27&searchId=9141b44bfa3c4496b6dd27db4ac5a234&rank=0&isAddedCart="),
-            new PostIngredient(11L, "두부", "https://www.kurly.com/goods/5053329"),
-            new PostIngredient(12L, "배추", "https://www.coupang.com/vp/products/2233944989?itemId=3812413037&vendorItemId=71797311591&pickType=COU_PICK&q=%EB%B0%B0%EC%B6%94&itemsCount=27&searchId=ea435bc585b34aa8a5eb4e52280af94f&rank=0&isAddedCart="),
-            new PostIngredient(13L, "무", "https://www.kurly.com/goods/5049635"),
-            new PostIngredient(14L, "당근", "https://www.coupang.com/vp/products/6202345562?itemId=12314074324&vendorItemId=79584195630&q=%EB%8B%B9%EA%B7%BC&itemsCount=27&searchId=6a8aec6bf3f24b759099fd5c756a53d9&rank=1&isAddedCart="),
-            new PostIngredient(15L, "소고기", "https://www.kurly.com/goods/5054443"),
-            new PostIngredient(16L, "돼지고기", "https://www.coupang.com/vp/products/5923718611?itemId=10507163351&vendorItemId=77788822678&q=%EB%8F%BC%EC%A7%80%EA%B3%A0%EA%B8%B0&itemsCount=26&searchId=226d843ffa48495eaf9104870742ebbb&rank=2&isAddedCart="),
-            new PostIngredient(17L, "닭고기", "https://www.kurly.com/goods/5030115"),
-            new PostIngredient(18L, "새우젓", "https://www.coupang.com/vp/products/6957124407?itemId=16922960532&vendorItemId=84100794087&pickType=COU_PICK&q=%EC%83%88%EC%9A%B0%EC%A0%93&itemsCount=27&searchId=365f83c088424850bfb0c9ed03ff19a7&rank=0&isAddedCart="),
-            new PostIngredient(19L, "미역", "https://www.kurly.com/goods/5004778"),
-            new PostIngredient(20L, "고사리", "https://www.coupang.com/vp/products/6342738185?itemId=13313872019&vendorItemId=80570095547&pickType=COU_PICK&q=%EA%B3%A0%EC%82%AC%EB%A6%AC&itemsCount=27&searchId=7f77adf0ea4c4e2eacc63050bda5d5f2&rank=0&isAddedCart=")
+            new PostIngredient(1L, "고추장", "https://www.kurly.com/goods/5156563",null),
+            new PostIngredient(2L, "된장", "https://www.coupang.com/vp/products/7235480382?itemId=13507099803&vendorItemId=3000138235&pickType=COU_PICK&q=%EB%90%9C%EC%9E%A5&itemsCount=27&searchId=fd5785e3e3cc4bf5bd9564acaefc85d1&rank=0&isAddedCart=",null),
+            new PostIngredient(3L, "간장", "https://www.kurly.com/goods/5156583",null),
+            new PostIngredient(4L, "참기름", "https://www.coupang.com/vp/products/7235432441?itemId=3019599468&vendorItemId=84993756491&pickType=COU_PICK&q=%EC%B0%B8%EA%B8%B0%EB%A6%84&itemsCount=27&searchId=e16ef9ad8dbd45e3b24539697e3d7080&rank=0&isAddedCart=",null),
+            new PostIngredient(5L, "마늘", "https://www.kurly.com/goods/5027318",null),
+            new PostIngredient(6L, "양파", "https://www.coupang.com/vp/products/1074470755?itemId=2573048645&vendorItemId=70565380605&pickType=COU_PICK&q=%EC%96%91%ED%8C%8C&itemsCount=27&searchId=258a059f4f854434ad9ff92317d20c74&rank=0&isAddedCart=",null),
+            new PostIngredient(7L, "깐대파", "https://www.kurly.com/goods/5027320",null),
+            new PostIngredient(8L, "고춧가루", "https://www.coupang.com/vp/products/188717799?itemId=2089138674&vendorItemId=70088115437&pickType=COU_PICK&q=%EA%B3%A0%EC%B6%A7%EA%B0%80%EB%A3%A8&itemsCount=27&searchId=b4d36fa793be43de8cef583ee0c4f36f&rank=0&isAddedCart=",null),
+            new PostIngredient(9L, "쌀", "https://www.kurly.com/goods/5003169",null),
+            new PostIngredient(10L, "김", "https://www.coupang.com/vp/products/266254917?itemId=834542714&vendorItemId=5124578637&q=%EA%B9%80&itemsCount=27&searchId=9141b44bfa3c4496b6dd27db4ac5a234&rank=0&isAddedCart=",null),
+            new PostIngredient(11L, "두부", "https://www.kurly.com/goods/5053329",null),
+            new PostIngredient(12L, "배추", "https://www.coupang.com/vp/products/2233944989?itemId=3812413037&vendorItemId=71797311591&pickType=COU_PICK&q=%EB%B0%B0%EC%B6%94&itemsCount=27&searchId=ea435bc585b34aa8a5eb4e52280af94f&rank=0&isAddedCart=",null),
+            new PostIngredient(13L, "무", "https://www.kurly.com/goods/5049635",null),
+            new PostIngredient(14L, "당근", "https://www.coupang.com/vp/products/6202345562?itemId=12314074324&vendorItemId=79584195630&q=%EB%8B%B9%EA%B7%BC&itemsCount=27&searchId=6a8aec6bf3f24b759099fd5c756a53d9&rank=1&isAddedCart=",null),
+            new PostIngredient(15L, "소고기", "https://www.kurly.com/goods/5054443",null),
+            new PostIngredient(16L, "돼지고기", "https://www.coupang.com/vp/products/5923718611?itemId=10507163351&vendorItemId=77788822678&q=%EB%8F%BC%EC%A7%80%EA%B3%A0%EA%B8%B0&itemsCount=26&searchId=226d843ffa48495eaf9104870742ebbb&rank=2&isAddedCart=",null),
+            new PostIngredient(17L, "닭고기", "https://www.kurly.com/goods/5030115",null),
+            new PostIngredient(18L, "새우젓", "https://www.coupang.com/vp/products/6957124407?itemId=16922960532&vendorItemId=84100794087&pickType=COU_PICK&q=%EC%83%88%EC%9A%B0%EC%A0%93&itemsCount=27&searchId=365f83c088424850bfb0c9ed03ff19a7&rank=0&isAddedCart=",null),
+            new PostIngredient(19L, "미역", "https://www.kurly.com/goods/5004778",null),
+            new PostIngredient(20L, "고사리", "https://www.coupang.com/vp/products/6342738185?itemId=13313872019&vendorItemId=80570095547&pickType=COU_PICK&q=%EA%B3%A0%EC%82%AC%EB%A6%AC&itemsCount=27&searchId=7f77adf0ea4c4e2eacc63050bda5d5f2&rank=0&isAddedCart=",null)
     );
 
     // 이미지 리스트
     private static final List<PostImage> IMAGES = List.of(
-            new PostImage(1L, "/img/post/0dc8cf3c-d0ae-4a1b-bcf6-86a6a12c7bf0.jpeg"),
-            new PostImage(2L, "/img/post/0e73779c-be7e-4784-ba61-303e9b4d5b78.jpg"),
-            new PostImage(3L, "/img/post/1ca094dd-294d-43e0-8d7f-5ce9dcf92260.jpeg"),
-            new PostImage(4L, "/img/post/9dfc0c12-fabc-46b9-bb89-f48dd740997a.jpg"),
-            new PostImage(5L, "/img/post/474ada2e-e09d-49d1-92c2-542ab2e18cbc.jpeg"),
-            new PostImage(6L, "/img/post/523c90ab-d681-40cf-bfc4-a4df93bc220b.jpg"),
-            new PostImage(7L, "/img/post/4436fdec-039d-4683-b8f3-7ebf677ad190.jpg"),
-            new PostImage(8L, "/img/post/06191e9a-85b8-41d1-ba4c-2444cc1571a6.jpg"),
-            new PostImage(9L, "/img/post/7929c030-978c-4d2d-8862-8c8222180b0c.jpg"),
-            new PostImage(10L, "/img/post/3421441c-4f0f-4fe2-a397-ffb6e2971140.jpg"),
-            new PostImage(11L, "/img/post/147918052537l0.jpg"),
-            new PostImage(12L, "/img/post/1568959908860l0.jpg"),
-            new PostImage(13L, "/img/post/1583220729606l0.jpg"),
-            new PostImage(14L, "/img/post/1653037915850l0.jpeg"),
-            new PostImage(15L, "/img/post/1653038353558l0.jpeg"),
-            new PostImage(16L, "/img/post/1653038616850l0.jpeg"),
-            new PostImage(17L, "/img/post/1656563327799l0.jpg"),
-            new PostImage(18L, "/img/post/a695cf27-81b4-4ac2-8683-da431feedb75.jpeg"),
-            new PostImage(19L, "/img/post/c11e3b6e-5dee-47d0-8a7b-7df11a620867.jpg"),
-            new PostImage(20L, "/img/post/e5e8f113-c75e-4104-b4fb-5206c8b1d9b8.jpg")
+            new PostImage(1L, "/img/post/0dc8cf3c-d0ae-4a1b-bcf6-86a6a12c7bf0.jpeg",null),
+            new PostImage(2L, "/img/post/0e73779c-be7e-4784-ba61-303e9b4d5b78.jpg",null),
+            new PostImage(3L, "/img/post/1ca094dd-294d-43e0-8d7f-5ce9dcf92260.jpeg",null),
+            new PostImage(4L, "/img/post/9dfc0c12-fabc-46b9-bb89-f48dd740997a.jpg",null),
+            new PostImage(5L, "/img/post/474ada2e-e09d-49d1-92c2-542ab2e18cbc.jpeg",null),
+            new PostImage(6L, "/img/post/523c90ab-d681-40cf-bfc4-a4df93bc220b.jpg",null),
+            new PostImage(7L, "/img/post/4436fdec-039d-4683-b8f3-7ebf677ad190.jpg",null),
+            new PostImage(8L, "/img/post/06191e9a-85b8-41d1-ba4c-2444cc1571a6.jpg",null),
+            new PostImage(9L, "/img/post/7929c030-978c-4d2d-8862-8c8222180b0c.jpg",null),
+            new PostImage(10L, "/img/post/3421441c-4f0f-4fe2-a397-ffb6e2971140.jpg",null),
+            new PostImage(11L, "/img/post/147918052537l0.jpg",null),
+            new PostImage(12L, "/img/post/1568959908860l0.jpg",null),
+            new PostImage(13L, "/img/post/1583220729606l0.jpg",null),
+            new PostImage(14L, "/img/post/1653037915850l0.jpeg",null),
+            new PostImage(15L, "/img/post/1653038353558l0.jpeg",null),
+            new PostImage(16L, "/img/post/1653038616850l0.jpeg",null),
+            new PostImage(17L, "/img/post/1656563327799l0.jpg",null),
+            new PostImage(18L, "/img/post/a695cf27-81b4-4ac2-8683-da431feedb75.jpeg",null),
+            new PostImage(19L, "/img/post/c11e3b6e-5dee-47d0-8a7b-7df11a620867.jpg",null),
+            new PostImage(20L, "/img/post/e5e8f113-c75e-4104-b4fb-5206c8b1d9b8.jpg",null)
     );
 
 
@@ -209,29 +211,35 @@ public class RandomPostGenerator {
 
     // 재료 목록 생성
     // type이 0이면 재료 하나 반환, 1이면 여러 개의 재료 반환
-    public static List<PostIngredient> ingredients(int type) {
+    public static List<PostIngredient> ingredients(int type, Post post) {
         if (type == 0) {
-
             int randIndex = random.nextInt(20);
-
-            return List.of(INGREDIENTS.get(randIndex));
-
+            PostIngredient ingredient = INGREDIENTS.get(randIndex);
+            ingredient.setPost(post); // Set the post reference
+            return List.of(ingredient);
         } else {
-
             int randCounter = random.nextInt(5) + 3;
-
             return IntStream.range(0, randCounter)
-                    .mapToObj((index) -> INGREDIENTS.get(random.nextInt(20))).toList();
-
+                    .mapToObj((index) -> {
+                        PostIngredient ingredient = INGREDIENTS.get(random.nextInt(20));
+                        ingredient.setPost(post); // Set the post reference
+                        return ingredient;
+                    })
+                    .toList();
         }
     }
 
 
     // 이미지 목록 생성
-    public static List<PostImage> images() {
+    public static List<PostImage> images(Post post) {
         int randCounter = random.nextInt(4) + 1;
 
         return IntStream.range(0, randCounter)
-                .mapToObj((index) -> IMAGES.get(random.nextInt(20))).toList();
+                .mapToObj((index) -> {
+                    PostImage image = IMAGES.get(random.nextInt(20));
+                    image.setPost(post);
+                    return image;
+                })
+                .toList();
     }
 }
