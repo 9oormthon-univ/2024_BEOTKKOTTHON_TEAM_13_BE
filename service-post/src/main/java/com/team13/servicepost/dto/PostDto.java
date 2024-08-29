@@ -29,4 +29,5 @@ public class PostDto {
     private String contents;
     private List<PostIngredient> ingredients;
     private List<PostImage> images;
+    private Long likesCount;
 }

@@ -24,6 +24,8 @@ public class RandomPostGenerator {
             "동료", "성격", "판단", "반응", "대화", "결정", "연인", "아이", "성격", "관점"
     );
 
+
+
     // 제목 리스트
     private static final List<String> TITLES = List.of(
             "양파 한 묶음 공동구매합니다.",
@@ -120,6 +122,19 @@ public class RandomPostGenerator {
             new PostImage(20L, "/img/post/e5e8f113-c75e-4104-b4fb-5206c8b1d9b8.jpg",null)
     );
 
+    private static final List<String> cities = List.of(
+            "서울특별시", "부산광역시", "인천광역시", "대구광역시", "대전광역시", "광주광역시", "울산광역시", "수원시"
+    );
+
+    private static final List<String> gus = List.of(
+            "강남구", "중구", "서초구", "마포구", "용산구", "동작구", "영등포구"
+    );
+
+    private static final List<String> dongs = List.of(
+            "신사동", "잠실동", "대치동", "압구정동", "삼성동", "청담동"
+    );
+
+
 
     // 게시글 ID 생성
     public static Long id() {
@@ -154,6 +169,21 @@ public class RandomPostGenerator {
     }
 
 
+    //채팅 id 생성
+    public static String chatId() {
+        int length = 5;
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder chatIdBuilder = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            chatIdBuilder.append(characters.charAt(index));
+        }
+
+        return chatIdBuilder.toString();
+    }
+
+
     // 작성일 생성
     public static Date createdAt() {
         Calendar calendar = new GregorianCalendar();
@@ -162,6 +192,28 @@ public class RandomPostGenerator {
         calendar.add(Calendar.DATE, randDay * -1);
 
         return Date.from(calendar.toInstant());
+    }
+
+
+    //종료일 생성 작성일 + 1~7일
+    public static Date closedAt(Date createdAt) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(createdAt);
+
+        int additionalDays = random.nextInt(7) + 1;
+        calendar.add(Calendar.DATE, additionalDays);
+
+        return calendar.getTime();
+    }
+
+
+    //주소 생성
+    public static String locationAddress() {
+
+        String city = cities.get(random.nextInt(cities.size()));
+        String gu = gus.get(random.nextInt(gus.size()));
+        String dong = dongs.get(random.nextInt(dongs.size()));
+        return city + " " + gu + " " + dong  + " " + random.nextInt(45)+ "번길";
     }
 
 
@@ -190,15 +242,15 @@ public class RandomPostGenerator {
 
 
     // 내용 생성
-    public static String contents(int index) {
-        return TITLES.get(index);
+    public static String contents() {
+        int randIndex = random.nextInt(20);
+        return CONTENTS.get(randIndex);
     }
 
 
     // 인당 가격 생성
     public static int pricePerUser() {
         int rand = random.nextInt(200) + 10;
-
         return rand * 100;
     }
 
@@ -206,6 +258,10 @@ public class RandomPostGenerator {
     // 게시물 타입 생성
     public static int type() {
         return random.nextInt(2);
+    }
+
+    public static Long likesCount() {
+        return random.nextLong(50);
     }
 
 
