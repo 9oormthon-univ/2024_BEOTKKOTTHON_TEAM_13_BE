@@ -1,9 +1,6 @@
 package com.team13.servicepost.service;
 
-import com.team13.servicepost.dto.PostImageDto;
-import com.team13.servicepost.dto.PostIngredientDto;
-import com.team13.servicepost.dto.PostResponseDto;
-import com.team13.servicepost.dto.UserDto;
+import com.team13.servicepost.dto.*;
 import com.team13.servicepost.entity.Post;
 import com.team13.servicepost.entity.PostImage;
 import com.team13.servicepost.entity.PostIngredient;
@@ -47,6 +44,42 @@ public class PostService {
     public boolean checkUserExists(Long userId) {
         ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
         return response.getStatusCode() == HttpStatus.OK;
+    }
+
+    public PostResponseDto createPostWithIngredients(PostRequestDto postRequestDto) {
+        // Check if user exists
+        boolean userExists = checkUserExists(postRequestDto.getUserId());
+        if (!userExists) {
+            throw new RuntimeException("User does not exist.");
+        }
+
+        // Convert PostRequestDto to Post entity
+        Post post = convertDtoToEntity(postRequestDto);
+
+        // Save the post entity and its ingredients
+        PostResponseDto savedPostResponse = savePostWithIngredients(post, postRequestDto.getIngredients());
+
+        return savedPostResponse;
+    }
+
+    private Post convertDtoToEntity(PostRequestDto postRequestDto) {
+        Post post = new Post();
+        post.setUserId(postRequestDto.getUserId());
+        post.setStatus(postRequestDto.getStatus());
+        post.setGroupSize(postRequestDto.getGroupSize());
+        post.setCurGroupSize(postRequestDto.getCurGroupSize());
+        post.setChatId(postRequestDto.getChatId());
+        post.setCreatedAt(postRequestDto.getCreatedAt());
+        post.setClosedAt(postRequestDto.getClosedAt());
+        post.setLocationBcode(postRequestDto.getLocationBcode());
+        post.setLocationAddress(postRequestDto.getLocationAddress());
+        post.setLocationLongitude(postRequestDto.getLocationLongitude());
+        post.setLocationLatitude(postRequestDto.getLocationLatitude());
+        post.setTitle(postRequestDto.getTitle());
+        post.setPricePerUser(postRequestDto.getPricePerUser());
+        post.setType(postRequestDto.getType());
+        post.setContents(postRequestDto.getContents());
+        return post;
     }
 
     public PostResponseDto savePostWithIngredients(Post post, List<PostIngredientDto> ingredientsDto) {

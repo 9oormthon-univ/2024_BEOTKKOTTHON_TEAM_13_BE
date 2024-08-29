@@ -26,50 +26,16 @@ public class PostController {
 
     @Autowired
     private LikePostService likePostService;
-
-//    @PostMapping
-//    public ResponseEntity<Post> createPost(@RequestBody Post post) {
-//        boolean userExists = postService.checkUserExists(post.getUserId());
-//        if (userExists) {
-//            return new ResponseEntity<>(postService.savePost(post), HttpStatus.CREATED);
-//        } else {
-//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-//        }
-//    }
-
+    
     @PostMapping
     public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto) {
-        // Check if user exists
-        boolean userExists = postService.checkUserExists(postRequestDto.getUserId());
-        if (!userExists) {
+        try {
+            PostResponseDto savedPostResponse = postService.createPostWithIngredients(postRequestDto);
+            return new ResponseEntity<>(savedPostResponse, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-
-        // Convert PostRequestDto to Post entity
-        Post post = new Post();
-        post.setUserId(postRequestDto.getUserId());
-        post.setStatus(postRequestDto.getStatus());
-        post.setGroupSize(postRequestDto.getGroupSize());
-        post.setCurGroupSize(postRequestDto.getCurGroupSize());
-        post.setChatId(postRequestDto.getChatId());
-        post.setCreatedAt(postRequestDto.getCreatedAt());
-        post.setClosedAt(postRequestDto.getClosedAt());
-        post.setLocationBcode(postRequestDto.getLocationBcode());
-        post.setLocationAddress(postRequestDto.getLocationAddress());
-        post.setLocationLongitude(postRequestDto.getLocationLongitude());
-        post.setLocationLatitude(postRequestDto.getLocationLatitude());
-        post.setTitle(postRequestDto.getTitle());
-        post.setPricePerUser(postRequestDto.getPricePerUser());
-        post.setType(postRequestDto.getType());
-        post.setContents(postRequestDto.getContents());
-
-        // Use the new service method to save post and ingredients together
-        PostResponseDto savedPostResponse = postService.savePostWithIngredients(post, postRequestDto.getIngredients());
-
-        return new ResponseEntity<>(savedPostResponse, HttpStatus.CREATED);
     }
-
-
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponseDto> getPostById(@PathVariable Long id) {
