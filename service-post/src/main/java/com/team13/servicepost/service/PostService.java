@@ -49,6 +49,28 @@ public class PostService {
         return response.getStatusCode() == HttpStatus.OK;
     }
 
+    public PostResponseDto savePostWithIngredients(Post post, List<PostIngredientDto> ingredientsDto) {
+        // Save the post entity
+        Post savedPost = savePost(post);
+
+        // Convert and save each ingredient
+        if (ingredientsDto != null && !ingredientsDto.isEmpty()) {
+            List<PostIngredient> ingredients = ingredientsDto.stream().map(dto -> {
+                PostIngredient ingredient = new PostIngredient();
+                ingredient.setPost(savedPost); // set the post to the savedPost
+                ingredient.setName(dto.getName());
+                ingredient.setUrl(dto.getUrl());
+                return ingredient;
+            }).collect(Collectors.toList());
+
+            ingredients.forEach(postIngredientService::saveIngredient);
+        }
+
+        // Return the response DTO with the user details and saved data
+        return getPostWithUserDetails(savedPost.getId()).orElseThrow(
+                () -> new RuntimeException("Failed to retrieve post details after saving"));
+    }
+
     public Optional<PostResponseDto> getPostWithUserDetails(Long postId) {
         Optional<Post> postOptional = postRepository.findById(postId);
         if (!postOptional.isPresent()) {
