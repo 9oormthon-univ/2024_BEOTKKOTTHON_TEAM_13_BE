@@ -46,18 +46,18 @@ public class PostService {
         return response.getStatusCode() == HttpStatus.OK;
     }
 
-    public PostResponseDto createPostWithIngredients(PostRequestDto postRequestDto) {
-        // Check if user exists
+    public PostResponseDto createPostWithDetails(PostRequestDto postRequestDto) {
+        // userId확인
         boolean userExists = checkUserExists(postRequestDto.getUserId());
         if (!userExists) {
             throw new RuntimeException("User does not exist.");
         }
 
-        // Convert PostRequestDto to Post entity
+        // dto를 entity로 변화
         Post post = convertDtoToEntity(postRequestDto);
 
-        // Save the post entity and its ingredients
-        PostResponseDto savedPostResponse = savePostWithIngredients(post, postRequestDto.getIngredients());
+        // post entity, ingredients,images 저장
+        PostResponseDto savedPostResponse = savePostWithDetails(post, postRequestDto.getIngredients(), postRequestDto.getImages());
 
         return savedPostResponse;
     }
@@ -82,15 +82,15 @@ public class PostService {
         return post;
     }
 
-    public PostResponseDto savePostWithIngredients(Post post, List<PostIngredientDto> ingredientsDto) {
-        // Save the post entity
+    public PostResponseDto savePostWithDetails(Post post, List<PostIngredientDto> ingredientsDto, List<PostImageDto> imagesDto) {
+        // post 엔티티 저장
         Post savedPost = savePost(post);
 
-        // Convert and save each ingredient
+        //ingredients
         if (ingredientsDto != null && !ingredientsDto.isEmpty()) {
             List<PostIngredient> ingredients = ingredientsDto.stream().map(dto -> {
                 PostIngredient ingredient = new PostIngredient();
-                ingredient.setPost(savedPost); // set the post to the savedPost
+                ingredient.setPost(savedPost);
                 ingredient.setName(dto.getName());
                 ingredient.setUrl(dto.getUrl());
                 return ingredient;
@@ -99,9 +99,20 @@ public class PostService {
             ingredients.forEach(postIngredientService::saveIngredient);
         }
 
-        // Return the response DTO with the user details and saved data
+        // images
+        if (imagesDto != null && !imagesDto.isEmpty()) {
+            List<PostImage> images = imagesDto.stream().map(dto -> {
+                PostImage image = new PostImage();
+                image.setPost(savedPost);
+                image.setImagePath(dto.getImagePath());
+                return image;
+            }).collect(Collectors.toList());
+
+            images.forEach(postImageService::saveImage);
+        }
+
         return getPostWithUserDetails(savedPost.getId()).orElseThrow(
-                () -> new RuntimeException("Failed to retrieve post details after saving"));
+                () -> new RuntimeException("게시글 작성에 실패했습니다."));
     }
 
     public Optional<PostResponseDto> getPostWithUserDetails(Long postId) {

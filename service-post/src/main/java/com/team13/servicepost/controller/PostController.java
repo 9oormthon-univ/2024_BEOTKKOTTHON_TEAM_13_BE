@@ -23,14 +23,12 @@ public class PostController {
 
     @Autowired
     private PostService postService;
-
     @Autowired
     private LikePostService likePostService;
-    
     @PostMapping
     public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto) {
         try {
-            PostResponseDto savedPostResponse = postService.createPostWithIngredients(postRequestDto);
+            PostResponseDto savedPostResponse = postService.createPostWithDetails(postRequestDto);
             return new ResponseEntity<>(savedPostResponse, HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
