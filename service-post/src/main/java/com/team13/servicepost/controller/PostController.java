@@ -26,11 +26,16 @@ public class PostController {
     @Autowired
     private LikePostService likePostService;
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto) {
+    public ResponseEntity<PostResponseDto> createPost(
+            @RequestBody PostRequestDto postRequestDto,
+            @RequestParam Long userId // userId를 쿼리 파라미터로 받음
+    ) {
         try {
-            PostResponseDto savedPostResponse = postService.createPostWithDetails(postRequestDto);
+            // 게시글과 관련된 세부 정보 저장
+            PostResponseDto savedPostResponse = postService.createPostWithDetails(postRequestDto, userId);
             return new ResponseEntity<>(savedPostResponse, HttpStatus.CREATED);
         } catch (RuntimeException e) {
+            // 오류 발생 시 400 BAD REQUEST 반환
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }

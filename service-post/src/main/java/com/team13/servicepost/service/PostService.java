@@ -25,7 +25,7 @@ public class PostService {
     private PostImageService postImageService;
 
     @Autowired
-    private  PostIngredientService postIngredientService;
+    private PostIngredientService postIngredientService;
 
     @Autowired
     private UserServiceClient userServiceClient;
@@ -46,17 +46,19 @@ public class PostService {
         return response.getStatusCode() == HttpStatus.OK;
     }
 
-    public PostResponseDto createPostWithDetails(PostRequestDto postRequestDto) {
-        // userId확인
-        boolean userExists = checkUserExists(postRequestDto.getUserId());
+    // 새 게시물, 재료, 이미지 저장을 처리하는 메서드
+    public PostResponseDto createPostWithDetails(PostRequestDto postRequestDto, Long userId) {
+        // 사용자가 존재하는지 확인
+        boolean userExists = checkUserExists(userId);
         if (!userExists) {
-            throw new RuntimeException("User does not exist.");
+            throw new RuntimeException("회원이 존재하지 않습니다.");
         }
 
-        // dto를 entity로 변화
+        // PostRequestDto를 Post 엔티티로 변환
         Post post = convertDtoToEntity(postRequestDto);
+        post.setUserId(userId); // userId 설정
 
-        // post entity, ingredients,images 저장
+        // 게시물 엔티티, 재료, 이미지 저장
         PostResponseDto savedPostResponse = savePostWithDetails(post, postRequestDto.getIngredients(), postRequestDto.getImages());
 
         return savedPostResponse;
@@ -64,7 +66,6 @@ public class PostService {
 
     private Post convertDtoToEntity(PostRequestDto postRequestDto) {
         Post post = new Post();
-        post.setUserId(postRequestDto.getUserId());
         post.setStatus(postRequestDto.getStatus());
         post.setGroupSize(postRequestDto.getGroupSize());
         post.setCurGroupSize(postRequestDto.getCurGroupSize());
@@ -83,10 +84,10 @@ public class PostService {
     }
 
     public PostResponseDto savePostWithDetails(Post post, List<PostIngredientDto> ingredientsDto, List<PostImageDto> imagesDto) {
-        // post 엔티티 저장
+        // 게시물 엔티티 저장
         Post savedPost = savePost(post);
 
-        //ingredients
+        // 각 재료를 변환하고 저장
         if (ingredientsDto != null && !ingredientsDto.isEmpty()) {
             List<PostIngredient> ingredients = ingredientsDto.stream().map(dto -> {
                 PostIngredient ingredient = new PostIngredient();
@@ -99,7 +100,7 @@ public class PostService {
             ingredients.forEach(postIngredientService::saveIngredient);
         }
 
-        // images
+        // 각 이미지를 변환하고 저장
         if (imagesDto != null && !imagesDto.isEmpty()) {
             List<PostImage> images = imagesDto.stream().map(dto -> {
                 PostImage image = new PostImage();
@@ -111,8 +112,12 @@ public class PostService {
             images.forEach(postImageService::saveImage);
         }
 
-        return getPostWithUserDetails(savedPost.getId()).orElseThrow(
-                () -> new RuntimeException("게시글 작성에 실패했습니다."));
+        // 응답을 위한 사용자 닉네임 가져오기 및 좋아요 수 초기화
+        String userNickname = fetchUserNickname(post.getUserId());
+        Long likesCount = 0L;  // 새 게시물은 0개의 좋아요로 시작
+
+        // 사용자 세부 정보 및 저장된 데이터를 포함한 응답 DTO 반환
+        return buildPostResponseDto(savedPost, userNickname, likesCount);
     }
 
     public Optional<PostResponseDto> getPostWithUserDetails(Long postId) {
@@ -122,29 +127,32 @@ public class PostService {
         }
 
         Post post = postOptional.get();
-        ResponseEntity<UserDto> response = userServiceClient.getUserById(post.getUserId());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return Optional.empty();
-        }
+        String userNickname = fetchUserNickname(post.getUserId());
+        Long likesCount = likePostService.getLikesCount(postId);
 
-        UserDto user = response.getBody();
-        if (user == null) {
-            return Optional.empty();
-        }
+        // 사용자 세부 정보 및 저장된 데이터를 포함한 응답 DTO 반환
+        return Optional.of(buildPostResponseDto(post, userNickname, likesCount));
+    }
 
-        //list 형식으로 같은 postId가진 이미지 불러오기
-        List<PostImage> images = postImageService.getImagesByPostId(postId);
+    private String fetchUserNickname(Long userId) {
+        ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
+        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
+            throw new RuntimeException("Failed to fetch user nickname.");
+        }
+        return response.getBody().getNickname();
+    }
+
+    private PostResponseDto buildPostResponseDto(Post post, String userNickname, Long likesCount) {
+        // 같은 postId를 가진 이미지를 리스트 형식으로 불러오기
+        List<PostImage> images = postImageService.getImagesByPostId(post.getId());
         List<PostImageDto> imageDto = images.stream()
                 .map(postImageService::convertToDto)
                 .collect(Collectors.toList());
 
-        List<PostIngredient> ingredients = postIngredientService.getIngredientsByPostId(postId);
+        List<PostIngredient> ingredients = postIngredientService.getIngredientsByPostId(post.getId());
         List<PostIngredientDto> ingredientDto = ingredients.stream()
                 .map(postIngredientService::convertToDto)
                 .collect(Collectors.toList());
-
-        //좋아요 수 가져오기
-        Long likesCount = likePostService.getLikesCount(postId);
 
         PostResponseDto postResponseDto = new PostResponseDto();
         postResponseDto.setId(post.getId());
@@ -163,12 +171,11 @@ public class PostService {
         postResponseDto.setPricePerUser(post.getPricePerUser());
         postResponseDto.setType(post.getType());
         postResponseDto.setContents(post.getContents());
-        postResponseDto.setUserNickname(user.getNickname());  //feign을 이용한 같은 userId에 대한 nickname불러오기
-        postResponseDto.setImages(imageDto); //list형식으로 불러오기
+        postResponseDto.setUserNickname(userNickname);
+        postResponseDto.setImages(imageDto);
         postResponseDto.setIngredients(ingredientDto);
         postResponseDto.setLikesCount(likesCount);
 
-        return Optional.of(postResponseDto);
+        return postResponseDto;
     }
 }
-
