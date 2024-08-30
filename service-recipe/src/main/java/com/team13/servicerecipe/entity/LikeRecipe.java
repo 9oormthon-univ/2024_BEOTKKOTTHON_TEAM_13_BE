@@ -8,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "likes_recipes")
+@Table(name = "likes_recipes", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"recipes_id", "users_id"})
+})
 @Data
 @Builder
 @AllArgsConstructor
