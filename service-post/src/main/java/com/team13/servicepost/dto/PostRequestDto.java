@@ -29,5 +29,5 @@ public class PostRequestDto {
     private List<PostIngredientDto> ingredients;
 
     //nickname이랑 좋아요수는 입력 x
-
 }
+
