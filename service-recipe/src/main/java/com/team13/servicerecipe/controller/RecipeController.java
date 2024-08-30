@@ -1,6 +1,7 @@
 package com.team13.servicerecipe.controller;
 
 
+import com.team13.servicerecipe.dto.RecipeRequestDto;
 import com.team13.servicerecipe.dto.RecipeResponseDto;
 import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.service.LikeRecipeService;
@@ -21,11 +22,14 @@ public class RecipeController {
     private LikeRecipeService likeRecipeService;
 
     @PostMapping
-    public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) {
-        boolean userExists = recipeService.checkUserExists(recipe.getUserId());
-        if (userExists) {
-            return new ResponseEntity<>(recipeService.saveRecipe(recipe), HttpStatus.CREATED);
-        } else {
+    public ResponseEntity<RecipeResponseDto> createRecipe(
+            @RequestBody RecipeRequestDto recipeRequestDto,
+            @RequestParam Long userId
+    ) {
+        try {
+            RecipeResponseDto savedRecipeResponse = recipeService.createRecipeWithDetails(recipeRequestDto, userId);
+            return new ResponseEntity<>(savedRecipeResponse, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
@@ -59,5 +63,6 @@ public class RecipeController {
         Long likesCount = likeRecipeService.getLikesCount(recipeId);
         return ResponseEntity.ok(likesCount);
     }
+
 
 }

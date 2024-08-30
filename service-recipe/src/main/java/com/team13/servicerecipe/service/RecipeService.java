@@ -1,9 +1,6 @@
 package com.team13.servicerecipe.service;
 
-import com.team13.servicerecipe.dto.RecipeIngredientDto;
-import com.team13.servicerecipe.dto.RecipeProcessDto;
-import com.team13.servicerecipe.dto.RecipeResponseDto;
-import com.team13.servicerecipe.dto.UserDto;
+import com.team13.servicerecipe.dto.*;
 import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.entity.RecipeIngredient;
 import com.team13.servicerecipe.entity.RecipeProcess;
@@ -52,6 +49,62 @@ public class RecipeService {
         return response.getStatusCode() ==  HttpStatus.OK;
     }
 
+    public RecipeResponseDto createRecipeWithDetails(RecipeRequestDto recipeRequestDto, Long userId) {
+        boolean userExists = checkUserExists(userId);
+        if (!userExists) {
+            throw new RuntimeException("회원이 존재하지 않습니다.");
+        }
+        Recipe recipe = convertDtoToEntity(recipeRequestDto);
+        recipe.setUserId(userId);
+
+        RecipeResponseDto savedRecipeResponse = saveRecipeWithDetails(recipe, recipeRequestDto.getIngredients(), recipeRequestDto.getProcesses());
+          return savedRecipeResponse;
+    }
+
+    private Recipe convertDtoToEntity (RecipeRequestDto recipeRequestDto) {
+        Recipe recipe = new Recipe();
+        recipe.setTitle(recipeRequestDto.getTitle());
+        recipe.setContents(recipeRequestDto.getContents());
+        recipe.setThumbnailImagePath(recipeRequestDto.getThumbnailImagePath());
+        recipe.setCreatedAt(recipeRequestDto.getCreatedAt());
+        recipe.setType(recipeRequestDto.getType());
+        return recipe;
+    }
+
+    public RecipeResponseDto saveRecipeWithDetails(Recipe recipe, List<RecipeIngredientDto> ingredientsDto, List<RecipeProcessDto> processesDto ) {
+        Recipe savedRecipe = saveRecipe(recipe);
+
+        if (ingredientsDto != null & !ingredientsDto.isEmpty()) {
+            List<RecipeIngredient> ingredients = ingredientsDto.stream().map(dto -> {
+                RecipeIngredient ingredient = new RecipeIngredient();
+                ingredient.setRecipe(savedRecipe);
+                ingredient.setName(dto.getName());
+                ingredient.setAmount(dto.getAmount());
+                return ingredient;
+            }).collect(Collectors.toList());
+
+            ingredients.forEach(recipeIngredientService::saveIngredient);
+        }
+
+        if (processesDto !=null & !processesDto.isEmpty()) {
+            List<RecipeProcess> processes = processesDto.stream().map(dto -> {
+                RecipeProcess process = new RecipeProcess();
+                process.setRecipe(savedRecipe);
+                process.setContents(dto.getContents());
+                process.setImagePath(dto.getImagePath());
+                return process;
+            }).collect(Collectors.toList());
+
+            processes.forEach(recipeProcessService::saveProcess);
+        }
+
+        String userNickname = fetchUserNickname(recipe.getUserId());
+        Long likesCount = 0L;
+        Long commentCount =0L;
+
+        return buildRecipeResponseDto(savedRecipe, userNickname, likesCount, commentCount);
+    }
+
     public Optional<RecipeResponseDto> getRecipeWithUserDetails(Long recipeId) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
         if (!recipeOptional.isPresent()) {
@@ -61,9 +114,10 @@ public class RecipeService {
         Recipe recipe = recipeOptional.get();
         String userNickname = fetchUserNickname(recipe.getUserId());
         Long likesCount = likeRecipeService.getLikesCount(recipeId);
+        Long commentCount= likeRecipeService.getLikesCount(recipeId);
 
 
-        return Optional.of(buildRecipeResponseDto(recipe, userNickname, likesCount));
+        return Optional.of(buildRecipeResponseDto(recipe, userNickname, likesCount, commentCount));
     }
 
     private String fetchUserNickname(Long userId) {
@@ -75,9 +129,7 @@ public class RecipeService {
     }
 
 
-
-
-    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe, String userNickname ,Long likesCount) {
+    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe, String userNickname ,Long likesCount ,Long commentCount) {
         List<RecipeIngredient> ingredients = recipeIngredientService.getIngredientsByRecipeId(recipe.getId());
         List<RecipeIngredientDto> ingredientDto = ingredients.stream()
                 .map(recipeIngredientService::convertToDto)
