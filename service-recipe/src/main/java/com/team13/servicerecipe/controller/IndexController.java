@@ -1,16 +1,15 @@
 package com.team13.servicerecipe.controller;
 
+import com.mysql.cj.log.Log;
 import com.team13.servicerecipe.dto.RecipeDto;
+import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.feign.UserFeignClient;
 import com.team13.servicerecipe.util.RandomRecipeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +70,28 @@ public class IndexController {
         }
 
         return new ResponseEntity<>(recipes, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RecipeDto> getRecipeById(@PathVariable("id") Long id) {
+
+        Recipe recipe = new Recipe();
+        recipe.setId(id);
+
+        RecipeDto recipeDto = RecipeDto.builder()
+                .id(id)
+                .userProfileUrl(RandomRecipeGenerator.userProfileUrl())
+                .userNickname(RandomRecipeGenerator.userNickname())
+                .title(RandomRecipeGenerator.title())
+                .contents(RandomRecipeGenerator.contents())
+                .commentCount(RandomRecipeGenerator.commentCount())
+                .likesCount(RandomRecipeGenerator.likesCount())
+                .thumbnailImagePath(RandomRecipeGenerator.thumbnailImagePath())
+                .ingredients(RandomRecipeGenerator.ingredients())
+                .processes(RandomRecipeGenerator.processes(recipe))
+                .build();
+        return new ResponseEntity<>(recipeDto, HttpStatus.OK);
+
     }
 
 }

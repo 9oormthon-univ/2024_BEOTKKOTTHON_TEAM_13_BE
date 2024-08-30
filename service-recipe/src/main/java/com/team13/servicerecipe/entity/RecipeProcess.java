@@ -1,5 +1,6 @@
 package com.team13.servicerecipe.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@Table(name="recipes_processes")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,5 +24,10 @@ public class RecipeProcess {
 
     @Column(name = "contents", nullable = false)
     private String contents;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="recipes_id", nullable = false)
+    @JsonIgnore
+    private Recipe recipe;
 
 }

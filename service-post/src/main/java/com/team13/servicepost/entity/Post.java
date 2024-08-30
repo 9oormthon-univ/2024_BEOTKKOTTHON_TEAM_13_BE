@@ -73,7 +73,4 @@ public class Post {
     List<PostImage> images;
 
 
-    public Post(Long id) {
-        this.id = id;
-    }
 }

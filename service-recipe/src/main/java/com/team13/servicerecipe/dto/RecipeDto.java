@@ -21,3 +21,4 @@ public class RecipeDto {
     private List<RecipeIngredient> ingredients;
     private List<RecipeProcess> processes;
 }
+//indexController에서만 사용용도
