@@ -23,4 +23,5 @@ public class RecipeResponseDto {
     private int type;
     private String userNickname;
     private List<RecipeIngredientDto> ingredients;
+    private List<RecipeProcessDto> processes;
 }

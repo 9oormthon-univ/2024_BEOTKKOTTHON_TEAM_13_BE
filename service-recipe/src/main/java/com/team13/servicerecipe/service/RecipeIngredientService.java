@@ -15,11 +15,11 @@ public class RecipeIngredientService {
     private RecipeIngredientRepository recipeIngredientRepository ;
 
     public RecipeIngredient saveIngredients(RecipeIngredient ingredient) {
-        return recipeIngredientRepository .save(ingredient);
+        return recipeIngredientRepository.save(ingredient);
     }
 
     public List< RecipeIngredient> getIngredientsByRecipeId(Long recipeId) {
-        return recipeIngredientRepository .findByRecipeId(recipeId);
+        return recipeIngredientRepository.findByRecipeId(recipeId);
     }
     public RecipeIngredientDto convertToDto(RecipeIngredient ingredient) {
          RecipeIngredientDto dto = new RecipeIngredientDto();

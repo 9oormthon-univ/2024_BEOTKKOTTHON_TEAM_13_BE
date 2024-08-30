@@ -1,10 +1,12 @@
 package com.team13.servicerecipe.service;
 
 import com.team13.servicerecipe.dto.RecipeIngredientDto;
+import com.team13.servicerecipe.dto.RecipeProcessDto;
 import com.team13.servicerecipe.dto.RecipeResponseDto;
 import com.team13.servicerecipe.dto.UserDto;
 import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.entity.RecipeIngredient;
+import com.team13.servicerecipe.entity.RecipeProcess;
 import com.team13.servicerecipe.feign.UserServiceClient;
 import com.team13.servicerecipe.repository.RecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class RecipeService {
 
     @Autowired
     private RecipeIngredientService recipeIngredientService;
+
+    @Autowired
+    private RecipeProcessService recipeProcessService;
 
     public Recipe saveRecipe(Recipe recipe) {
         return recipeRepository.save(recipe);
@@ -74,6 +79,11 @@ public class RecipeService {
                 .map(recipeIngredientService::convertToDto)
                 .collect(Collectors.toList());
 
+        List<RecipeProcess> processes = recipeProcessService.getProcessByRecipeId(recipe.getId());
+        List<RecipeProcessDto> processDto = processes.stream()
+                .map(recipeProcessService::convertToDto)
+                .collect(Collectors.toList());
+
         RecipeResponseDto recipeResponseDto = new RecipeResponseDto();
         recipeResponseDto.setId(recipe.getId());
         recipeResponseDto.setUserId(recipe.getUserId());
@@ -86,6 +96,7 @@ public class RecipeService {
         recipeResponseDto.setType(recipe.getType());
         recipeResponseDto.setUserNickname(userNickname);
         recipeResponseDto.setIngredients(ingredientDto);
+        recipeResponseDto.setProcesses(processDto);
 
         return recipeResponseDto;
     }
