@@ -1,8 +1,10 @@
 package com.team13.servicerecipe.service;
 
-import com.team13.servicerecipe.dto.RecipeWithUserDetails;
-import com.team13.servicerecipe.dto.User;
+import com.team13.servicerecipe.dto.RecipeIngredientDto;
+import com.team13.servicerecipe.dto.RecipeResponseDto;
+import com.team13.servicerecipe.dto.UserDto;
 import com.team13.servicerecipe.entity.Recipe;
+import com.team13.servicerecipe.entity.RecipeIngredient;
 import com.team13.servicerecipe.feign.UserServiceClient;
 import com.team13.servicerecipe.repository.RecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RecipeService {
@@ -21,6 +25,9 @@ public class RecipeService {
 
     @Autowired
     private UserServiceClient userServiceClient;
+
+    @Autowired
+    private RecipeIngredientService recipeIngredientService;
 
     public Recipe saveRecipe(Recipe recipe) {
         return recipeRepository.save(recipe);
@@ -33,39 +40,54 @@ public class RecipeService {
 
 
     public  boolean checkUserExists(Long userId) {
-        ResponseEntity<User> response = userServiceClient.getUserById(userId);
+        ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
         return response.getStatusCode() ==  HttpStatus.OK;
     }
 
-    public Optional<RecipeWithUserDetails> getRecipeWithUserDetails(Long recipeId) {
+    public Optional<RecipeResponseDto> getRecipeWithUserDetails(Long recipeId) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
         if (!recipeOptional.isPresent()) {
             return Optional.empty();
         }
 
         Recipe recipe = recipeOptional.get();
-        ResponseEntity<User> response = userServiceClient.getUserById(recipe.getUserId());
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return Optional.empty();
-        }
+        String userNickname = fetchUserNickname(recipe.getUserId());
 
-        User user = response.getBody();
-        if (user == null) {
-            return Optional.empty();
-        }
 
-        RecipeWithUserDetails recipeWithUserDetails = new RecipeWithUserDetails();
-        recipeWithUserDetails.setId(recipe.getId());
-        recipeWithUserDetails.setUserId(recipe.getUserId());
-        recipeWithUserDetails.setTitle(recipe.getTitle());
-        recipeWithUserDetails.setContents(recipe.getContents());
-        recipeWithUserDetails.setCommentCount(recipe.getCommentCount());
-        recipeWithUserDetails.setLikesCount(recipe.getLikesCount());
-        recipeWithUserDetails.setThumbnailImagePath(recipe.getThumbnailImagePath());
-        recipeWithUserDetails.setCreatedAt(recipe.getCreatedAt());
-        recipeWithUserDetails.setType(recipe.getType());
-        recipeWithUserDetails.setUserNickname(user.getNickname());
-
-        return Optional.of(recipeWithUserDetails);
+        return Optional.of(buildRecipeResponseDto(recipe, userNickname));
     }
+
+    private String fetchUserNickname(Long userId) {
+        ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
+        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
+            throw new RuntimeException("Failed to fetch user nickname.");
+        }
+        return response.getBody().getNickname();
+    }
+
+
+
+
+    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe, String userNickname) {
+        List<RecipeIngredient> ingredients = recipeIngredientService.getIngredientsByRecipeId(recipe.getId());
+        List<RecipeIngredientDto> ingredientDto = ingredients.stream()
+                .map(recipeIngredientService::convertToDto)
+                .collect(Collectors.toList());
+
+        RecipeResponseDto recipeResponseDto = new RecipeResponseDto();
+        recipeResponseDto.setId(recipe.getId());
+        recipeResponseDto.setUserId(recipe.getUserId());
+        recipeResponseDto.setTitle(recipe.getTitle());
+        recipeResponseDto.setContents(recipe.getContents());
+        recipeResponseDto.setCommentCount(recipe.getCommentCount());
+        recipeResponseDto.setLikesCount(recipe.getLikesCount());
+        recipeResponseDto.setThumbnailImagePath(recipe.getThumbnailImagePath());
+        recipeResponseDto.setCreatedAt(recipe.getCreatedAt());
+        recipeResponseDto.setType(recipe.getType());
+        recipeResponseDto.setUserNickname(userNickname);
+        recipeResponseDto.setIngredients(ingredientDto);
+
+        return recipeResponseDto;
+    }
+
 }

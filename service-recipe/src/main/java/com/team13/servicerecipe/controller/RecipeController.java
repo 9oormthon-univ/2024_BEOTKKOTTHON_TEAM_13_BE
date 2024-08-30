@@ -1,7 +1,8 @@
 package com.team13.servicerecipe.controller;
 
-import com.team13.servicerecipe.dto.RecipeIngredientDTO;
-import com.team13.servicerecipe.dto.RecipeProcessDTO;
+import com.team13.servicerecipe.dto.RecipeIngredientDto;
+import com.team13.servicerecipe.dto.RecipeProcessDto;
+import com.team13.servicerecipe.dto.RecipeResponseDto;
 import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.entity.RecipeIngredient;
 import com.team13.servicerecipe.entity.RecipeProcess;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,32 +41,28 @@ public class RecipeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Recipe> getRecipeById(@PathVariable Long id) {
-        return recipeService.getRecipeById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    public ResponseEntity<RecipeResponseDto> getRecipeById(@PathVariable Long id) {
+        Optional<RecipeResponseDto> recipeWithDetails = recipeService.getRecipeWithUserDetails(id);
+        if (recipeWithDetails.isPresent()) {
+            return ResponseEntity.ok(recipeWithDetails.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<RecipeWithUserDetails> getRecipeById(@PathVariable Long id) {
-//        return recipeService.getRecipeWithUserDetails(id)
-//                .map(ResponseEntity::ok)
-//                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
-//    }
-
     @GetMapping("/{recipeId}/ingredients")
-    public ResponseEntity<List<RecipeIngredientDTO>> getIngredientByRecipeId(@PathVariable Long recipeId) {
+    public ResponseEntity<List<RecipeIngredientDto>> getIngredientByRecipeId(@PathVariable Long recipeId) {
         List<RecipeIngredient> ingredient = recipeIngredientService.getIngredientsByRecipeId(recipeId);
-        List<RecipeIngredientDTO> ingredientDTO = ingredient.stream()
+        List<RecipeIngredientDto> ingredientDTO = ingredient.stream()
                 .map(recipeIngredientService::convertToDto)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(ingredientDTO, HttpStatus.OK);
     }
 
     @GetMapping("/{recipeId}/processes")
-    public ResponseEntity<List<RecipeProcessDTO>> getProcessByRecipeId(@PathVariable Long recipeId) {
+    public ResponseEntity<List<RecipeProcessDto>> getProcessByRecipeId(@PathVariable Long recipeId) {
         List<RecipeProcess> processs = recipeProcessService.getProcessByRecipeId(recipeId);
-        List<RecipeProcessDTO> processsDTO = processs.stream()
+        List<RecipeProcessDto> processsDTO = processs.stream()
                 .map(recipeProcessService::convertToDto)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(processsDTO, HttpStatus.OK);

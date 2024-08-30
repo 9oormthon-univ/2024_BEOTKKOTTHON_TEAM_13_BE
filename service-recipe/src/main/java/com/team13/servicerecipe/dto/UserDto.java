@@ -8,13 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class User {
+public class UserDto {
     private Long id;
-    private String loginId;
-    private String password;
     private String nickname;
     private float userRating;
-    private int locationBcode;
-    private String locationAddress;
     private String profileImageUrl;
 }

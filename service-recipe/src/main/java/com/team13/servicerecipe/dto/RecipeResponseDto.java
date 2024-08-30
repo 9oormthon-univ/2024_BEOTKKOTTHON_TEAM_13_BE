@@ -5,12 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class RecipeWithUserDetails {
+public class RecipeResponseDto {
     private Long id;
     private Long userId;
     private String title;
@@ -21,4 +22,5 @@ public class RecipeWithUserDetails {
     private Date createdAt;
     private int type;
     private String userNickname;
+    private List<RecipeIngredientDto> ingredients;
 }

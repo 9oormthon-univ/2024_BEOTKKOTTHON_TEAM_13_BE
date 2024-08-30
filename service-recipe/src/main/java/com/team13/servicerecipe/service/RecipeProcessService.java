@@ -1,6 +1,6 @@
 package com.team13.servicerecipe.service;
 
-import com.team13.servicerecipe.dto.RecipeProcessDTO;
+import com.team13.servicerecipe.dto.RecipeProcessDto;
 import com.team13.servicerecipe.entity.RecipeProcess;
 import com.team13.servicerecipe.repository.RecipeProcessRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,8 @@ public class RecipeProcessService {
         return recipeProcessRepository.findByRecipeId(recipeId);
     }
 
-    public RecipeProcessDTO convertToDto(RecipeProcess process) {
-        RecipeProcessDTO dto = new RecipeProcessDTO();
+    public RecipeProcessDto convertToDto(RecipeProcess process) {
+        RecipeProcessDto dto = new RecipeProcessDto();
         dto.setId(process.getId());
         dto.setRecipeId(process.getRecipe().getId());
         dto.setImagePath(process.getImagePath());
@@ -30,7 +30,7 @@ public class RecipeProcessService {
         return dto;
     }
 
-    public RecipeProcess convertToEntity(RecipeProcessDTO dto) {
+    public RecipeProcess convertToEntity(RecipeProcessDto dto) {
         RecipeProcess process = new RecipeProcess();
         process.setId(dto.getId());
         process.setImagePath(dto.getImagePath());

@@ -4,7 +4,7 @@ package com.team13.servicerecipe.dto;
 import lombok.Data;
 
 @Data
-public class RecipeProcessDTO {
+public class RecipeProcessDto {
     private Long id;
     private Long recipeId;
     private String imagePath;

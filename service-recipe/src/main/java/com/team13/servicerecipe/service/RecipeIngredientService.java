@@ -1,6 +1,6 @@
 package com.team13.servicerecipe.service;
 
-import com.team13.servicerecipe.dto.RecipeIngredientDTO;
+import com.team13.servicerecipe.dto.RecipeIngredientDto;
 import com.team13.servicerecipe.entity.RecipeIngredient;
 import com.team13.servicerecipe.repository.RecipeIngredientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,8 @@ public class RecipeIngredientService {
     public List< RecipeIngredient> getIngredientsByRecipeId(Long recipeId) {
         return recipeIngredientRepository .findByRecipeId(recipeId);
     }
-    public  RecipeIngredientDTO convertToDto( RecipeIngredient ingredient) {
-         RecipeIngredientDTO dto = new  RecipeIngredientDTO();
+    public RecipeIngredientDto convertToDto(RecipeIngredient ingredient) {
+         RecipeIngredientDto dto = new RecipeIngredientDto();
         dto.setId(ingredient.getId());
         dto.setRecipeId(ingredient.getRecipe().getId());
         dto.setName(ingredient.getName());
@@ -30,7 +30,7 @@ public class RecipeIngredientService {
         return dto;
     }
 
-    public  RecipeIngredient convertToEntity( RecipeIngredientDTO dto) {
+    public  RecipeIngredient convertToEntity( RecipeIngredientDto dto) {
          RecipeIngredient ingredient = new  RecipeIngredient();
         ingredient.setId(dto.getId());
         ingredient.setName(dto.getName());
