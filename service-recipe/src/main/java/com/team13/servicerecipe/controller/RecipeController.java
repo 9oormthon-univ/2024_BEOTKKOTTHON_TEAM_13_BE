@@ -40,8 +40,8 @@ public class RecipeController {
         }
     }
 
-    // localhost:925:1/like?userId=2
-    //userId가 2인 사람이 Post1번 글 좋아요를 누른다.
+    // localhost:4328:1/like?userId=2
+    //userId가 2인 사람이 Recipe1번 글 좋아요를 누른다.
     @PostMapping("/{recipeId}/like")
     public ResponseEntity<String> toggleLikeRecipe(@PathVariable Long recipeId, @RequestParam Long userId) {
         boolean success = likeRecipeService.toggleLikeRecipe(recipeId, userId);
@@ -52,15 +52,6 @@ public class RecipeController {
         }
     }
 
-    @PostMapping("/{recipeId}/likeke")
-    public ResponseEntity<String> likeRecipe(@PathVariable Long recipeId, @RequestParam Long userId) {
-        boolean success = likeRecipeService.likeRecipe(recipeId, userId);
-        if (success) {
-            return ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
-        }
-    }
 
     //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
     @GetMapping("/{recipeId}/likes")

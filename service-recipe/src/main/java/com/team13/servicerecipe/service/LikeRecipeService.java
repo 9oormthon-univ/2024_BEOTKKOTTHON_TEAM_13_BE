@@ -26,38 +26,6 @@ public class LikeRecipeService {
     @Autowired
     private UserServiceClient userServiceClient;
 
-
-    @Transactional
-    public boolean likeRecipe(Long recipeId, Long userId) {
-        // Check if the recipe exists
-        Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
-        if (recipeOptional.isEmpty()) {
-            return false; // recipe does not exist
-        }
-
-        // Check if the user exists using Feign client
-        ResponseEntity<UserDto> userResponse = userServiceClient.getUserById(userId);
-        if (userResponse.getStatusCode() != HttpStatus.OK || userResponse.getBody() == null) {
-            return false; // User does not exist or UserService call failed
-        }
-
-        // Check if the user has already liked the recipe
-        Optional<LikeRecipe> existingLike = likeRecipeRepository.findByRecipeIdAndUserId(recipeId, userId);
-        if (existingLike.isPresent()) {
-            return false; // User has already liked the recipe, do not allow another like
-        }
-
-        // Create a new Likerecipe entry
-        LikeRecipe likeRecipe = new LikeRecipe();
-        likeRecipe.setRecipe(recipeOptional.get());
-        likeRecipe.setUserId(userId);
-
-        // Save the like
-        likeRecipeRepository.save(likeRecipe);
-        return true; // Successfully liked the recipe
-    }
-
-
     @Transactional
     public boolean toggleLikeRecipe(Long recipeId, Long userId) {
         //해당 recipe가 있는지 확인
