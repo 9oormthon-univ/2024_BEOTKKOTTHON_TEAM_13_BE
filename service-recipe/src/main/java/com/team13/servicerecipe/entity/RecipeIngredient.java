@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@Table(name="recipes_ingredients")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,5 +23,9 @@ public class RecipeIngredient {
 
     @Column(name = "amount", nullable = false)
     private String amount;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="recipes_id", nullable = false)
+    private Recipe recipe;
 
 }
