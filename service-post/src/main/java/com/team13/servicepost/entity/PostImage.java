@@ -1,5 +1,6 @@
 package com.team13.servicepost.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,9 @@ public class PostImage {
     @Column(name = "image_path", nullable = false)
     private String imagePath;
 
-//    @ManyToOne
-//    @Column(name = "posts_id", nullable = false)
-//    private Post post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "posts_id", nullable = false)
+    @JsonIgnore
+    private Post post;
+
 }

@@ -1,19 +1,20 @@
 package com.team13.servicepost.dto;
 
-import com.team13.servicepost.entity.PostImage;
-import com.team13.servicepost.entity.PostIngredient;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
-@Builder
-public class PostDto {
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class PostResponseDto {
     private Long id;
-    private int status;  // 0 - 마감, 1 - 진행중
-    private String userNickname;
+    private Long userId; // 나중에 삭제 확인용
+    private int status;
     private int groupSize;
     private int curGroupSize;
     private String chatId;
@@ -27,7 +28,8 @@ public class PostDto {
     private int pricePerUser;
     private int type;
     private String contents;
-    private List<PostIngredient> ingredients;
-    private List<PostImage> images;
+    private List<PostImageDto> images;
+    private List<PostIngredientDto> ingredients;
+    private String userNickname;
     private Long likesCount;
 }

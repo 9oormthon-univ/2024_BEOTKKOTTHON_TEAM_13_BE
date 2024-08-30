@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "likes_posts")
+@Table(name = "likes_posts", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"posts_id", "users_id"})
+})
 @Data
 @Builder
 @AllArgsConstructor
@@ -23,5 +25,4 @@ public class LikePost {
 
     @Column(name = "users_id", nullable = false)
     private Long userId;
-
 }

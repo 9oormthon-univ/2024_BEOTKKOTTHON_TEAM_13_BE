@@ -78,9 +78,9 @@ public class IndexController {
 
     @GetMapping("/list")
     public ResponseEntity<List<PostDto>> list(@RequestParam(value = "bcode", defaultValue = "4113510300") String bCode,
-                                                          @RequestParam(value = "type", defaultValue = "all") String strType,
-                                                          @RequestParam(value = "keyword", defaultValue = "") String keyword,
-                                                          @RequestParam(value = "page", defaultValue = "1") int pageName) {
+                                              @RequestParam(value = "type", defaultValue = "all") String strType,
+                                              @RequestParam(value = "keyword", defaultValue = "") String keyword,
+                                              @RequestParam(value = "page", defaultValue = "1") int pageName) {
 
         List<PostDto> posts = new ArrayList<>();
 
@@ -119,7 +119,6 @@ public class IndexController {
                     .build());
 
         }
-
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
