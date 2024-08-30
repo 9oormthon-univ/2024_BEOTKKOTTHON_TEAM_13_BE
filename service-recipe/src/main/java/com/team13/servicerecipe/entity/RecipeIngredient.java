@@ -1,5 +1,6 @@
 package com.team13.servicerecipe.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,7 @@ public class RecipeIngredient {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="recipes_id", nullable = false)
+    @JsonIgnore
     private Recipe recipe;
 
 }
