@@ -34,6 +34,9 @@ public class RecipeService {
     @Autowired
     private RecipeProcessService recipeProcessService;
 
+    @Autowired
+    private LikeRecipeService likeRecipeService;
+
     public Recipe saveRecipe(Recipe recipe) {
         return recipeRepository.save(recipe);
     }
@@ -57,9 +60,10 @@ public class RecipeService {
 
         Recipe recipe = recipeOptional.get();
         String userNickname = fetchUserNickname(recipe.getUserId());
+        Long likesCount = likeRecipeService.getLikesCount(recipeId);
 
 
-        return Optional.of(buildRecipeResponseDto(recipe, userNickname));
+        return Optional.of(buildRecipeResponseDto(recipe, userNickname, likesCount));
     }
 
     private String fetchUserNickname(Long userId) {
@@ -73,7 +77,7 @@ public class RecipeService {
 
 
 
-    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe, String userNickname) {
+    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe, String userNickname ,Long likesCount) {
         List<RecipeIngredient> ingredients = recipeIngredientService.getIngredientsByRecipeId(recipe.getId());
         List<RecipeIngredientDto> ingredientDto = ingredients.stream()
                 .map(recipeIngredientService::convertToDto)
@@ -90,13 +94,13 @@ public class RecipeService {
         recipeResponseDto.setTitle(recipe.getTitle());
         recipeResponseDto.setContents(recipe.getContents());
         recipeResponseDto.setCommentCount(recipe.getCommentCount());
-        recipeResponseDto.setLikesCount(recipe.getLikesCount());
         recipeResponseDto.setThumbnailImagePath(recipe.getThumbnailImagePath());
         recipeResponseDto.setCreatedAt(recipe.getCreatedAt());
         recipeResponseDto.setType(recipe.getType());
         recipeResponseDto.setUserNickname(userNickname);
         recipeResponseDto.setIngredients(ingredientDto);
         recipeResponseDto.setProcesses(processDto);
+        recipeResponseDto.setLikesCount(likesCount);
 
         return recipeResponseDto;
     }

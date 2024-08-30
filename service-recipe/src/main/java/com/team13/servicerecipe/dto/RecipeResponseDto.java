@@ -17,11 +17,11 @@ public class RecipeResponseDto {
     private String title;
     private String contents;
     private int commentCount;
-    private int likesCount;
     private String thumbnailImagePath;
     private Date createdAt;
     private int type;
     private String userNickname;
     private List<RecipeIngredientDto> ingredients;
     private List<RecipeProcessDto> processes;
+    private Long likesCount;
 }
