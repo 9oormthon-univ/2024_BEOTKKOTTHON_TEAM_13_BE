@@ -55,9 +55,6 @@ public class Post {
     @Column(name = "title", nullable = false, length = 100)
     private String title;
 
-    @Column(name = "price", nullable = false)
-    private int price;
-
     @Column(name = "price_per_user", nullable = false)
     private int pricePerUser;
 
@@ -74,4 +71,9 @@ public class Post {
     @OneToMany
     @JoinColumn(name = "posts_id")
     List<PostImage> images;
+
+
+    public Post(Long id) {
+        this.id = id;
+    }
 }

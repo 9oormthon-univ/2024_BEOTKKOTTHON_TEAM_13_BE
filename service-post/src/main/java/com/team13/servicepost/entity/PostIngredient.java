@@ -1,5 +1,6 @@
 package com.team13.servicepost.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,14 @@ public class PostIngredient {
     @Column(name = "url", nullable = false)
     private String url;
 
-//    @ManyToOne
-//    @Column(name = "posts_id", nullable = false)
-//    private Post post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "posts_id", nullable = false)
+    @JsonIgnore
+    private Post post;
+
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
 }
