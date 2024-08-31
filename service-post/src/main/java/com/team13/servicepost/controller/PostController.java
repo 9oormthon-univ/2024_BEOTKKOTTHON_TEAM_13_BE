@@ -73,4 +73,15 @@ public class PostController {
             return ResponseEntity.ok(posts);
         }
     }
+
+    // 사용자가 좋아요한 게시글 가져오기
+    @GetMapping("/like/user/{userId}")
+    public ResponseEntity<List<PostResponseDto>> getLikePostsByUserId(@PathVariable("userId") Long userId) {
+        List<PostResponseDto> likedPosts = postService.getLikePostsByUserId(userId);
+        if (likedPosts.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } else {
+            return ResponseEntity.ok(likedPosts);
+        }
+    }
 }

@@ -1,10 +1,12 @@
 package com.team13.servicepost.service;
 
 import com.team13.servicepost.dto.*;
+import com.team13.servicepost.entity.LikePost;
 import com.team13.servicepost.entity.Post;
 import com.team13.servicepost.entity.PostImage;
 import com.team13.servicepost.entity.PostIngredient;
 import com.team13.servicepost.feign.UserServiceClient;
+import com.team13.servicepost.repository.LikePostRepository;
 import com.team13.servicepost.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ public class PostService {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private LikePostRepository likePostRepository;
 
     @Autowired
     private PostImageService postImageService;
@@ -190,4 +195,24 @@ public class PostService {
                 })
                 .collect(Collectors.toList());
     }
+
+    // 좋아요한 게시글을 가져오기 위한 메서드
+    public List<PostResponseDto> getLikePostsByUserId(Long userId) {
+        // LikePostService를 사용하여 사용자가 좋아요한 Post ID 리스트를 가져옴
+        List<Long> likedPostIds = likePostService.getLikedPostIdsByUserId(userId);
+
+        // 각 Post ID를 사용하여 Post 엔티티를 조회하고, PostResponseDto로 변환
+        return likedPostIds.stream()
+                .map(postId -> postRepository.findById(postId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(post -> {
+                    String userNickname = fetchUserNickname(post.getUserId());
+                    Long likesCount = likePostService.getLikesCount(post.getId());
+                    return buildPostResponseDto(post, userNickname, likesCount);
+                })
+                .collect(Collectors.toList());
+    }
+
+
 }
