@@ -32,6 +32,10 @@ public class MyPageService {
         return postServiceClient.getLikePostsByUserId(userId);
     }
 
+    public List<RecipeResponseDto> getLikeRecipesByUserId(Long userId) {
+        return recipeServiceClient.getLikeRecipesByUserId(userId);
+    }
+
     public UserDto getUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));

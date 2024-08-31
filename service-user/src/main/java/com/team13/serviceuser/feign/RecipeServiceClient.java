@@ -1,5 +1,6 @@
 package com.team13.serviceuser.feign;
 
+import com.team13.serviceuser.dto.PostResponseDto;
 import com.team13.serviceuser.dto.RecipeResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,4 +13,7 @@ public interface RecipeServiceClient {
 
     @GetMapping("/recipes/user/{userId}")
     List<RecipeResponseDto> getRecipesByUserId(@PathVariable("userId") Long userId);
+
+    @GetMapping("/recipes/like/user/{userId}")
+    List<RecipeResponseDto> getLikeRecipesByUserId(@PathVariable("userId") Long userId);
 }

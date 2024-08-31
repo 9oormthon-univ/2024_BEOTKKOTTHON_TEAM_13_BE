@@ -47,6 +47,7 @@ public class MypageController {
         return ResponseEntity.ok(recipes);
     }
 
+    //사용자가 좋아요 누른 공동구매게시글
     @GetMapping("/user/{userId}/likePosts")
     public ResponseEntity<List<PostResponseDto>> getLikePostsByUserId(@PathVariable Long userId) {
         List<PostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
@@ -54,6 +55,18 @@ public class MypageController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } else {
             return ResponseEntity.ok(likedPosts);
+        }
+    }
+
+
+    //사용자가 좋아요 누른 레시피
+    @GetMapping("/user/{userId}/likeRecipes")
+    public ResponseEntity<List<RecipeResponseDto>> getLikeRecipesByUserId(@PathVariable Long userId) {
+        List<RecipeResponseDto> likedRecipes = myPageService.getLikeRecipesByUserId(userId);
+        if (likedRecipes.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } else {
+            return ResponseEntity.ok(likedRecipes);
         }
     }
 
