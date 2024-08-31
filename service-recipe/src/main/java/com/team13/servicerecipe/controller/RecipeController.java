@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -62,6 +63,16 @@ public class RecipeController {
     public ResponseEntity<Long> getLikesCount(@PathVariable Long recipeId) {
         Long likesCount = likeRecipeService.getLikesCount(recipeId);
         return ResponseEntity.ok(likesCount);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<RecipeResponseDto>> getRecipesByUserId(@PathVariable("userId") Long userId) {
+        List<RecipeResponseDto> recipes = recipeService.getRecipesByUserId(userId);
+        if (recipes.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } else {
+            return ResponseEntity.ok(recipes);
+        }
     }
 
 

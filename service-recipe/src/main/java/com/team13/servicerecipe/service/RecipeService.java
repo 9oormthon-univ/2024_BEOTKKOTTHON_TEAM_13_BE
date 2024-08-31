@@ -100,9 +100,9 @@ public class RecipeService {
 
         String userNickname = fetchUserNickname(recipe.getUserId());
         Long likesCount = 0L;
-        Long commentCount =0L;
 
-        return buildRecipeResponseDto(savedRecipe, userNickname, likesCount, commentCount);
+
+        return buildRecipeResponseDto(savedRecipe, userNickname, likesCount);
     }
 
     public Optional<RecipeResponseDto> getRecipeWithUserDetails(Long recipeId) {
@@ -114,10 +114,10 @@ public class RecipeService {
         Recipe recipe = recipeOptional.get();
         String userNickname = fetchUserNickname(recipe.getUserId());
         Long likesCount = likeRecipeService.getLikesCount(recipeId);
-        Long commentCount= likeRecipeService.getLikesCount(recipeId);
 
 
-        return Optional.of(buildRecipeResponseDto(recipe, userNickname, likesCount, commentCount));
+
+        return Optional.of(buildRecipeResponseDto(recipe, userNickname, likesCount));
     }
 
     private String fetchUserNickname(Long userId) {
@@ -129,7 +129,7 @@ public class RecipeService {
     }
 
 
-    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe, String userNickname ,Long likesCount ,Long commentCount) {
+    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe, String userNickname ,Long likesCount) {
         List<RecipeIngredient> ingredients = recipeIngredientService.getIngredientsByRecipeId(recipe.getId());
         List<RecipeIngredientDto> ingredientDto = ingredients.stream()
                 .map(recipeIngredientService::convertToDto)
@@ -155,6 +155,18 @@ public class RecipeService {
         recipeResponseDto.setLikesCount(likesCount);
 
         return recipeResponseDto;
+    }
+
+    public List<RecipeResponseDto> getRecipesByUserId(Long userId) {
+        List<Recipe> recipes = recipeRepository.findAllByUserId(userId);
+
+        return recipes.stream()
+                .map(recipe -> {
+                    String userNickname = fetchUserNickname(recipe.getUserId());
+                    Long likesCount = likeRecipeService.getLikesCount(recipe.getId());
+                    return buildRecipeResponseDto(recipe, userNickname, likesCount);
+                })
+                .collect(Collectors.toList());
     }
 
 }
