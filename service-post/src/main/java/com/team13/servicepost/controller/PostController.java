@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -61,5 +62,15 @@ public class PostController {
     public ResponseEntity<Long> getLikesCount(@PathVariable Long postId) {
         Long likesCount = likePostService.getLikesCount(postId);
         return ResponseEntity.ok(likesCount);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<PostResponseDto>> getPostsByUserId(@PathVariable("userId") Long userId) {
+        List<PostResponseDto> posts = postService.getPostsByUserId(userId);
+        if (posts.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } else {
+            return ResponseEntity.ok(posts);
+        }
     }
 }

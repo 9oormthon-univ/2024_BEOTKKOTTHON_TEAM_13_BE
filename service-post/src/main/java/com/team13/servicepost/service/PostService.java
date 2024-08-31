@@ -178,4 +178,16 @@ public class PostService {
 
         return postResponseDto;
     }
+
+    public List<PostResponseDto> getPostsByUserId(Long userId) {
+        List<Post> posts = postRepository.findAllByUserId(userId);
+
+        return posts.stream()
+                .map(post -> {
+                    String userNickname = fetchUserNickname(post.getUserId());
+                    Long likesCount = likePostService.getLikesCount(post.getId());
+                    return buildPostResponseDto(post, userNickname, likesCount);
+                })
+                .collect(Collectors.toList());
+    }
 }
