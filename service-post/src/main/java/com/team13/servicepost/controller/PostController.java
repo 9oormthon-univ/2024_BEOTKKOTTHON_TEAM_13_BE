@@ -1,5 +1,6 @@
 package com.team13.servicepost.controller;
 
+import com.team13.servicepost.dto.MypagePostResponseDto;
 import com.team13.servicepost.dto.PostRequestDto;
 import com.team13.servicepost.dto.PostResponseDto;
 import com.team13.servicepost.service.LikePostService;
@@ -65,8 +66,8 @@ public class PostController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PostResponseDto>> getPostsByUserId(@PathVariable("userId") Long userId) {
-        List<PostResponseDto> posts = postService.getPostsByUserId(userId);
+    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId(@PathVariable("userId") Long userId) {
+        List<MypagePostResponseDto> posts = postService.getPostsByUserId(userId);
         if (posts.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } else {
@@ -76,8 +77,8 @@ public class PostController {
 
     // 사용자가 좋아요한 게시글 가져오기
     @GetMapping("/like/user/{userId}")
-    public ResponseEntity<List<PostResponseDto>> getLikePostsByUserId(@PathVariable("userId") Long userId) {
-        List<PostResponseDto> likedPosts = postService.getLikePostsByUserId(userId);
+    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@PathVariable("userId") Long userId) {
+        List<MypagePostResponseDto> likedPosts = postService.getLikePostsByUserId(userId);
         if (likedPosts.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } else {

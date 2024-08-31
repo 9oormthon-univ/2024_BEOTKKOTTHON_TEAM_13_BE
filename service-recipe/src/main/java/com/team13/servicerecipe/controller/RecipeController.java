@@ -1,6 +1,7 @@
 package com.team13.servicerecipe.controller;
 
 
+import com.team13.servicerecipe.dto.MypageRecipeResponseDto;
 import com.team13.servicerecipe.dto.RecipeRequestDto;
 import com.team13.servicerecipe.dto.RecipeResponseDto;
 import com.team13.servicerecipe.entity.Recipe;
@@ -66,8 +67,8 @@ public class RecipeController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<RecipeResponseDto>> getRecipesByUserId(@PathVariable("userId") Long userId) {
-        List<RecipeResponseDto> recipes = recipeService.getRecipesByUserId(userId);
+    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(@PathVariable("userId") Long userId) {
+        List<MypageRecipeResponseDto> recipes = recipeService.getRecipesByUserId(userId);
         if (recipes.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } else {
@@ -76,8 +77,8 @@ public class RecipeController {
     }
 
     @GetMapping("/like/user/{userId}")
-    public ResponseEntity<List<RecipeResponseDto>> getLikeRecipesByUserId(@PathVariable("userId") Long userId) {
-        List<RecipeResponseDto> likedRecipes = recipeService.getLikeRecipesByUserId(userId);
+    public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(@PathVariable("userId") Long userId) {
+        List<MypageRecipeResponseDto> likedRecipes = recipeService.getLikeRecipesByUserId(userId);
         if (likedRecipes.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } else {

@@ -1,9 +1,6 @@
 package com.team13.serviceuser.controller;
 
-import com.team13.serviceuser.dto.PostResponseDto;
-import com.team13.serviceuser.dto.RecipeProcessDto;
-import com.team13.serviceuser.dto.RecipeResponseDto;
-import com.team13.serviceuser.dto.UserDto;
+import com.team13.serviceuser.dto.*;
 import com.team13.serviceuser.service.MyPageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,22 +32,22 @@ public class MypageController {
 
     // 사용자가 작성한 공동구매게시글 가져오기
     @GetMapping("/user/{userId}/posts")
-    public ResponseEntity<List<PostResponseDto>> getPostsByUserId(@PathVariable Long userId) {
-        List<PostResponseDto> posts = myPageService.getPostsByUserId(userId);
+    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId(@PathVariable Long userId) {
+        List<MypagePostResponseDto> posts = myPageService.getPostsByUserId(userId);
         return ResponseEntity.ok(posts);
     }
 
     //사용자가 작성한 레시피 가져오기
     @GetMapping("/user/{userId}/recipes")
-    public ResponseEntity<List<RecipeResponseDto>> getRecipesByUserId(@PathVariable Long userId) {
-        List<RecipeResponseDto> recipes = myPageService.getRecipesByUserId(userId);
+    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(@PathVariable Long userId) {
+        List<MypageRecipeResponseDto> recipes = myPageService.getRecipesByUserId(userId);
         return ResponseEntity.ok(recipes);
     }
 
     //사용자가 좋아요 누른 공동구매게시글
     @GetMapping("/user/{userId}/likePosts")
-    public ResponseEntity<List<PostResponseDto>> getLikePostsByUserId(@PathVariable Long userId) {
-        List<PostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
+    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@PathVariable Long userId) {
+        List<MypagePostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
         if (likedPosts.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } else {
@@ -61,8 +58,8 @@ public class MypageController {
 
     //사용자가 좋아요 누른 레시피
     @GetMapping("/user/{userId}/likeRecipes")
-    public ResponseEntity<List<RecipeResponseDto>> getLikeRecipesByUserId(@PathVariable Long userId) {
-        List<RecipeResponseDto> likedRecipes = myPageService.getLikeRecipesByUserId(userId);
+    public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(@PathVariable Long userId) {
+        List<MypageRecipeResponseDto> likedRecipes = myPageService.getLikeRecipesByUserId(userId);
         if (likedRecipes.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } else {

@@ -1,8 +1,6 @@
 package com.team13.serviceuser.service;
 
-import com.team13.serviceuser.dto.PostResponseDto;
-import com.team13.serviceuser.dto.RecipeResponseDto;
-import com.team13.serviceuser.dto.UserDto;
+import com.team13.serviceuser.dto.*;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.feign.PostServiceClient;
 import com.team13.serviceuser.feign.RecipeServiceClient;
@@ -22,17 +20,17 @@ public class MyPageService {
     private PostServiceClient postServiceClient;
     @Autowired
     private RecipeServiceClient recipeServiceClient;
-    public List<PostResponseDto> getPostsByUserId(Long userId) {
+    public List<MypagePostResponseDto> getPostsByUserId(Long userId) {
         return postServiceClient.getPostsByUserId(userId);
     }
-    public List<RecipeResponseDto> getRecipesByUserId(Long userId) {
+    public List<MypageRecipeResponseDto> getRecipesByUserId(Long userId) {
         return recipeServiceClient.getRecipesByUserId(userId);
     }
-    public List<PostResponseDto> getLikePostsByUserId(Long userId) {
+    public List<MypagePostResponseDto> getLikePostsByUserId(Long userId) {
         return postServiceClient.getLikePostsByUserId(userId);
     }
 
-    public List<RecipeResponseDto> getLikeRecipesByUserId(Long userId) {
+    public List<MypageRecipeResponseDto> getLikeRecipesByUserId(Long userId) {
         return recipeServiceClient.getLikeRecipesByUserId(userId);
     }
 
