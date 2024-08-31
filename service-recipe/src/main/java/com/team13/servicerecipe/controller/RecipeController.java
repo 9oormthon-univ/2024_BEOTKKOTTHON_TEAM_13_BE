@@ -75,5 +75,15 @@ public class RecipeController {
         }
     }
 
+    @GetMapping("/like/user/{userId}")
+    public ResponseEntity<List<RecipeResponseDto>> getLikeRecipesByUserId(@PathVariable("userId") Long userId) {
+        List<RecipeResponseDto> likedRecipes = recipeService.getLikeRecipesByUserId(userId);
+        if (likedRecipes.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } else {
+            return ResponseEntity.ok(likedRecipes);
+        }
+    }
+
 
 }

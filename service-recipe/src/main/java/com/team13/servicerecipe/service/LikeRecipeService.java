@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LikeRecipeService {
@@ -58,5 +60,12 @@ public class LikeRecipeService {
 
     public Long getLikesCount(Long recipeId) {
         return likeRecipeRepository.countByRecipeId(recipeId);
+    }
+
+    public List<Long> getLikedRecipeIdsByUserId(Long userId) {
+        List<LikeRecipe> likedRecipes = likeRecipeRepository.findByUserId(userId);
+        return likedRecipes.stream()
+                .map(likeRecipe -> likeRecipe.getRecipe().getId())
+                .collect(Collectors.toList());
     }
 }

@@ -169,4 +169,22 @@ public class RecipeService {
                 .collect(Collectors.toList());
     }
 
+    public List<RecipeResponseDto> getLikeRecipesByUserId(Long userId) {
+        // LikePostService를 사용하여 사용자가 좋아요한 Post ID 리스트를 가져옴
+        List<Long> likedRecipeIds = likeRecipeService.getLikedRecipeIdsByUserId(userId);
+
+        // 각 Post ID를 사용하여 Post 엔티티를 조회하고, PostResponseDto로 변환
+        return likedRecipeIds.stream()
+                .map(recipeId -> recipeRepository.findById(recipeId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(recipe -> {
+                    String userNickname = fetchUserNickname(recipe.getUserId());
+                    Long likesCount = likeRecipeService.getLikesCount(recipe.getId());
+                    return buildRecipeResponseDto(recipe, userNickname, likesCount);
+                })
+                .collect(Collectors.toList());
+    }
+
+
 }
