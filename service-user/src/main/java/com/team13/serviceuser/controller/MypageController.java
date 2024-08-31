@@ -1,14 +1,13 @@
 package com.team13.serviceuser.controller;
 
 import com.team13.serviceuser.dto.*;
+import com.team13.serviceuser.entity.User;
+import com.team13.serviceuser.repository.UserRepository;
 import com.team13.serviceuser.service.MyPageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,6 +16,7 @@ import java.util.List;
 public class MypageController {
 
     private final MyPageService myPageService;
+
 
     @Autowired
     public MypageController(MyPageService myPageService) {
@@ -67,5 +67,10 @@ public class MypageController {
         }
     }
 
+    @PutMapping("/user/{userId}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
+        UserDto updatedUser = myPageService.updateUser(userId, userDto);
+        return ResponseEntity.ok(updatedUser);
+    }
 
 }
