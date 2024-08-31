@@ -11,4 +11,7 @@ import java.util.List;
 public interface PostServiceClient {
     @GetMapping("/posts/user/{userId}")
     List<PostResponseDto> getPostsByUserId(@PathVariable("userId") Long userId);
+
+    @GetMapping("/posts/like/user/{userId}")
+    List<PostResponseDto> getLikePostsByUserId(@PathVariable("userId") Long userId);
 }

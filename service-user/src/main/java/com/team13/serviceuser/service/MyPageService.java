@@ -28,7 +28,9 @@ public class MyPageService {
     public List<RecipeResponseDto> getRecipesByUserId(Long userId) {
         return recipeServiceClient.getRecipesByUserId(userId);
     }
-
+    public List<PostResponseDto> getLikePostsByUserId(Long userId) {
+        return postServiceClient.getLikePostsByUserId(userId);
+    }
 
     public UserDto getUserById(Long userId) {
         User user = userRepository.findById(userId)

@@ -6,6 +6,7 @@ import com.team13.serviceuser.dto.RecipeResponseDto;
 import com.team13.serviceuser.dto.UserDto;
 import com.team13.serviceuser.service.MyPageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +45,16 @@ public class MypageController {
     public ResponseEntity<List<RecipeResponseDto>> getRecipesByUserId(@PathVariable Long userId) {
         List<RecipeResponseDto> recipes = myPageService.getRecipesByUserId(userId);
         return ResponseEntity.ok(recipes);
+    }
+
+    @GetMapping("/user/{userId}/likePosts")
+    public ResponseEntity<List<PostResponseDto>> getLikePostsByUserId(@PathVariable Long userId) {
+        List<PostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
+        if (likedPosts.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } else {
+            return ResponseEntity.ok(likedPosts);
+        }
     }
 
 
