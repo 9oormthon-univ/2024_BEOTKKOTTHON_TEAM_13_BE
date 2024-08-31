@@ -1,5 +1,6 @@
 package com.team13.servicepost.service;
 
+import com.team13.servicepost.dto.PostResponseDto;
 import com.team13.servicepost.dto.UserDto;
 import com.team13.servicepost.entity.LikePost;
 import com.team13.servicepost.entity.Post;
@@ -12,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -60,4 +63,13 @@ public class LikePostService {
     public Long getLikesCount(Long postId) {
         return likePostRepository.countByPostId(postId);
     }
+
+    // 특정 사용자가 좋아요한 게시글 ID 리스트를 반환하는 메서드
+    public List<Long> getLikedPostIdsByUserId(Long userId) {
+        List<LikePost> likedPosts = likePostRepository.findByUserId(userId);
+        return likedPosts.stream()
+                .map(likePost -> likePost.getPost().getId()) // 각 LikePost 엔티티에서 Post의 ID를 가져옴
+                .collect(Collectors.toList());
+    }
+
 }

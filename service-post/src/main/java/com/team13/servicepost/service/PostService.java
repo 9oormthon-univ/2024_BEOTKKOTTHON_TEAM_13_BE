@@ -1,10 +1,12 @@
 package com.team13.servicepost.service;
 
 import com.team13.servicepost.dto.*;
+import com.team13.servicepost.entity.LikePost;
 import com.team13.servicepost.entity.Post;
 import com.team13.servicepost.entity.PostImage;
 import com.team13.servicepost.entity.PostIngredient;
 import com.team13.servicepost.feign.UserServiceClient;
+import com.team13.servicepost.repository.LikePostRepository;
 import com.team13.servicepost.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ public class PostService {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private LikePostRepository likePostRepository;
 
     @Autowired
     private PostImageService postImageService;
@@ -178,4 +183,64 @@ public class PostService {
 
         return postResponseDto;
     }
+
+    public List<MypagePostResponseDto> getPostsByUserId(Long userId) {
+        // 사용자가 작성한 모든 게시글을 가져옵니다.
+        List<Post> posts = postRepository.findAllByUserId(userId);
+
+        // 각 게시글을 MypagePostResponseDto로 변환하여 리스트로 반환합니다.
+        return posts.stream()
+                .map(post -> {
+                    // 게시글 작성자의 닉네임을 가져옵니다.
+                    String userNickname = fetchUserNickname(post.getUserId());
+                    // 게시글의 좋아요 개수를 가져옵니다.
+                    Long likesCount = likePostService.getLikesCount(post.getId());
+                    // 게시글을 MypagePostResponseDto로 변환합니다.
+                    return buildMypagePostResponseDto(post, userNickname, likesCount);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<MypagePostResponseDto> getLikePostsByUserId(Long userId) {
+        List<Long> likedPostIds = likePostService.getLikedPostIdsByUserId(userId);
+
+        return likedPostIds.stream()
+                .map(postId -> postRepository.findById(postId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(post -> {
+                    String userNickname = fetchUserNickname(post.getUserId());
+                    Long likesCount = likePostService.getLikesCount(post.getId());
+                    return buildMypagePostResponseDto(post, userNickname, likesCount);
+                })
+                .collect(Collectors.toList());
+    }
+
+
+
+    private MypagePostResponseDto buildMypagePostResponseDto(Post post, String userNickname, Long likesCount) {
+        List<PostIngredient> ingredients = postIngredientService.getIngredientsByPostId(post.getId());
+        List<PostIngredientDto> ingredientDto = ingredients.stream()
+                .map(postIngredientService::convertToDto)
+                .collect(Collectors.toList());
+
+        MypagePostResponseDto postResponseDto = new MypagePostResponseDto();
+        postResponseDto.setId(post.getId());
+        postResponseDto.setUserId(post.getUserId());
+        postResponseDto.setStatus(post.getStatus());
+        postResponseDto.setGroupSize(post.getGroupSize());
+        postResponseDto.setCurGroupSize(post.getCurGroupSize());
+        postResponseDto.setCreatedAt(post.getCreatedAt());
+        postResponseDto.setClosedAt(post.getClosedAt());
+        postResponseDto.setTitle(post.getTitle());
+        postResponseDto.setPricePerUser(post.getPricePerUser());
+        postResponseDto.setType(post.getType());
+        postResponseDto.setContents(post.getContents());
+        postResponseDto.setUserNickname(userNickname);
+        postResponseDto.setIngredients(ingredientDto);
+        postResponseDto.setLikesCount(likesCount);
+        return postResponseDto;
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.team13.servicepost.controller;
 
+import com.team13.servicepost.dto.MypagePostResponseDto;
 import com.team13.servicepost.dto.PostRequestDto;
 import com.team13.servicepost.dto.PostResponseDto;
 import com.team13.servicepost.service.LikePostService;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -61,5 +63,26 @@ public class PostController {
     public ResponseEntity<Long> getLikesCount(@PathVariable Long postId) {
         Long likesCount = likePostService.getLikesCount(postId);
         return ResponseEntity.ok(likesCount);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId(@PathVariable("userId") Long userId) {
+        List<MypagePostResponseDto> posts = postService.getPostsByUserId(userId);
+        if (posts.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } else {
+            return ResponseEntity.ok(posts);
+        }
+    }
+
+    // 사용자가 좋아요한 게시글 가져오기
+    @GetMapping("/like/user/{userId}")
+    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@PathVariable("userId") Long userId) {
+        List<MypagePostResponseDto> likedPosts = postService.getLikePostsByUserId(userId);
+        if (likedPosts.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } else {
+            return ResponseEntity.ok(likedPosts);
+        }
     }
 }

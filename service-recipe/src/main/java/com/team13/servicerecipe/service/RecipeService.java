@@ -100,9 +100,9 @@ public class RecipeService {
 
         String userNickname = fetchUserNickname(recipe.getUserId());
         Long likesCount = 0L;
-        Long commentCount =0L;
 
-        return buildRecipeResponseDto(savedRecipe, userNickname, likesCount, commentCount);
+
+        return buildRecipeResponseDto(savedRecipe, userNickname, likesCount);
     }
 
     public Optional<RecipeResponseDto> getRecipeWithUserDetails(Long recipeId) {
@@ -114,10 +114,10 @@ public class RecipeService {
         Recipe recipe = recipeOptional.get();
         String userNickname = fetchUserNickname(recipe.getUserId());
         Long likesCount = likeRecipeService.getLikesCount(recipeId);
-        Long commentCount= likeRecipeService.getLikesCount(recipeId);
 
 
-        return Optional.of(buildRecipeResponseDto(recipe, userNickname, likesCount, commentCount));
+
+        return Optional.of(buildRecipeResponseDto(recipe, userNickname, likesCount));
     }
 
     private String fetchUserNickname(Long userId) {
@@ -129,7 +129,7 @@ public class RecipeService {
     }
 
 
-    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe, String userNickname ,Long likesCount ,Long commentCount) {
+    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe, String userNickname ,Long likesCount) {
         List<RecipeIngredient> ingredients = recipeIngredientService.getIngredientsByRecipeId(recipe.getId());
         List<RecipeIngredientDto> ingredientDto = ingredients.stream()
                 .map(recipeIngredientService::convertToDto)
@@ -156,5 +156,57 @@ public class RecipeService {
 
         return recipeResponseDto;
     }
+
+    public List<MypageRecipeResponseDto> getRecipesByUserId(Long userId) {
+        List<Recipe> recipes = recipeRepository.findAllByUserId(userId);
+
+        return recipes.stream()
+                .map(recipe -> {
+                    String userNickname = fetchUserNickname(recipe.getUserId());
+                    Long likesCount = likeRecipeService.getLikesCount(recipe.getId());
+                    return buildMypageRecipeResponseDto(recipe, userNickname, likesCount);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<MypageRecipeResponseDto> getLikeRecipesByUserId(Long userId) {
+        // LikePostService를 사용하여 사용자가 좋아요한 Post ID 리스트를 가져옴
+        List<Long> likedRecipeIds = likeRecipeService.getLikedRecipeIdsByUserId(userId);
+
+        // 각 Post ID를 사용하여 Post 엔티티를 조회하고, PostResponseDto로 변환
+        return likedRecipeIds.stream()
+                .map(recipeId -> recipeRepository.findById(recipeId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(recipe -> {
+                    String userNickname = fetchUserNickname(recipe.getUserId());
+                    Long likesCount = likeRecipeService.getLikesCount(recipe.getId());
+                    return buildMypageRecipeResponseDto(recipe, userNickname, likesCount);
+                })
+                .collect(Collectors.toList());
+    }
+
+    private MypageRecipeResponseDto buildMypageRecipeResponseDto(Recipe recipe, String userNickname ,Long likesCount) {
+        List<RecipeIngredient> ingredients = recipeIngredientService.getIngredientsByRecipeId(recipe.getId());
+        List<RecipeIngredientDto> ingredientDto = ingredients.stream()
+                .map(recipeIngredientService::convertToDto)
+                .collect(Collectors.toList());
+
+        MypageRecipeResponseDto recipeResponseDto = new MypageRecipeResponseDto();
+        recipeResponseDto.setId(recipe.getId());
+        recipeResponseDto.setUserId(recipe.getUserId());
+        recipeResponseDto.setTitle(recipe.getTitle());
+        recipeResponseDto.setContents(recipe.getContents());
+        recipeResponseDto.setCommentCount(recipe.getCommentCount());
+        recipeResponseDto.setThumbnailImagePath(recipe.getThumbnailImagePath());
+        recipeResponseDto.setCreatedAt(recipe.getCreatedAt());
+        recipeResponseDto.setType(recipe.getType());
+        recipeResponseDto.setUserNickname(userNickname);
+        recipeResponseDto.setIngredients(ingredientDto);
+        recipeResponseDto.setLikesCount(likesCount);
+
+        return recipeResponseDto;
+    }
+
 
 }
