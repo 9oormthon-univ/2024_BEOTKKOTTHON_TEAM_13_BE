@@ -38,7 +38,7 @@ public class IndexController {
 
     //post 게시물 1개 보기
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable Long id) {
+    public ResponseEntity<PostDto> getPostById(@PathVariable("id") Long id) {
 
         int groupSize = RandomPostGenerator.groupSize();
         int curGroupSize = RandomPostGenerator.curGroupSize(groupSize);

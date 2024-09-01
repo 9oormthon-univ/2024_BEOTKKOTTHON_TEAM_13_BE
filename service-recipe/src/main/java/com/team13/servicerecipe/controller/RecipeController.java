@@ -37,7 +37,7 @@ public class RecipeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RecipeResponseDto> getRecipeById(@PathVariable Long id) {
+    public ResponseEntity<RecipeResponseDto> getRecipeById(@PathVariable("id") Long id) {
         Optional<RecipeResponseDto> recipeWithDetails = recipeService.getRecipeWithUserDetails(id);
         if (recipeWithDetails.isPresent()) {
             return ResponseEntity.ok(recipeWithDetails.get());
@@ -49,7 +49,7 @@ public class RecipeController {
     // localhost:4328:1/like?userId=2
     //userId가 2인 사람이 Recipe1번 글 좋아요를 누른다.
     @PostMapping("/{recipeId}/like")
-    public ResponseEntity<String> toggleLikeRecipe(@PathVariable Long recipeId, @RequestParam Long userId) {
+    public ResponseEntity<String> toggleLikeRecipe(@PathVariable("recipeId") Long recipeId, @RequestParam Long userId) {
         boolean success = likeRecipeService.toggleLikeRecipe(recipeId, userId);
         if (success) {
             return ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다");
@@ -61,7 +61,7 @@ public class RecipeController {
 
     //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
     @GetMapping("/{recipeId}/likes")
-    public ResponseEntity<Long> getLikesCount(@PathVariable Long recipeId) {
+    public ResponseEntity<Long> getLikesCount(@PathVariable("recipeId") Long recipeId) {
         Long likesCount = likeRecipeService.getLikesCount(recipeId);
         return ResponseEntity.ok(likesCount);
     }
