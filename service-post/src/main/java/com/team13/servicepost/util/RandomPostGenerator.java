@@ -261,7 +261,7 @@ public class RandomPostGenerator {
     }
 
     public static Long likesCount() {
-        return random.nextLong(50);
+        return (long) random.nextInt(50);
     }
 
 

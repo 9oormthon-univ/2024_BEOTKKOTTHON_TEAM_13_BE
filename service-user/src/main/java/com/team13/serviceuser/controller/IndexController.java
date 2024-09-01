@@ -41,7 +41,7 @@ public class IndexController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long id) {
         // 임의의 닉네임 생성
         String emailId = RandomUserGenerator.generateEmailId();
 
