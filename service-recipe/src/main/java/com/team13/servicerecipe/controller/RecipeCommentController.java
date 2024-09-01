@@ -24,7 +24,7 @@ import java.util.Optional;
     private RecipeService recipeService;
 
     @PostMapping("/{recipeId}")
-    public ResponseEntity<RecipeCommentDto> addComment(@PathVariable Long recipeId, @RequestBody RecipeCommentDto commentDto) {
+    public ResponseEntity<RecipeCommentDto> addComment(@PathVariable("recipeId") Long recipeId, @RequestBody RecipeCommentDto commentDto) {
         Optional<Recipe> recipeOptional = recipeService.getRecipeById(recipeId);
         if (!recipeOptional.isPresent()) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -48,21 +48,21 @@ import java.util.Optional;
 
     //해당 레시피에 있는 댓글
     @GetMapping("/{recipeId}")
-    public ResponseEntity<List<RecipeCommentDto>> getCommentsByRecipeId(@PathVariable Long recipeId) {
+    public ResponseEntity<List<RecipeCommentDto>> getCommentsByRecipeId(@PathVariable("recipeId") Long recipeId) {
         List<RecipeCommentDto> comments = recipeCommentService.getCommentsByRecipeId(recipeId);
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
     //해당 댓글에 달린 답글 확인
     @GetMapping("/{commentId}/replies")
-    public ResponseEntity<List<RecipeCommentDto>> getRepliesByCommentId(@PathVariable Long commentId) {
+    public ResponseEntity<List<RecipeCommentDto>> getRepliesByCommentId(@PathVariable("commentId") Long commentId) {
         List<RecipeCommentDto> replies = recipeCommentService.getRepliesByCommentId(commentId);
         return new ResponseEntity<>(replies, HttpStatus.OK);
     }
 
     //내가 쓴 댓글 확인
     @GetMapping("/{userId}")
-    public ResponseEntity<List<RecipeCommentDto>> getCommentsByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<RecipeCommentDto>> getCommentsByUserId(@PathVariable("userId") Long userId) {
         List<RecipeCommentDto> comments = recipeCommentService.getCommentsByUserId(userId);
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
