@@ -4,6 +4,8 @@ import com.team13.serviceuser.dto.*;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.repository.UserRepository;
 import com.team13.serviceuser.service.MyPageService;
+import com.team13.serviceuser.service.SignInService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +18,24 @@ import java.util.List;
 public class MypageController {
 
     private final MyPageService myPageService;
+    private final SignInService signInService;
 
 
     @Autowired
-    public MypageController(MyPageService myPageService) {
+    public MypageController(MyPageService myPageService, SignInService signInService) {
         this.myPageService = myPageService;
+        this.signInService = signInService;
     }
 
     // 사용자 정보 가져오기
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable("userId") Long userId) {
+    @GetMapping("/user")
+    public ResponseEntity<UserDto> getUserInfo(HttpServletRequest request) {
+        String token = signInService.extractTokenFromCookies(request);
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        Long userId = signInService.extractUserIdFromToken(token);
         UserDto user = myPageService.getUserById(userId);
         return ResponseEntity.ok(user);
     }
