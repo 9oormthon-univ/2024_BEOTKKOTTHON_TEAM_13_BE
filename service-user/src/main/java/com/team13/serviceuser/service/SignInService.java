@@ -3,10 +3,12 @@ package com.team13.serviceuser.service;
 import com.team13.serviceuser.dto.LoginRequestDto;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -81,4 +83,28 @@ public class SignInService {
 
         return cookie;
     }
+
+    // JWT 토큰에서 userId 추출
+    public Long extractUserIdFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(jwtSecretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return Long.valueOf(claims.get("userId").toString());
+    }
+
+    // 쿠키에서 JWT 토큰 추출
+    public String extractTokenFromCookies(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("LTK".equals(cookie.getName())) { // JWT 토큰이 저장된 쿠키 이름
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
 }
