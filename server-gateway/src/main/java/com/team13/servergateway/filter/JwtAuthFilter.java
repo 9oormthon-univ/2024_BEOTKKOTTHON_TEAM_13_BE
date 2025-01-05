@@ -1,6 +1,8 @@
 package com.team13.servergateway.filter;
 
 import com.team13.servergateway.util.RouterValidator;
+import com.team13.servergateway.util.cookie.Cookie;
+import com.team13.servergateway.util.cookie.CookieParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -51,19 +53,18 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
 
                     // 만약 쿠키가 없는 경우 예외 발생
                     if (cookies == null || cookies.isEmpty()) {
-                        throw new RuntimeException();
+                        throw new Exception("Couldn't find cookies in header.");
                     }
 
-                    // 애플리케이션에서 사용하는 쿠키는 로그인 쿠키밖에 없으므로, 항상 첫 번째 쿠키를 가져옴
-                    // 쿠키 앞에 붙은 접두사 'LTK='를 제거
-                    String token = cookies.get(0).substring(4);
+                    // 헤더에 포함된 쿠키 리스트에서 LTK 쿠키를 가져옴
+                    Cookie ltkCookie = CookieParser.findCookieInCookies(cookies, "LTK")
+                            .orElseThrow(() -> new Exception("No LTK cookie"));
 
                     // 해당 쿠키의 내용을 토대로 복호화 수행
                     Jwts.parserBuilder()
                             .setSigningKey(jwtSecretKey)
                             .build()
-                            .parseClaimsJws(token);
-
+                            .parseClaimsJws(ltkCookie.getValue());
                 } catch (Exception e) {
                     // 만약 try 문 내의 과정 수행 중에 예외가 발생한 경우 인증에 문제가 있다고 판단하고
                     // HTTP 상태 코드를 401로 설정하고, 서비스에 접근할 수 없도록 함
