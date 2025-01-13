@@ -1,23 +1,13 @@
 package com.team13.serviceuser.controller;
 
-import com.team13.serviceuser.dto.JoinRequestDto;
-import com.team13.serviceuser.dto.LoginRequestDto;
 import com.team13.serviceuser.dto.ResponseDto;
 import com.team13.serviceuser.dto.UserDto;
-import com.team13.serviceuser.entity.User;
-import com.team13.serviceuser.service.SignInService;
-import com.team13.serviceuser.service.SignUpService;
 import com.team13.serviceuser.util.RandomUserGenerator;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 @Log4j2
@@ -33,7 +23,13 @@ public class IndexController {
     public String index() { return "Index page of service-user"; }
 
     @GetMapping("/config")
-    public String getConfig() { return configTestString; }
+    public String getConfig(@RequestHeader("X-User-Id") String userId,
+                            @RequestHeader("X-User-Nickname") String userNickname) {
+        log.info(userId);
+        log.info(userNickname);
+
+        return configTestString;
+    }
 
     @GetMapping("/service-connection-test")
     public ResponseDto serviceConnectionTest() {
