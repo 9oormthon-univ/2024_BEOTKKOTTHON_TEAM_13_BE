@@ -51,6 +51,10 @@ spring:
           filters:
             - JwtAuthFilter
             - RewritePath=/api2/user(?<segment>.*),${segment}
+
+
+
+
   config:
     import: optional:configserver:${app.server-config.url}
 
@@ -68,3 +72,8 @@ management:
     web:
       exposure:
         include: "*"
+
+logging:
+  level:
+    root: DEBUG
+    com.team13.servergateway: DEBUG

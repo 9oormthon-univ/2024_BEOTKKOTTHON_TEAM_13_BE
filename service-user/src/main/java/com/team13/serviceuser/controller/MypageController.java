@@ -30,14 +30,20 @@ public class MypageController {
     // 사용자 정보 가져오기
     @GetMapping("/user")
     public ResponseEntity<UserDto> getUserInfo(HttpServletRequest request) {
-        String token = signInService.extractTokenFromCookies(request);
-        if (token == null) {
+        // Gateway에서 전달한 사용자 ID를 헤더에서 가져옴
+        String userIdHeader = request.getHeader("X-User-Id");
+
+        if (userIdHeader == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        Long userId = signInService.extractUserIdFromToken(token);
-        UserDto user = myPageService.getUserById(userId);
-        return ResponseEntity.ok(user);
+        try {
+            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
+            UserDto user = myPageService.getUserById(userId); // 서비스 호출
+            return ResponseEntity.ok(user);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     // 사용자가 작성한 공동구매게시글 가져오기
