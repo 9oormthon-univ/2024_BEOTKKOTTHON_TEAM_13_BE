@@ -18,15 +18,11 @@ import java.util.List;
 public class MypageController {
 
     private final MyPageService myPageService;
-    private final SignInService signInService;
-
 
     @Autowired
-    public MypageController(MyPageService myPageService, SignInService signInService) {
+    public MypageController(MyPageService myPageService) {
         this.myPageService = myPageService;
-        this.signInService = signInService;
     }
-
     // 사용자 정보 가져오기
     @GetMapping("/info")
     public ResponseEntity<UserDto> getUserInfo(HttpServletRequest request) {
@@ -36,7 +32,6 @@ public class MypageController {
         if (userIdHeader == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             UserDto user = myPageService.getUserById(userId); // 서비스 호출
@@ -70,8 +65,7 @@ public class MypageController {
             return ResponseEntity.ok(likedPosts);
         }
     }
-
-
+    
     //사용자가 좋아요 누른 레시피
     @GetMapping("/user/{userId}/likeRecipes")
     public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(@PathVariable("userId") Long userId) {
