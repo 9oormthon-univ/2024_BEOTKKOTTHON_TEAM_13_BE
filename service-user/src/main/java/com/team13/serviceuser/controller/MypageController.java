@@ -28,7 +28,7 @@ public class MypageController {
     }
 
     // 사용자 정보 가져오기
-    @GetMapping("/user")
+    @GetMapping("/info")
     public ResponseEntity<UserDto> getUserInfo(HttpServletRequest request) {
         // Gateway에서 전달한 사용자 ID를 헤더에서 가져옴
         String userIdHeader = request.getHeader("X-User-Id");
