@@ -10,7 +10,8 @@ public class RouterValidator {
 
     // 로그인 토큰이 요구되는 path
     private final List<List<String>> securedApiEndpoints = List.of(
-            List.of("GET", "/user/config")
+            List.of("GET", "/user/config"),
+            List.of("GET", "/mypage")
             // 채팅 관련 API는 모두 토큰 요구
 //            List.of("GET", "/chat"),
 //            List.of("POST", "/chat")
@@ -20,7 +21,7 @@ public class RouterValidator {
     public boolean isSecured(ServerHttpRequest request) {
         return securedApiEndpoints.stream().anyMatch(methodAndPath ->
                 request.getMethod().toString().equals(methodAndPath.get(0)) &&
-                request.getURI().getPath().contains(methodAndPath.get(1))
+                        request.getURI().getPath().contains(methodAndPath.get(1))
         );
     }
 }

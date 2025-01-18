@@ -71,10 +71,8 @@ public class SignController {
         if (user == null) {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        Cookie cookie = signInService.createCookieFromUser(user);
-        response.addCookie(cookie);
-        return ResponseEntity.ok().build();
+        signInService.createCookieFromUser(user, response);
+        return ResponseEntity.ok("Login successful");
     }
-
 
 }

@@ -3,12 +3,18 @@ package com.team13.serviceuser.service;
 import com.team13.serviceuser.dto.LoginRequestDto;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +22,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.Optional;
 
+@Log4j2
 @Service
 @Transactional
 public class SignInService {
@@ -62,23 +69,42 @@ public class SignInService {
     }
 
     // JWT 쿠키 생성
-    public Cookie createCookieFromUser(User user) {
-        // 쿠키 만료 시간 설정을 위한 현재 시간 데이터
+    public void createCookieFromUser(User user, HttpServletResponse response) {
+        // 현재 시간 가져오기
         long now = (new Date()).getTime();
 
         // JWT 토큰 생성
         String token = Jwts.builder()
-                            .claim("userId", user.getId().toString())  // ID는 개발 편의상 문자열로 저장
-                            .claim("userNickname", user.getNickname())
-                            .setExpiration(new Date(now + tokenKeepDuration))
-                            .signWith(jwtSecretKey)
-                            .compact();
+                .setHeaderParam("typ", "JWT")
+                .claim("userId", user.getId().toString())  // 사용자 ID
+                .claim("userNickname", user.getNickname()) // 닉네임
+                .setExpiration(new Date(now + tokenKeepDuration)) // 만료 시간 설정
+                .signWith(jwtSecretKey, SignatureAlgorithm.HS384)
+                .compact();
 
-        // JWT 쿠키 생성
-        Cookie cookie = new Cookie("LTK", token);
-        cookie.setMaxAge((int) tokenKeepDuration / 1000);
-        cookie.setPath("/");
+        log.debug("Generated JWT: {}", token);
 
-        return cookie;
+        // 기존 LTK 쿠키 삭제
+        Cookie deleteCookie = new Cookie("LTK", null);
+        deleteCookie.setMaxAge(0); // 즉시 만료
+        deleteCookie.setHttpOnly(true); // 동일한 옵션 설정
+        deleteCookie.setSecure(true);  // 동일한 옵션 설정
+        deleteCookie.setPath("/");     // 경로 설정 (루트 경로)
+        deleteCookie.setDomain("localhost"); // 도메인 설정
+        response.addCookie(deleteCookie);
+
+        // 새로운 LTK 쿠키 생성
+        Cookie newCookie = new Cookie("LTK", token);
+        newCookie.setHttpOnly(true);
+        newCookie.setSecure(true); // HTTPS 환경에서만 전달
+        newCookie.setPath("/"); // 루트 경로
+        newCookie.setDomain("localhost"); // 도메인 설정
+        newCookie.setMaxAge((int) tokenKeepDuration / 1000); // 초 단위 만료 시간
+        response.addCookie(newCookie);
+
+        log.debug("LTK Cookie set with new JWT token.");
     }
+
+
+
 }

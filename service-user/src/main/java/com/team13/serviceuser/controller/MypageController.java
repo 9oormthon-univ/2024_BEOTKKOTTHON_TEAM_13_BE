@@ -4,6 +4,8 @@ import com.team13.serviceuser.dto.*;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.repository.UserRepository;
 import com.team13.serviceuser.service.MyPageService;
+import com.team13.serviceuser.service.SignInService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +19,26 @@ public class MypageController {
 
     private final MyPageService myPageService;
 
-
     @Autowired
     public MypageController(MyPageService myPageService) {
         this.myPageService = myPageService;
     }
-
     // 사용자 정보 가져오기
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable("userId") Long userId) {
-        UserDto user = myPageService.getUserById(userId);
-        return ResponseEntity.ok(user);
+    @GetMapping("/info")
+    public ResponseEntity<UserDto> getUserInfo(HttpServletRequest request) {
+        // Gateway에서 전달한 사용자 ID를 헤더에서 가져옴
+        String userIdHeader = request.getHeader("X-User-Id");
+
+        if (userIdHeader == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        try {
+            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
+            UserDto user = myPageService.getUserById(userId); // 서비스 호출
+            return ResponseEntity.ok(user);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     // 사용자가 작성한 공동구매게시글 가져오기
@@ -54,8 +65,7 @@ public class MypageController {
             return ResponseEntity.ok(likedPosts);
         }
     }
-
-
+    
     //사용자가 좋아요 누른 레시피
     @GetMapping("/user/{userId}/likeRecipes")
     public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(@PathVariable("userId") Long userId) {
