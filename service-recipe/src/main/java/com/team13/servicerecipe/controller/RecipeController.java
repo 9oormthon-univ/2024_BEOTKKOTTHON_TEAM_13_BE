@@ -49,9 +49,9 @@ public class RecipeController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<RecipeResponseDto> getRecipeById(@PathVariable("id") Long id) {
-        Optional<RecipeResponseDto> recipeWithDetails = recipeService.getRecipeWithUserDetails(id);
+    @GetMapping("/{recipeId}")
+    public ResponseEntity<RecipeResponseDto> getRecipeById(@PathVariable("recipeId") Long recipeId) {
+        Optional<RecipeResponseDto> recipeWithDetails = recipeService.getRecipeWithUserDetails(recipeId);
         if (recipeWithDetails.isPresent()) {
             return ResponseEntity.ok(recipeWithDetails.get());
         } else {
