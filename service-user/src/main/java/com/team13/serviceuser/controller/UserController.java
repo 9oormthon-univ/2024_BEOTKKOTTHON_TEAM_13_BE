@@ -29,11 +29,12 @@ public class UserController {
         }
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
-        return userService.getUserById(userId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+            return userService.getUserById(userId)
+                    .map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
 
-    } catch (NumberFormatException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-    }}
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 }

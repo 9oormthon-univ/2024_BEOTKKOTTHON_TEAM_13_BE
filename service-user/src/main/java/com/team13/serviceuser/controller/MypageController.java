@@ -23,6 +23,7 @@ public class MypageController {
     public MypageController(MyPageService myPageService) {
         this.myPageService = myPageService;
     }
+
     // 사용자 정보 가져오기
     @GetMapping("/info")
     public ResponseEntity<UserDto> getUserInfo(HttpServletRequest request) {
@@ -49,10 +50,20 @@ public class MypageController {
     }
 
     //사용자가 작성한 레시피 가져오기
-    @GetMapping("/user/{userId}/recipes")
-    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(@PathVariable("userId") Long userId) {
-        List<MypageRecipeResponseDto> recipes = myPageService.getRecipesByUserId(userId);
-        return ResponseEntity.ok(recipes);
+    @GetMapping("/recipes")
+    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(HttpServletRequest request) {
+        String userIdHeader = request.getHeader("X-User-Id");
+
+        if (userIdHeader == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        try {
+            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
+            List<MypageRecipeResponseDto> recipes = myPageService.getRecipesByUserId(userId);
+            return ResponseEntity.ok(recipes);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     //사용자가 좋아요 누른 공동구매게시글
@@ -65,15 +76,25 @@ public class MypageController {
             return ResponseEntity.ok(likedPosts);
         }
     }
-    
+
     //사용자가 좋아요 누른 레시피
-    @GetMapping("/user/{userId}/likeRecipes")
-    public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(@PathVariable("userId") Long userId) {
-        List<MypageRecipeResponseDto> likedRecipes = myPageService.getLikeRecipesByUserId(userId);
-        if (likedRecipes.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } else {
-            return ResponseEntity.ok(likedRecipes);
+    @GetMapping("/likeRecipes")
+    public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(HttpServletRequest request) {
+        String userIdHeader = request.getHeader("X-User-Id");
+
+        if (userIdHeader == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        try {
+            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
+            List<MypageRecipeResponseDto> likedRecipes = myPageService.getLikeRecipesByUserId(userId);
+            if (likedRecipes.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            } else {
+                return ResponseEntity.ok(likedRecipes);
+            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
@@ -82,5 +103,6 @@ public class MypageController {
         UserDto updatedUser = myPageService.updateUser(userId, userDto);
         return ResponseEntity.ok(updatedUser);
     }
+
 
 }

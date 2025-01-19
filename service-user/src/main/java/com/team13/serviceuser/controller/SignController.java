@@ -31,8 +31,8 @@ public class SignController {
     //회원가입 요청
     // 회원가입 요청
     @PostMapping("/join")
-    public ResponseEntity<String> join (@Valid @RequestBody JoinRequestDto joinRequestDto,
-                                        BindingResult bindingResult) {
+    public ResponseEntity<String> join(@Valid @RequestBody JoinRequestDto joinRequestDto,
+                                       BindingResult bindingResult) {
         //request전달 값 조건 에러시 메세지
         if (bindingResult.hasErrors()) {
             String errorMessages = bindingResult.getAllErrors()
@@ -65,8 +65,8 @@ public class SignController {
     // 로그인 요청
     // 로그인 성공 시 클라이언트에게 JWT 토큰을 반환함
     @PostMapping("/login")
-    public  ResponseEntity<String> login (@RequestBody LoginRequestDto loginRequestDto,
-                                          HttpServletResponse response) {
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto,
+                                        HttpServletResponse response) {
         User user = signInService.login(loginRequestDto);
         if (user == null) {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

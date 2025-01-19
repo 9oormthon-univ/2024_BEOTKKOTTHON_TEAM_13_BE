@@ -26,10 +26,7 @@ public class RecipeController {
     private LikeRecipeService likeRecipeService;
 
     @PostMapping
-    public ResponseEntity<RecipeResponseDto> createRecipe(
-            @RequestBody RecipeRequestDto recipeRequestDto,
-            HttpServletRequest request
-    ) {
+    public ResponseEntity<RecipeResponseDto> createRecipe(@RequestBody RecipeRequestDto recipeRequestDto, HttpServletRequest request) {
         // Gateway에서 전달한 사용자 ID를 헤더에서 가져옴
         String userIdHeader = request.getHeader("X-User-Id");
         if (userIdHeader == null || userIdHeader.isEmpty()) {
@@ -70,12 +67,12 @@ public class RecipeController {
         }
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
-        boolean success = likeRecipeService.toggleLikeRecipe(recipeId, userId);
-        if (success) {
-            return ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
-        }
+            boolean success = likeRecipeService.toggleLikeRecipe(recipeId, userId);
+            if (success) {
+                return ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
+            }
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -90,7 +87,7 @@ public class RecipeController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(HttpServletRequest request){
+    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(HttpServletRequest request) {
         String userIdHeader = request.getHeader("X-User-Id");
 
         if (userIdHeader == null) {
@@ -98,12 +95,12 @@ public class RecipeController {
         }
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
-        List<MypageRecipeResponseDto> recipes = recipeService.getRecipesByUserId(userId);
-        if (recipes.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } else {
-            return ResponseEntity.ok(recipes);
-        }
+            List<MypageRecipeResponseDto> recipes = recipeService.getRecipesByUserId(userId);
+            if (recipes.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            } else {
+                return ResponseEntity.ok(recipes);
+            }
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -118,12 +115,12 @@ public class RecipeController {
         }
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
-        List<MypageRecipeResponseDto> likedRecipes = recipeService.getLikeRecipesByUserId(userId);
-        if (likedRecipes.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } else {
-            return ResponseEntity.ok(likedRecipes);
-        }
+            List<MypageRecipeResponseDto> likedRecipes = recipeService.getLikeRecipesByUserId(userId);
+            if (likedRecipes.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            } else {
+                return ResponseEntity.ok(likedRecipes);
+            }
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
