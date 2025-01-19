@@ -12,6 +12,7 @@ public class RouterValidator {
     private final List<List<String>> securedApiEndpoints = List.of(
             List.of("GET", "/user/config"),
             List.of("GET", "/mypage"),
+            List.of("GET", "/users"),
             List.of("POST", "/recipes"),
             List.of("GET", "/recipes")
             // 채팅 관련 API는 모두 토큰 요구
