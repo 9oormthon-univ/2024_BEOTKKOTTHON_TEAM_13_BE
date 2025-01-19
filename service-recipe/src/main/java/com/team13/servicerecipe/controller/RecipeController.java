@@ -7,6 +7,7 @@ import com.team13.servicerecipe.dto.RecipeResponseDto;
 import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.service.LikeRecipeService;
 import com.team13.servicerecipe.service.RecipeService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +21,31 @@ import java.util.Optional;
 public class RecipeController {
     @Autowired
     private RecipeService recipeService;
+
     @Autowired
     private LikeRecipeService likeRecipeService;
 
     @PostMapping
     public ResponseEntity<RecipeResponseDto> createRecipe(
             @RequestBody RecipeRequestDto recipeRequestDto,
-            @RequestParam Long userId
+            HttpServletRequest request
     ) {
+        // Gateway에서 전달한 사용자 ID를 헤더에서 가져옴
+        String userIdHeader = request.getHeader("X-User-Id");
+        if (userIdHeader == null || userIdHeader.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
         try {
+            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             RecipeResponseDto savedRecipeResponse = recipeService.createRecipeWithDetails(recipeRequestDto, userId);
             return new ResponseEntity<>(savedRecipeResponse, HttpStatus.CREATED);
+        } catch (NumberFormatException e) {
+            // 헤더에서 가져온 사용자 ID가 숫자로 변환되지 않을 경우
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            // 비즈니스 로직에서 발생하는 기타 예외 처리
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
