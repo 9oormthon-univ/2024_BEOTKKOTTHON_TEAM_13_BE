@@ -37,6 +37,8 @@ public class SignRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LoginRequestDto {
+
+        @Email(message = "이메일은 유효해야합니다")
         @NotBlank(message = "이메일을 입력하세요")
         private String email;
 
