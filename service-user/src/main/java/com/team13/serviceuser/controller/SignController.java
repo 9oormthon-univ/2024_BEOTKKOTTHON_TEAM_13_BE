@@ -69,14 +69,33 @@ public class SignController {
     // 로그인 요청
     // 로그인 성공 시 클라이언트에게 JWT 토큰을 반환함
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto,
-                                        HttpServletResponse response) {
-        User user = signInService.login(loginRequestDto);
-        if (user == null) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody LoginRequestDto loginRequestDto,
+                                                     BindingResult bindingResult,
+                                                     HttpServletResponse response) {
+        // Request 전달 값 조건 에러시 메시지 (단일 메시지만 반환)
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors()
+                    .stream()
+                    .findFirst()
+                    .map(ObjectError::getDefaultMessage)
+                    .orElse("Validation failed.");
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.onFailure(ErrorStatus._BAD_REQUEST.getCode(), ErrorStatus._BAD_REQUEST.getMessage(), errorMessage));
         }
+
+        ApiResponse<User> apiResponse = signInService.login(loginRequestDto);
+
+        if (!apiResponse.getIsSuccess()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    ApiResponse.onFailure(apiResponse.getCode(), apiResponse.getMessage(), null)
+            );
+        }
+
+        // 로그인 성공 시 쿠키 생성
+        User user = (User) apiResponse.getResult();
         signInService.createCookieFromUser(user, response);
-        return ResponseEntity.ok("Login successful");
+
+        return ResponseEntity.ok(ApiResponse.onSuccess("로그인 성공"));
     }
 
 }
