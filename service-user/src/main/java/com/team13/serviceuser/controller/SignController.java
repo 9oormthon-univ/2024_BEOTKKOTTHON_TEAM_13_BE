@@ -81,7 +81,6 @@ public class SignController {
             return ResponseEntity.badRequest().body(
                     ApiResponse.onFailure(ErrorStatus._BAD_REQUEST.getCode(), ErrorStatus._BAD_REQUEST.getMessage(), errorMessage));
         }
-
         ApiResponse<User> apiResponse = signInService.login(loginRequestDto);
 
         if (!apiResponse.getIsSuccess()) {
@@ -96,5 +95,4 @@ public class SignController {
 
         return ResponseEntity.ok(ApiResponse.onSuccess("로그인 성공"));
     }
-
 }
