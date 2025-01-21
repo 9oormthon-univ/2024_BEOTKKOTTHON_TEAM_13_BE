@@ -2,7 +2,6 @@ package com.team13.serviceuser.controller;
 
 import com.team13.serviceuser.apiPyaload.ApiResponse;
 import com.team13.serviceuser.apiPyaload.code.status.ErrorStatus;
-import com.team13.serviceuser.dto.LoginRequestDto;
 import com.team13.serviceuser.dto.SignRequest;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.service.SignInService;
@@ -69,7 +68,7 @@ public class SignController {
     // 로그인 요청
     // 로그인 성공 시 클라이언트에게 JWT 토큰을 반환함
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody LoginRequestDto loginRequestDto,
+    public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody SignRequest.LoginRequestDto loginRequestDto,
                                                      BindingResult bindingResult,
                                                      HttpServletResponse response) {
         // Request 전달 값 조건 에러시 메시지 (단일 메시지만 반환)

@@ -2,7 +2,7 @@ package com.team13.serviceuser.service;
 
 import com.team13.serviceuser.apiPyaload.ApiResponse;
 import com.team13.serviceuser.apiPyaload.code.status.ErrorStatus;
-import com.team13.serviceuser.dto.LoginRequestDto;
+import com.team13.serviceuser.dto.SignRequest;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -50,7 +50,7 @@ public class SignInService {
         this.encoder = encoder;
     }
 
-    public ApiResponse<User> login(LoginRequestDto req) {
+    public ApiResponse<User> login(SignRequest.LoginRequestDto req) {
         // 이메일 유효성 검사
         Optional<User> optionalUser = userRepository.findByEmail(req.getEmail());
         if (optionalUser.isEmpty()) {
