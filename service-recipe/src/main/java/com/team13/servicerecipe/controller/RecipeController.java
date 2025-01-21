@@ -29,10 +29,6 @@ public class RecipeController {
     public ResponseEntity<RecipeResponseDto> createRecipe(@RequestBody RecipeRequestDto recipeRequestDto, HttpServletRequest request) {
         // Gateway에서 전달한 사용자 ID를 헤더에서 가져옴
         String userIdHeader = request.getHeader("X-User-Id");
-        if (userIdHeader == null || userIdHeader.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             RecipeResponseDto savedRecipeResponse = recipeService.createRecipeWithDetails(recipeRequestDto, userId);
@@ -56,8 +52,6 @@ public class RecipeController {
         }
     }
 
-    // localhost:4328:1/like?userId=2
-    //userId가 2인 사람이 Recipe1번 글 좋아요를 누른다.
     @PostMapping("/{recipeId}/like")
     public ResponseEntity<String> toggleLikeRecipe(@PathVariable("recipeId") Long recipeId, HttpServletRequest request) {
         String userIdHeader = request.getHeader("X-User-Id");
@@ -78,7 +72,6 @@ public class RecipeController {
         }
     }
 
-
     //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
     @GetMapping("/{recipeId}/likes")
     public ResponseEntity<Long> getLikesCount(@PathVariable("recipeId") Long recipeId) {
@@ -89,10 +82,6 @@ public class RecipeController {
     @GetMapping("/user")
     public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(HttpServletRequest request) {
         String userIdHeader = request.getHeader("X-User-Id");
-
-        if (userIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             List<MypageRecipeResponseDto> recipes = recipeService.getRecipesByUserId(userId);
@@ -109,10 +98,6 @@ public class RecipeController {
     @GetMapping("/like/user")
     public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(HttpServletRequest request) {
         String userIdHeader = request.getHeader("X-User-Id");
-
-        if (userIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             List<MypageRecipeResponseDto> likedRecipes = recipeService.getLikeRecipesByUserId(userId);

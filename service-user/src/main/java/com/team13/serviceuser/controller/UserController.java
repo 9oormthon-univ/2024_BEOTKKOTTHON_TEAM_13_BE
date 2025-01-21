@@ -23,10 +23,6 @@ public class UserController {
     @GetMapping()
     public ResponseEntity<User> getUserById(HttpServletRequest request) {
         String userIdHeader = request.getHeader("X-User-Id");
-
-        if (userIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             return userService.getUserById(userId)

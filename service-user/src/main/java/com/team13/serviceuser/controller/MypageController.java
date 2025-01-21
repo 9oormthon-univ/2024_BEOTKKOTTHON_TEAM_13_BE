@@ -29,10 +29,6 @@ public class MypageController {
     public ResponseEntity<UserDto> getUserInfo(HttpServletRequest request) {
         // Gateway에서 전달한 사용자 ID를 헤더에서 가져옴
         String userIdHeader = request.getHeader("X-User-Id");
-
-        if (userIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             UserDto user = myPageService.getUserById(userId); // 서비스 호출
@@ -53,10 +49,6 @@ public class MypageController {
     @GetMapping("/recipes")
     public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(HttpServletRequest request) {
         String userIdHeader = request.getHeader("X-User-Id");
-
-        if (userIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             List<MypageRecipeResponseDto> recipes = myPageService.getRecipesByUserId(userId);
@@ -81,10 +73,6 @@ public class MypageController {
     @GetMapping("/likeRecipes")
     public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(HttpServletRequest request) {
         String userIdHeader = request.getHeader("X-User-Id");
-
-        if (userIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             List<MypageRecipeResponseDto> likedRecipes = myPageService.getLikeRecipesByUserId(userId);
