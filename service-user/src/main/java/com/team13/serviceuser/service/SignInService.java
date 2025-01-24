@@ -1,6 +1,8 @@
 package com.team13.serviceuser.service;
 
-import com.team13.serviceuser.dto.LoginRequestDto;
+import com.team13.serviceuser.apiPyaload.ApiResponse;
+import com.team13.serviceuser.apiPyaload.code.status.ErrorStatus;
+import com.team13.serviceuser.dto.SignRequest;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -48,24 +50,19 @@ public class SignInService {
         this.encoder = encoder;
     }
 
-    public User login(LoginRequestDto req) {
-        //email에 대한 유효성 확인
+    public ApiResponse<User> login(SignRequest.LoginRequestDto req) {
+        // 이메일 유효성 검사
         Optional<User> optionalUser = userRepository.findByEmail(req.getEmail());
         if (optionalUser.isEmpty()) {
-            System.out.println("Login ID not found");
-            return null;
+            return ApiResponse.onFailure(ErrorStatus.LOGIN4002.getCode(), ErrorStatus.LOGIN4002.getMessage(), null);
         }
         User user = optionalUser.get();
-        System.out.println("User found: " + user.getEmail());
-
-        //비밀번호에 대한 유효성
+        // 비밀번호 유효성 검사
         if (!encoder.matches(req.getPassword(), user.getPassword())) {
-            System.out.println("Password does not match");
-            return null;
+            return ApiResponse.onFailure(ErrorStatus.LOGIN4001.getCode(), ErrorStatus.LOGIN4001.getMessage(), null);
         }
-
-        System.out.println("Password matches");
-        return user;
+        // 로그인 성공 시
+        return ApiResponse.onSuccess(user);
     }
 
     // JWT 쿠키 생성
