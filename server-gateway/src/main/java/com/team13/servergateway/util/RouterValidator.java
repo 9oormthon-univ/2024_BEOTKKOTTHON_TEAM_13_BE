@@ -13,11 +13,14 @@ public class RouterValidator {
             List.of("GET", "/user/config"),
             List.of("GET", "/mypage"),
             List.of("GET", "/users"),
+            // NOTE: 레시피 서비스
             List.of("POST", "/recipes"),
-            List.of("GET", "/recipes")
-            // 채팅 관련 API는 모두 토큰 요구
-//            List.of("GET", "/chat"),
-//            List.of("POST", "/chat")
+            List.of("GET", "/recipes"),
+            // NOTE: 채팅 서비스
+            List.of("GET", "/chatroom"),
+            List.of("GET", "/chatroom/list"),
+            List.of("POST", "/chatroom"),
+            List.of("POST", "/chatroom/join")
     );
 
     // 만약 request의 path가 securedApiEndpoints 중 하나인 경우 true를 반환하고, 그렇지 않으면 false를 반환함

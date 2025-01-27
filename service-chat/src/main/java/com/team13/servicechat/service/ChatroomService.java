@@ -39,20 +39,10 @@ public class ChatroomService {
         if (!chatroomRepository.existsById("test-chatroom")) {
             chatroomRepository.save(Chatroom.builder()
                             .id("test-chatroom")
-                            .postId(1)
+                            .postId(-1)
                             .messageIds(new ArrayList<>())
-                            .userIds(new ArrayList<>(List.of(1L, 2L)))
+                            .userIds(new ArrayList<>())
                             .build());
-
-            userJoinedChatsRepository.save(UserJoinedChats.builder()
-                            .id(1L)
-                            .chatroomIds(List.of("test-chatroom"))
-                            .build());
-
-            userJoinedChatsRepository.save(UserJoinedChats.builder()
-                    .id(2L)
-                    .chatroomIds(List.of("test-chatroom"))
-                    .build());
         }
     }
 
@@ -191,6 +181,8 @@ public class ChatroomService {
     public List<ChatroomDto> getChatroomList(Long userId) {
 
         Optional<UserJoinedChats> userJoinedChats = userJoinedChatsRepository.findById(userId);
+
+        System.out.println(userJoinedChats);
 
         // 사용자가 참여한 채팅방이 존재하는 경우에만 결과 반환
         if (userJoinedChats.isPresent()) {
