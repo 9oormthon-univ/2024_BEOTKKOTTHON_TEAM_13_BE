@@ -2,23 +2,32 @@ package com.team13.servicechat.service;
 
 import com.team13.servicechat.dto.ChatMessageDto;
 import com.team13.servicechat.dto.ChatroomDto;
+import com.team13.servicechat.dto.PostInfoDTO;
+import com.team13.servicechat.dto.feign.PostDTO;
 import com.team13.servicechat.entity.ChatMessage;
 import com.team13.servicechat.entity.Chatroom;
 import com.team13.servicechat.entity.UserJoinedChats;
+import com.team13.servicechat.feign.PostServiceClient;
 import com.team13.servicechat.repository.ChatMessageRepository;
 import com.team13.servicechat.repository.ChatroomRepository;
 import com.team13.servicechat.repository.UserJoinedChatsRepository;
+import feign.FeignException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class ChatroomService {
+
+    // NOTE: service-post에 연결하기 위한 Feign 갹채
+    private final PostServiceClient postServiceClient;
 
     // 채팅방 메시지 데이터를 저장하는 레포지토리
     private final ChatroomRepository chatroomRepository;
@@ -39,7 +48,7 @@ public class ChatroomService {
         if (!chatroomRepository.existsById("test-chatroom")) {
             chatroomRepository.save(Chatroom.builder()
                             .id("test-chatroom")
-                            .postId(-1)
+                            .postId(1)
                             .messageIds(new ArrayList<>())
                             .userIds(new ArrayList<>())
                             .build());
@@ -182,8 +191,6 @@ public class ChatroomService {
 
         Optional<UserJoinedChats> userJoinedChats = userJoinedChatsRepository.findById(userId);
 
-        System.out.println(userJoinedChats);
-
         // 사용자가 참여한 채팅방이 존재하는 경우에만 결과 반환
         if (userJoinedChats.isPresent()) {
             List<ChatroomDto> chatroomDtos = new ArrayList<>();
@@ -198,12 +205,36 @@ public class ChatroomService {
                 List<ChatMessage> unreadMessages = userUnreadMsgsService.getUnreadMsgsInChatroom(userId, chatroomId);
 
                 // 존재하는 채팅방인 경우에만 chatroomDtos에 추가
-                opChatroom.ifPresent(chatroom -> chatroomDtos.add(ChatroomDto.builder()
+                if (opChatroom.isPresent()) {
+                    // NOTE: 채팅방에 연결된 게시글이 없을 경우를 대비한 try문
+                    try {
+                        // NOTE: 해당 채팅방의 게시글 정보를 가져옴
+                        PostDTO post = postServiceClient.getPostById(opChatroom.get().getPostId());
+
+                        // NOTE: 게시글 정보를 담는 DTO 생성
+                        PostInfoDTO postInfo = PostInfoDTO.builder()
+                                .title(post.getTitle())
+                                .imagePath(post.getImages().isEmpty() ? "" : post.getImages().get(0).getImagePath())
+                                .build();
+
+                        // NOTE: 마지막 채팅 메시지 정보 가져오기
+                        List<Long> messages = opChatroom.get().getMessageIds();
+                        Long lastMsgId = messages.get(messages.size() - 1);
+
+                        Optional<ChatMessage> lastMsg = getMessageById(lastMsgId);
+
+                        // NOTE: 채팅방 정보 추가
+                        opChatroom.ifPresent(chatroom -> chatroomDtos.add(ChatroomDto.builder()
                                 .id(chatroom.getId())
                                 .postId(chatroom.getPostId())
                                 .unreadMsgsCounter(unreadMessages.size())
-                                .lastMessage(chatroom.getLastMessage())
+                                .lastMessage(lastMsg.orElse(null))
+                                .post(postInfo)
                                 .build()));
+                    } catch (FeignException e) {
+                        log.error("Couldn't find post!", e);
+                    }
+                }
             }
 
             return chatroomDtos;
