@@ -2,7 +2,6 @@ package com.team13.servicechat.controller;
 
 import com.team13.servicechat.dto.ChatroomDto;
 import com.team13.servicechat.dto.JwtPayloadDto;
-import com.team13.servicechat.entity.Chatroom;
 import com.team13.servicechat.feign.UserFeignClient;
 import com.team13.servicechat.service.ChatroomService;
 import com.team13.servicechat.service.JwtService;
@@ -66,11 +65,8 @@ public class IndexController {
 
     // 사용자가 속한 채팅방 리스트 반환
     @GetMapping("/chatroom/list")
-    public List<ChatroomDto> getChatroomList(@CookieValue("LTK") String loginToken) {
-
-        JwtPayloadDto payload = jwtService.getPayloadFromToken(loginToken);
-
-        return chatroomService.getChatroomList(Long.parseLong(payload.getUserId()));
+    public List<ChatroomDto> getChatroomList(@RequestHeader("X-User-Id") String userId) {
+        return chatroomService.getChatroomList(Long.parseLong(userId));
     }
 
 

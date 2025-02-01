@@ -1,5 +1,6 @@
 package com.team13.servicechat.dto;
 
+import com.team13.servicechat.entity.ChatMessage;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ public class ChatroomDto {
     private Long postId;
     private List<Long> userIds;
     private List<ChatMessageDto> messages;
-    private String lastMessage;
     private Integer unreadMsgsCounter;
+    private ChatMessage lastMessage;
+    private PostInfoDTO post;
 }
