@@ -52,7 +52,7 @@ public class RecipeController {
         }
     }
 
-    @PostMapping("/{recipeId}/like")
+    @PostMapping("/like/{recipeId}")
     public ResponseEntity<String> toggleLikeRecipe(@PathVariable("recipeId") Long recipeId, HttpServletRequest request) {
         String userIdHeader = request.getHeader("X-User-Id");
 
@@ -73,7 +73,7 @@ public class RecipeController {
     }
 
     //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
-    @GetMapping("/{recipeId}/likes")
+    @GetMapping("/like/{recipeId}")
     public ResponseEntity<Long> getLikesCount(@PathVariable("recipeId") Long recipeId) {
         Long likesCount = likeRecipeService.getLikesCount(recipeId);
         return ResponseEntity.ok(likesCount);
