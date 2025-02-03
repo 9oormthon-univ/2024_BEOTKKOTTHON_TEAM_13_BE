@@ -20,7 +20,10 @@ public class RouterValidator {
             List.of("GET", "/api2/chat/chatroom"),
             List.of("GET", "/api2/chat/chatroom/list"),
             List.of("POST", "/api2/chat/chatroom"),
-            List.of("POST", "/api2/chat/chatroom/join")
+            List.of("POST", "/api2/chat/chatroom/join"),
+            // NOTE: 공동구매 서비스
+            List.of("POST", "/api2/post/posts"),
+            List.of("GET", "/api2/post/posts")
     );
 
     // 만약 request의 path가 securedApiEndpoints 중 하나인 경우 true를 반환하고, 그렇지 않으면 false를 반환함

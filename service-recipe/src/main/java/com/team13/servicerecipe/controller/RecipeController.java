@@ -55,10 +55,6 @@ public class RecipeController {
     @PostMapping("/{recipeId}/like")
     public ResponseEntity<String> toggleLikeRecipe(@PathVariable("recipeId") Long recipeId, HttpServletRequest request) {
         String userIdHeader = request.getHeader("X-User-Id");
-
-        if (userIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             boolean success = likeRecipeService.toggleLikeRecipe(recipeId, userId);

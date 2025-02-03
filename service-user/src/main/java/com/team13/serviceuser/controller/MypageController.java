@@ -39,10 +39,16 @@ public class MypageController {
     }
 
     // 사용자가 작성한 공동구매게시글 가져오기
-    @GetMapping("/user/{userId}/posts")
-    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId(@PathVariable("userId") Long userId) {
-        List<MypagePostResponseDto> posts = myPageService.getPostsByUserId(userId);
-        return ResponseEntity.ok(posts);
+    @GetMapping("/posts")
+    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId(HttpServletRequest request) {
+        String userIdHeader = request.getHeader("X-User-Id");
+        try {
+            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
+            List<MypagePostResponseDto> posts = myPageService.getPostsByUserId(userId);
+            return ResponseEntity.ok(posts);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     //사용자가 작성한 레시피 가져오기
@@ -59,13 +65,19 @@ public class MypageController {
     }
 
     //사용자가 좋아요 누른 공동구매게시글
-    @GetMapping("/user/{userId}/likePosts")
-    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@PathVariable("userId") Long userId) {
-        List<MypagePostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
-        if (likedPosts.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } else {
-            return ResponseEntity.ok(likedPosts);
+    @GetMapping("/likePosts")
+    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(HttpServletRequest request) {
+        String userIdHeader = request.getHeader("X-User-Id");
+        try {
+            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
+            List<MypagePostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
+            if (likedPosts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            } else {
+                return ResponseEntity.ok(likedPosts);
+            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
