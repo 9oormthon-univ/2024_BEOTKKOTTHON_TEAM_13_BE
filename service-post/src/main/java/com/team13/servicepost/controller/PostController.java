@@ -48,8 +48,6 @@ public class PostController {
         }
     }
 
-    // localhost:925:1/like?userId=2
-    //userId가 2인 사람이 Post1번 글 좋아요를 누른다.
     @PostMapping("/like/{postId}")
     public ResponseEntity<String> toggleLikePost(@PathVariable("postId") Long postId, HttpServletRequest request) {
         String userIdHeader = request.getHeader("X-User-Id");
@@ -67,7 +65,7 @@ public class PostController {
     }
 
     //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
-    @GetMapping("/like/{postId}/")
+    @GetMapping("/like/{postId}")
     public ResponseEntity<Long> getLikesCount(@PathVariable("postId") Long postId) {
         Long likesCount = likePostService.getLikesCount(postId);
         return ResponseEntity.ok(likesCount);

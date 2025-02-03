@@ -23,14 +23,21 @@ public class RouterValidator {
             List.of("POST", "/api2/chat/chatroom/join"),
             // NOTE: 공동구매 서비스
             List.of("POST", "/api2/post/posts"),
-            List.of("GET", "/api2/post/posts")
+            List.of("GET", "/api2/post/posts"),
+            List.of("POST", "/api2/post/posts/like"), //동적 처리 {postId} 인식 위해서
+            List.of("GET", "/api2/post/posts/like")
     );
 
     // 만약 request의 path가 securedApiEndpoints 중 하나인 경우 true를 반환하고, 그렇지 않으면 false를 반환함
     public boolean isSecured(ServerHttpRequest request) {
+        String path = request.getURI().getPath();
         return securedApiEndpoints.stream().anyMatch(methodAndPath ->
                 request.getMethod().toString().equals(methodAndPath.get(0)) &&
-                        request.getURI().getPath().equals(methodAndPath.get(1))
+                        (
+                                path.equals(methodAndPath.get(1))
+                                        || (path.startsWith("/api2/recipe/recipes/like/") && methodAndPath.get(1).equals("/api2/recipe/recipes/like"))
+                                        ||(path.startsWith("/api2/post/posts/like/") && methodAndPath.get(1).equals("/api2/post/posts/like"))
+                        )
         );
     }
 }
