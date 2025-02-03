@@ -11,8 +11,12 @@ public class RouterValidator {
     // 로그인 토큰이 요구되는 path
     private final List<List<String>> securedApiEndpoints = List.of(
             // NOTE: 유저 서비스
-            List.of("GET", "/api2/user/mypage"),
+            List.of("GET", "/api2/user/mypage/info"),
+            List.of("GET", "/api2/user/mypage/recipes"),
+            List.of("GET", "/api2/user/mypage/likeRecipes"),
             List.of("GET", "/api2/user/users"),
+            List.of("GET", "/api2/user/mypage/posts"),
+            List.of("GET", "/api2/user/mypage/likePosts"),
             // NOTE: 레시피 서비스
             List.of("POST", "/api2/recipe/recipes"),
             List.of("GET", "/api2/recipe/recipes"),
