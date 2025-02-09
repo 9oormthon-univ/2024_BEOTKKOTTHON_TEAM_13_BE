@@ -53,12 +53,9 @@ public class PostController {
         String userIdHeader = request.getHeader("X-User-Id");
         try {
             Long userId = Long.valueOf(userIdHeader);
-            boolean success = likePostService.toggleLikePost(postId, userId);
-            if (success) {
-                return ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다");
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
-            }
+            return likePostService.toggleLikePost(postId, userId)
+                    ? ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다")
+                    : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
