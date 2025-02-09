@@ -35,16 +35,22 @@ public class PostController {
         } catch (RuntimeException e) {
             // 오류 발생 시 400 BAD REQUEST 반환
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponseDto> getPostById(@PathVariable("postId") Long postId) {
-        Optional<PostResponseDto> postWithDetails = postService.getPostWithUserDetails(postId);
-        if (postWithDetails.isPresent()) {
-            return ResponseEntity.ok(postWithDetails.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        try {
+            Optional<PostResponseDto> postWithDetails = postService.getPostWithUserDetails(postId);
+            if (postWithDetails.isPresent()) {
+                return ResponseEntity.ok(postWithDetails.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -58,14 +64,20 @@ public class PostController {
                     : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 내부 오류가 발생했습니다.");
         }
     }
 
     //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
     @GetMapping("/like/{postId}")
     public ResponseEntity<Long> getLikesCount(@PathVariable("postId") Long postId) {
-        Long likesCount = likePostService.getLikesCount(postId);
-        return ResponseEntity.ok(likesCount);
+        try {
+            Long likesCount = likePostService.getLikesCount(postId);
+            return ResponseEntity.ok(likesCount);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @GetMapping("/user")
@@ -81,6 +93,8 @@ public class PostController {
             }
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -98,6 +112,8 @@ public class PostController {
             }
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }
