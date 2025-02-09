@@ -26,11 +26,9 @@ public class RecipeController {
     private LikeRecipeService likeRecipeService;
 
     @PostMapping
-    public ResponseEntity<RecipeResponseDto> createRecipe(@RequestBody RecipeRequestDto recipeRequestDto, HttpServletRequest request) {
+    public ResponseEntity<RecipeResponseDto> createRecipe(@RequestBody RecipeRequestDto recipeRequestDto, @RequestHeader("X-User-Id") Long userId) {
         // Gateway에서 전달한 사용자 ID를 헤더에서 가져옴
-        String userIdHeader = request.getHeader("X-User-Id");
         try {
-            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             RecipeResponseDto savedRecipeResponse = recipeService.createRecipeWithDetails(recipeRequestDto, userId);
             return new ResponseEntity<>(savedRecipeResponse, HttpStatus.CREATED);
         } catch (NumberFormatException e) {
@@ -53,10 +51,8 @@ public class RecipeController {
     }
 
     @PostMapping("/{recipeId}/like")
-    public ResponseEntity<String> toggleLikeRecipe(@PathVariable("recipeId") Long recipeId, HttpServletRequest request) {
-        String userIdHeader = request.getHeader("X-User-Id");
+    public ResponseEntity<String> toggleLikeRecipe(@PathVariable("recipeId") Long recipeId, @RequestHeader("X-User-Id") Long userId) {
         try {
-            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             boolean success = likeRecipeService.toggleLikeRecipe(recipeId, userId);
             if (success) {
                 return ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다");
@@ -76,10 +72,8 @@ public class RecipeController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(HttpServletRequest request) {
-        String userIdHeader = request.getHeader("X-User-Id");
+    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
         try {
-            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             List<MypageRecipeResponseDto> recipes = recipeService.getRecipesByUserId(userId);
             if (recipes.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -92,10 +86,8 @@ public class RecipeController {
     }
 
     @GetMapping("/like/user")
-    public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(HttpServletRequest request) {
-        String userIdHeader = request.getHeader("X-User-Id");
+    public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
         try {
-            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             List<MypageRecipeResponseDto> likedRecipes = recipeService.getLikeRecipesByUserId(userId);
             if (likedRecipes.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
