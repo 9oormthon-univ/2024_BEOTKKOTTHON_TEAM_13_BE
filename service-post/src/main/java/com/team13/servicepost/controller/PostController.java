@@ -24,11 +24,8 @@ public class PostController {
     private LikePostService likePostService;
 
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto, HttpServletRequest request) {
-        String userIdHeader = request.getHeader("X-User-Id");
-
+    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto,@RequestHeader("X-User-Id") Long userId) {
         try {
-            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             // 게시글과 관련된 세부 정보 저장
             PostResponseDto savedPostResponse = postService.createPostWithDetails(postRequestDto, userId);
             return new ResponseEntity<>(savedPostResponse, HttpStatus.CREATED);
@@ -52,10 +49,8 @@ public class PostController {
     }
 
     @PostMapping("/like/{postId}")
-    public ResponseEntity<String> toggleLikePost(@PathVariable("postId") Long postId, HttpServletRequest request) {
-        String userIdHeader = request.getHeader("X-User-Id");
+    public ResponseEntity<String> toggleLikePost(@PathVariable("postId") Long postId, @RequestHeader("X-User-Id") Long userId) {
         try {
-            Long userId = Long.valueOf(userIdHeader);
             return likePostService.toggleLikePost(postId, userId)
                     ? ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다")
                     : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
@@ -78,10 +73,8 @@ public class PostController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId(HttpServletRequest request) {
-        String userIdHeader = request.getHeader("X-User-Id");
+    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId( @RequestHeader("X-User-Id") Long userId) {
         try {
-            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             List<MypagePostResponseDto> posts = postService.getPostsByUserId(userId);
             return posts.isEmpty()
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
@@ -95,10 +88,8 @@ public class PostController {
 
     // 사용자가 좋아요한 게시글 가져오기
     @GetMapping("/like/user")
-    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(HttpServletRequest request) {
-        String userIdHeader = request.getHeader("X-User-Id");
+    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
         try {
-            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             List<MypagePostResponseDto> likedPosts = postService.getLikePostsByUserId(userId);
             if (likedPosts.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
