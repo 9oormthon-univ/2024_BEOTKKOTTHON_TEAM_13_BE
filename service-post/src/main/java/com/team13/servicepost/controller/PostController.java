@@ -44,11 +44,8 @@ public class PostController {
     public ResponseEntity<PostResponseDto> getPostById(@PathVariable("postId") Long postId) {
         try {
             Optional<PostResponseDto> postWithDetails = postService.getPostWithUserDetails(postId);
-            if (postWithDetails.isPresent()) {
-                return ResponseEntity.ok(postWithDetails.get());
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
+            return postWithDetails.map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
@@ -86,11 +83,9 @@ public class PostController {
         try {
             Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
             List<MypagePostResponseDto> posts = postService.getPostsByUserId(userId);
-            if (posts.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            } else {
-                return ResponseEntity.ok(posts);
-            }
+            return posts.isEmpty()
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+                    : ResponseEntity.ok(posts);
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
