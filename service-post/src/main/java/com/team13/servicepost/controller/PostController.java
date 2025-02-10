@@ -5,6 +5,7 @@ import com.team13.servicepost.dto.PostRequestDto;
 import com.team13.servicepost.dto.PostResponseDto;
 import com.team13.servicepost.service.LikePostService;
 import com.team13.servicepost.service.PostService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/posts")
@@ -21,68 +23,46 @@ public class PostController {
     private PostService postService;
     @Autowired
     private LikePostService likePostService;
+
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(
-            @RequestBody PostRequestDto postRequestDto,
-            @RequestParam Long userId // userId를 쿼리 파라미터로 받음
-    ) {
-        try {
-            // 게시글과 관련된 세부 정보 저장
-            PostResponseDto savedPostResponse = postService.createPostWithDetails(postRequestDto, userId);
-            return new ResponseEntity<>(savedPostResponse, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            // 오류 발생 시 400 BAD REQUEST 반환
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto,@RequestHeader("X-User-Id") Long userId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPostWithDetails(postRequestDto, userId));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PostResponseDto> getPostById(@PathVariable("id") Long id) {
-        Optional<PostResponseDto> postWithDetails = postService.getPostWithUserDetails(id);
-        if (postWithDetails.isPresent()) {
-            return ResponseEntity.ok(postWithDetails.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostResponseDto> getPostById(@PathVariable("postId") Long postId) {
+        return postService.getPostWithUserDetails(postId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
-    // localhost:925:1/like?userId=2
-    //userId가 2인 사람이 Post1번 글 좋아요를 누른다.
-    @PostMapping("/{postId}/like")
-    public ResponseEntity<String> toggleLikePost(@PathVariable("postId") Long postId, @RequestParam Long userId) {
-        boolean success = likePostService.toggleLikePost(postId, userId);
-        if (success) {
-            return ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
-        }
+    @PostMapping("/like/{postId}")
+    public ResponseEntity<String> toggleLikePost(@PathVariable("postId") Long postId, @RequestHeader("X-User-Id") Long userId) {
+        return likePostService.toggleLikePost(postId, userId)
+                ? ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다")
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
     }
 
     //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
-    @GetMapping("/{postId}/likes")
+    @GetMapping("/like/{postId}")
     public ResponseEntity<Long> getLikesCount(@PathVariable("postId") Long postId) {
-        Long likesCount = likePostService.getLikesCount(postId);
-        return ResponseEntity.ok(likesCount);
+        return ResponseEntity.ok(likePostService.getLikesCount(postId));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId(@PathVariable("userId") Long userId) {
-        List<MypagePostResponseDto> posts = postService.getPostsByUserId(userId);
-        if (posts.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } else {
-            return ResponseEntity.ok(posts);
-        }
+    @GetMapping("/user")
+    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId( @RequestHeader("X-User-Id") Long userId) {
+            List<MypagePostResponseDto> posts = postService.getPostsByUserId(userId);
+            return posts.isEmpty()
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+                    : ResponseEntity.ok(posts);
     }
 
     // 사용자가 좋아요한 게시글 가져오기
-    @GetMapping("/like/user/{userId}")
-    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@PathVariable("userId") Long userId) {
-        List<MypagePostResponseDto> likedPosts = postService.getLikePostsByUserId(userId);
-        if (likedPosts.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } else {
-            return ResponseEntity.ok(likedPosts);
-        }
+    @GetMapping("/like/user")
+    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
+            List<MypagePostResponseDto> likedPosts = postService.getLikePostsByUserId(userId);
+            return likedPosts.isEmpty()
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+                    : ResponseEntity.ok(likedPosts);
     }
 }

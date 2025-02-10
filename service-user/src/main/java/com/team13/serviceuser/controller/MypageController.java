@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/mypage")
@@ -26,71 +27,43 @@ public class MypageController {
 
     // 사용자 정보 가져오기
     @GetMapping("/info")
-    public ResponseEntity<UserDto> getUserInfo(HttpServletRequest request) {
-        // Gateway에서 전달한 사용자 ID를 헤더에서 가져옴
-        String userIdHeader = request.getHeader("X-User-Id");
-        try {
-            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
-            UserDto user = myPageService.getUserById(userId); // 서비스 호출
-            return ResponseEntity.ok(user);
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+    public ResponseEntity<UserDto> getUserInfo(@RequestHeader("X-User-Id") Long userId) {
+        return ResponseEntity.ok(myPageService.getUserById(userId));
     }
 
     // 사용자가 작성한 공동구매게시글 가져오기
-    @GetMapping("/user/{userId}/posts")
-    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId(@PathVariable("userId") Long userId) {
-        List<MypagePostResponseDto> posts = myPageService.getPostsByUserId(userId);
-        return ResponseEntity.ok(posts);
+    @GetMapping("/posts")
+    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId) {
+        return ResponseEntity.ok(myPageService.getPostsByUserId(userId));
     }
 
     //사용자가 작성한 레시피 가져오기
     @GetMapping("/recipes")
-    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(HttpServletRequest request) {
-        String userIdHeader = request.getHeader("X-User-Id");
-        try {
-            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
-            List<MypageRecipeResponseDto> recipes = myPageService.getRecipesByUserId(userId);
-            return ResponseEntity.ok(recipes);
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
+        return ResponseEntity.ok(myPageService.getRecipesByUserId(userId));
     }
 
     //사용자가 좋아요 누른 공동구매게시글
-    @GetMapping("/user/{userId}/likePosts")
-    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@PathVariable("userId") Long userId) {
-        List<MypagePostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
-        if (likedPosts.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } else {
-            return ResponseEntity.ok(likedPosts);
-        }
+    @GetMapping("/likePosts")
+    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
+            List<MypagePostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
+            return likedPosts.isEmpty()
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+                    : ResponseEntity.ok(likedPosts);
     }
 
     //사용자가 좋아요 누른 레시피
     @GetMapping("/likeRecipes")
-    public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(HttpServletRequest request) {
-        String userIdHeader = request.getHeader("X-User-Id");
-        try {
-            Long userId = Long.valueOf(userIdHeader); // 사용자 ID 파싱
+    public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
             List<MypageRecipeResponseDto> likedRecipes = myPageService.getLikeRecipesByUserId(userId);
-            if (likedRecipes.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            } else {
-                return ResponseEntity.ok(likedRecipes);
-            }
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+            return likedRecipes.isEmpty()
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+                    : ResponseEntity.ok(likedRecipes);
     }
 
     @PutMapping("/user/{userId}")
     public ResponseEntity<UserDto> updateUser(@PathVariable("userId") Long userId, @RequestBody UserDto userDto) {
-        UserDto updatedUser = myPageService.updateUser(userId, userDto);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(myPageService.updateUser(userId, userDto));
     }
-
-
+    
 }
