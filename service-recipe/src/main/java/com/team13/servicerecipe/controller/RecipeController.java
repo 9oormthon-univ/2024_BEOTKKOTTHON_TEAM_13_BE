@@ -28,67 +28,44 @@ public class RecipeController {
 
     @PostMapping
     public ResponseEntity<RecipeResponseDto> createRecipe(@RequestBody RecipeRequestDto recipeRequestDto, @RequestHeader("X-User-Id") Long userId) {
-        return handleException(() -> {
             RecipeResponseDto savedRecipeResponse = recipeService.createRecipeWithDetails(recipeRequestDto, userId);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedRecipeResponse);
-        });
     }
 
     @GetMapping("/{recipeId}")
     public ResponseEntity<RecipeResponseDto> getRecipeById(@PathVariable("recipeId") Long recipeId) {
-        return handleException(() -> recipeService.getRecipeWithUserDetails(recipeId)
+        return recipeService.getRecipeWithUserDetails(recipeId)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null))
-        );
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
     @PostMapping("/like/{recipeId}")
     public ResponseEntity<String> toggleLikeRecipe(@PathVariable("recipeId") Long recipeId, @RequestHeader("X-User-Id") Long userId) {
-        return handleException(() -> {
             boolean success = likeRecipeService.toggleLikeRecipe(recipeId, userId);
             return success
                     ? ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다")
                     : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
-        });
     }
 
     //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
     @GetMapping("/like/{recipeId}")
     public ResponseEntity<Long> getLikesCount(@PathVariable("recipeId") Long recipeId) {
-        return handleException(() ->  ResponseEntity.ok(likeRecipeService.getLikesCount(recipeId)));
+        return ResponseEntity.ok(likeRecipeService.getLikesCount(recipeId));
     }
 
     @GetMapping("/user")
     public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
-        return handleException(() -> {
             List<MypageRecipeResponseDto> recipes = recipeService.getRecipesByUserId(userId);
             return recipes.isEmpty()
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
                     : ResponseEntity.ok(recipes);
-        });
     }
 
     @GetMapping("/like/user")
     public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
-        return handleException(() -> {
             List<MypageRecipeResponseDto> likedRecipes = recipeService.getLikeRecipesByUserId(userId);
             return likedRecipes.isEmpty()
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
                     : ResponseEntity.ok(likedRecipes);
-        });
-    }
-
-    private <T> ResponseEntity<T> handleException(Supplier<ResponseEntity<T>> action) {
-        try {
-            return action.get();
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
     }
 }
