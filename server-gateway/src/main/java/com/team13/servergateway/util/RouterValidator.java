@@ -20,7 +20,7 @@ public class RouterValidator {
             // NOTE: 레시피 서비스
             List.of("POST", "/api2/recipe/recipes"),
             List.of("GET", "/api2/recipe/recipes"),
-            List.of("POST", "/api2/recipe/recipes/like"), //동적 처리 {postId} 인식 위해서
+            List.of("POST", "/api2/recipe/recipes/like"), //동적 처리 {Id} 인식 위해서
             List.of("GET", "/api2/recipe/recipes/like"),
             // NOTE: 채팅 서비스
             List.of("GET", "/api2/chat/chatroom"),
