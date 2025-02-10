@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RecipeProcessService {
@@ -21,20 +22,25 @@ public class RecipeProcessService {
         return recipeProcessRepository.findByRecipeId(recipeId);
     }
 
+    public List<RecipeProcessDto> getProcessDtosByRecipeId(Long recipeId) {
+        return getProcessByRecipeId(recipeId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
     public RecipeProcessDto convertToDto(RecipeProcess process) {
-        RecipeProcessDto dto = new RecipeProcessDto();
-        dto.setId(process.getId());
-        dto.setRecipeId(process.getRecipe().getId());
-        dto.setImagePath(process.getImagePath());
-        dto.setContents(process.getContents());
-        return dto;
+        return RecipeProcessDto.builder()
+                .id(process.getId())
+                .imagePath(process.getImagePath())
+                .contents(process.getContents())
+                .build();
     }
 
     public RecipeProcess convertToEntity(RecipeProcessDto dto) {
-        RecipeProcess process = new RecipeProcess();
-        process.setId(dto.getId());
-        process.setImagePath(dto.getImagePath());
-        process.setContents(dto.getContents());
-        return process;
+        return RecipeProcess.builder()
+                .id(dto.getId())
+                .imagePath(dto.getImagePath())
+                .contents(dto.getContents())
+                .build();
     }
 }

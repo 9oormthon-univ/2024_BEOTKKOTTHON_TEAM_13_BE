@@ -65,5 +65,5 @@ public class MypageController {
     public ResponseEntity<UserDto> updateUser(@PathVariable("userId") Long userId, @RequestBody UserDto userDto) {
         return ResponseEntity.ok(myPageService.updateUser(userId, userDto));
     }
-    
+
 }

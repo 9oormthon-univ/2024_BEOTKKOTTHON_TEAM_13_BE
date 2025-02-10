@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RecipeIngredientService {
@@ -21,21 +22,26 @@ public class RecipeIngredientService {
     public List<RecipeIngredient> getIngredientsByRecipeId(Long recipeId) {
         return recipeIngredientRepository.findByRecipeId(recipeId);
     }
+
+    public List<RecipeIngredientDto> getIngredientDtosByRecipeId(Long recipeId) {
+        return getIngredientsByRecipeId(recipeId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
     public RecipeIngredientDto convertToDto(RecipeIngredient ingredient) {
-        RecipeIngredientDto dto = new RecipeIngredientDto();
-        dto.setId(ingredient.getId());
-        dto.setRecipeId(ingredient.getRecipe().getId());
-        dto.setName(ingredient.getName());
-        dto.setAmount(ingredient.getAmount());
-        return dto;
+        return RecipeIngredientDto.builder()
+                .id(ingredient.getId())
+                .name(ingredient.getName())
+                .amount(ingredient.getAmount())
+                .build();
     }
 
     public  RecipeIngredient convertToEntity( RecipeIngredientDto dto) {
-         RecipeIngredient ingredient = new  RecipeIngredient();
-        ingredient.setId(dto.getId());
-        ingredient.setName(dto.getName());
-        ingredient.setAmount(dto.getAmount());
-        return ingredient;
+        return RecipeIngredient.builder()
+                .id(dto.getId())
+                .name(dto.getName())
+                .amount(dto.getAmount())
+                .build();
     }
 
 }

@@ -25,46 +25,39 @@ import java.util.Optional;
 
     @PostMapping("/{recipeId}")
     public ResponseEntity<RecipeCommentDto> addComment(@PathVariable("recipeId") Long recipeId, @RequestBody RecipeCommentDto commentDto) {
-        Optional<Recipe> recipeOptional = recipeService.getRecipeById(recipeId);
-        if (!recipeOptional.isPresent()) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        if (recipeService.getRecipeById(recipeId).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        RecipeComment comment = new RecipeComment();
-        comment.setComment(commentDto.getComment());
-        comment.setCreatedAt(new Date());
-        comment.setUserId(commentDto.getUserId());
-        comment.setRecipe(recipeOptional.get());
-        if (commentDto.getParentCommentId() != null) {
-            RecipeComment parentComment = recipeCommentService.getCommentById(commentDto.getParentCommentId());
-            comment.setParentComment(parentComment);
-        }
-
-        RecipeComment savedComment = recipeCommentService.saveComment(comment);
-        RecipeCommentDto savedCommentDto = recipeCommentService.convertToDto(savedComment);
-
-        return new ResponseEntity<>(savedCommentDto, HttpStatus.CREATED);
+        RecipeCommentDto savedCommentDto = recipeCommentService.addComment(recipeId, commentDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCommentDto);
     }
 
     //해당 레시피에 있는 댓글
     @GetMapping("/{recipeId}")
     public ResponseEntity<List<RecipeCommentDto>> getCommentsByRecipeId(@PathVariable("recipeId") Long recipeId) {
         List<RecipeCommentDto> comments = recipeCommentService.getCommentsByRecipeId(recipeId);
-        return new ResponseEntity<>(comments, HttpStatus.OK);
+        return comments.isEmpty()
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+                : ResponseEntity.ok(comments);
     }
 
     //해당 댓글에 달린 답글 확인
     @GetMapping("/{commentId}/replies")
     public ResponseEntity<List<RecipeCommentDto>> getRepliesByCommentId(@PathVariable("commentId") Long commentId) {
         List<RecipeCommentDto> replies = recipeCommentService.getRepliesByCommentId(commentId);
-        return new ResponseEntity<>(replies, HttpStatus.OK);
+        return replies.isEmpty()
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+                : ResponseEntity.ok(replies);
     }
 
     //내가 쓴 댓글 확인
     @GetMapping("/{userId}")
     public ResponseEntity<List<RecipeCommentDto>> getCommentsByUserId(@PathVariable("userId") Long userId) {
         List<RecipeCommentDto> comments = recipeCommentService.getCommentsByUserId(userId);
-        return new ResponseEntity<>(comments, HttpStatus.OK);
+        return comments.isEmpty()
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+                : ResponseEntity.ok(comments);
     }
 
 
