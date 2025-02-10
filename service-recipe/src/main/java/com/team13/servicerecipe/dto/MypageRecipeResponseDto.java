@@ -24,4 +24,5 @@ public class MypageRecipeResponseDto {
     private String userNickname;
     private List<RecipeIngredientDto> ingredients;
     private Long likesCount;
+    private String userProfileUrl;
 }

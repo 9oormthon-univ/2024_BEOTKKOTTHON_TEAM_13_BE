@@ -90,7 +90,7 @@ public class RecipeService {
         String userNickname = fetchUserNickname(recipe.getUserId());
         Long likesCount = likeRecipeService.getLikesCount(recipeId);
 
-        return Optional.of(buildRecipeResponseDto(recipe, userNickname, likesCount));
+        return Optional.of(buildRecipeResponseDto(recipe));
     }
 
     private String fetchUserNickname(Long userId) {
@@ -101,11 +101,18 @@ public class RecipeService {
         return response.getBody().getNickname();
     }
 
-    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe) {
-        return buildRecipeResponseDto(recipe, fetchUserNickname(recipe.getUserId()), likeRecipeService.getLikesCount(recipe.getId()));
+    private UserDto fetchUserDetails(Long userId) {
+        ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
+        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
+            throw new RuntimeException("Failed to fetch user details.");
+        }
+        return response.getBody();
     }
 
-    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe, String userNickname ,Long likesCount) {
+    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe) {
+        UserDto userDto = fetchUserDetails(recipe.getUserId());
+        Long likesCount = likeRecipeService.getLikesCount(recipe.getId());
+
         List<RecipeIngredientDto> ingredientDtoList =  recipeIngredientService.getIngredientsByRecipeId(recipe.getId()).stream()
                 .map(recipeIngredientService::convertToDto)
                 .collect(Collectors.toList());
@@ -120,7 +127,8 @@ public class RecipeService {
                 .title(recipe.getTitle())
                 .contents(recipe.getContents())
                 .thumbnailImagePath(recipe.getThumbnailImagePath())
-                .userNickname(userNickname)
+                .userNickname(userDto.getNickname())
+                .userProfileUrl(userDto.getProfileImageUrl())
                 .ingredients(ingredientDtoList)
                 .processes(processDtoList)
                 .build();
@@ -128,7 +136,7 @@ public class RecipeService {
 
     public List<MypageRecipeResponseDto> getRecipesByUserId(Long userId) {
         return recipeRepository.findAllByUserId(userId).stream()
-                .map(recipe -> buildMypageRecipeResponseDto(recipe, fetchUserNickname(recipe.getUserId()), likeRecipeService.getLikesCount(recipe.getId())))
+                .map(this::buildMypageRecipeResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -141,14 +149,19 @@ public class RecipeService {
                 .map(recipeRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(recipe -> buildMypageRecipeResponseDto(recipe, fetchUserNickname(recipe.getUserId()), likeRecipeService.getLikesCount(recipe.getId())))
+                .map(this::buildMypageRecipeResponseDto)
                 .collect(Collectors.toList());
     }
 
-    private MypageRecipeResponseDto buildMypageRecipeResponseDto(Recipe recipe, String userNickname ,Long likesCount) {
-        List<RecipeIngredientDto> ingredientDtoList = recipeIngredientService.getIngredientsByRecipeId(recipe.getId()).stream()
+    private MypageRecipeResponseDto buildMypageRecipeResponseDto(Recipe recipe) {
+        UserDto userDto = fetchUserDetails(recipe.getUserId());
+        Long likesCount = likeRecipeService.getLikesCount(recipe.getId());
+
+        List<RecipeIngredientDto> ingredientDtoList = recipeIngredientService.getIngredientsByRecipeId(recipe.getId())
+                .stream()
                 .map(recipeIngredientService::convertToDto)
                 .collect(Collectors.toList());
+
         return MypageRecipeResponseDto.builder()
                 .id(recipe.getId())
                 .userId(recipe.getUserId())
@@ -156,11 +169,10 @@ public class RecipeService {
                 .contents(recipe.getContents())
                 .commentCount(recipe.getCommentCount())
                 .thumbnailImagePath(recipe.getThumbnailImagePath())
-                .userNickname(userNickname)
+                .userNickname(userDto.getNickname())
+                .userProfileUrl(userDto.getProfileImageUrl())
                 .ingredients(ingredientDtoList)
                 .likesCount(likesCount)
                 .build();
     }
-
-
 }
