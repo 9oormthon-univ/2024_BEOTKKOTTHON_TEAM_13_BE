@@ -28,59 +28,42 @@ public class MypageController {
     // 사용자 정보 가져오기
     @GetMapping("/info")
     public ResponseEntity<UserDto> getUserInfo(@RequestHeader("X-User-Id") Long userId) {
-        return handleException(() -> ResponseEntity.ok(myPageService.getUserById(userId)));
+        return ResponseEntity.ok(myPageService.getUserById(userId));
     }
 
     // 사용자가 작성한 공동구매게시글 가져오기
     @GetMapping("/posts")
     public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId) {
-        return handleException(() -> ResponseEntity.ok(myPageService.getPostsByUserId(userId)));
+        return ResponseEntity.ok(myPageService.getPostsByUserId(userId));
     }
 
     //사용자가 작성한 레시피 가져오기
     @GetMapping("/recipes")
     public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
-        return handleException(() -> ResponseEntity.ok(myPageService.getRecipesByUserId(userId)));
+        return ResponseEntity.ok(myPageService.getRecipesByUserId(userId));
     }
 
     //사용자가 좋아요 누른 공동구매게시글
     @GetMapping("/likePosts")
     public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
-        return handleException(() -> {
             List<MypagePostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
             return likedPosts.isEmpty()
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
                     : ResponseEntity.ok(likedPosts);
-        });
     }
 
     //사용자가 좋아요 누른 레시피
     @GetMapping("/likeRecipes")
     public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
-        return handleException(() -> {
             List<MypageRecipeResponseDto> likedRecipes = myPageService.getLikeRecipesByUserId(userId);
             return likedRecipes.isEmpty()
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
                     : ResponseEntity.ok(likedRecipes);
-        });
     }
 
     @PutMapping("/user/{userId}")
     public ResponseEntity<UserDto> updateUser(@PathVariable("userId") Long userId, @RequestBody UserDto userDto) {
-        return handleException(() -> ResponseEntity.ok(myPageService.updateUser(userId, userDto)));
+        return ResponseEntity.ok(myPageService.updateUser(userId, userDto));
     }
-
-    private <T> ResponseEntity<T> handleException(Supplier<ResponseEntity<T>> action) {
-        try {
-            return action.get();
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
+    
 }
