@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/posts")
@@ -25,80 +26,61 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto,@RequestHeader("X-User-Id") Long userId) {
-        try {
-            // 게시글과 관련된 세부 정보 저장
-            PostResponseDto savedPostResponse = postService.createPostWithDetails(postRequestDto, userId);
-            return new ResponseEntity<>(savedPostResponse, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            // 오류 발생 시 400 BAD REQUEST 반환
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        return handleException(() -> ResponseEntity.status(HttpStatus.CREATED)
+                .body(postService.createPostWithDetails(postRequestDto, userId)));
     }
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponseDto> getPostById(@PathVariable("postId") Long postId) {
-        try {
-            Optional<PostResponseDto> postWithDetails = postService.getPostWithUserDetails(postId);
-            return postWithDetails.map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        return handleException(() -> postService.getPostWithUserDetails(postId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)));
     }
 
     @PostMapping("/like/{postId}")
     public ResponseEntity<String> toggleLikePost(@PathVariable("postId") Long postId, @RequestHeader("X-User-Id") Long userId) {
-        try {
-            return likePostService.toggleLikePost(postId, userId)
-                    ? ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다")
-                    : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 내부 오류가 발생했습니다.");
-        }
+        return handleException(() -> likePostService.toggleLikePost(postId, userId)
+                ? ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다")
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다."));
     }
 
     //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
     @GetMapping("/like/{postId}")
     public ResponseEntity<Long> getLikesCount(@PathVariable("postId") Long postId) {
-        try {
-            Long likesCount = likePostService.getLikesCount(postId);
-            return ResponseEntity.ok(likesCount);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        return handleException(() -> ResponseEntity.ok(likePostService.getLikesCount(postId)));
     }
 
     @GetMapping("/user")
     public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId( @RequestHeader("X-User-Id") Long userId) {
-        try {
+        return handleException(() -> {
             List<MypagePostResponseDto> posts = postService.getPostsByUserId(userId);
             return posts.isEmpty()
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
                     : ResponseEntity.ok(posts);
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        });
     }
 
     // 사용자가 좋아요한 게시글 가져오기
     @GetMapping("/like/user")
     public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
-        try {
+        return handleException(() -> {
             List<MypagePostResponseDto> likedPosts = postService.getLikePostsByUserId(userId);
-            if (likedPosts.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            } else {
-                return ResponseEntity.ok(likedPosts);
-            }
+            return likedPosts.isEmpty()
+                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+                    : ResponseEntity.ok(likedPosts);
+        });
+    }
+
+    private <T> ResponseEntity<T> handleException(Supplier<ResponseEntity<T>> action) {
+        try {
+            return action.get();
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
