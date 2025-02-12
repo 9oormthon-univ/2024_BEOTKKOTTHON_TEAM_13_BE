@@ -28,19 +28,23 @@ public class RecipeService {
     @Autowired
     private LikeRecipeService likeRecipeService;
 
+    //레시피를 저장
     public Recipe saveRecipe(Recipe recipe) {
         return recipeRepository.save(recipe);
     }
 
+    //특정 ID의 레시피 조회
     public Optional<Recipe> getRecipeById(Long id) {
         return recipeRepository.findById(id);
     }
 
+    //사용자가 존재하는지 확인
     public  boolean checkUserExists(Long userId) {
         ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
         return response.getStatusCode() ==  HttpStatus.OK;
     }
 
+    //레시피 생성 (세부사항 포함)
     public RecipeResponseDto createRecipeWithDetails(RecipeRequestDto recipeRequestDto, Long userId) {
         if (!checkUserExists(userId)) {
             throw new RuntimeException("회원이 존재하지 않습니다.");
@@ -49,6 +53,7 @@ public class RecipeService {
         return saveRecipeWithDetails(recipe, recipeRequestDto);
     }
 
+    //DTO를 엔티티로 변환하는 메소드
     private Recipe convertDtoToEntity(RecipeRequestDto dto, Long userId) {
         return Recipe.builder()
                 .userId(userId)
@@ -58,9 +63,11 @@ public class RecipeService {
                 .build();
     }
 
+    //레시피를 저장하고, 해당 레시피의 재료 및 과정 정보도 저장
     public RecipeResponseDto saveRecipeWithDetails(Recipe recipe, RecipeRequestDto dto ) {
         Recipe savedRecipe = saveRecipe(recipe);
 
+        // 재료 저장
         List<RecipeIngredient> ingredients = dto.getIngredients().stream()
                 .map(ingredientDto -> RecipeIngredient.builder()
                         .name(ingredientDto.getName())
@@ -70,6 +77,7 @@ public class RecipeService {
                 .collect(Collectors.toList());
         ingredients.forEach(recipeIngredientService::saveIngredient);
 
+        // 조리 과정 저장
         List<RecipeProcess> processes = dto.getProcesses().stream()
                 .map(processDto -> RecipeProcess.builder()
                         .imagePath(processDto.getImagePath())
@@ -81,6 +89,7 @@ public class RecipeService {
         return buildRecipeResponseDto(savedRecipe);
     }
 
+    //특정 레시피 ID를 기반으로 사용자 정보를 포함한 레시피 DTO 조회
     public Optional<RecipeResponseDto> getRecipeWithUserDetails(Long recipeId) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
         if (!recipeOptional.isPresent()) {
@@ -93,6 +102,7 @@ public class RecipeService {
         return Optional.of(buildRecipeResponseDto(recipe));
     }
 
+    //사용자 닉네임을 조회
     private String fetchUserNickname(Long userId) {
         ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
@@ -101,6 +111,7 @@ public class RecipeService {
         return response.getBody().getNickname();
     }
 
+    // 사용자 정보를 조회
     private UserDto fetchUserDetails(Long userId) {
         ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
@@ -109,14 +120,17 @@ public class RecipeService {
         return response.getBody();
     }
 
+    // Recipe 엔티티를 RecipeResponseDto로 변환
     private RecipeResponseDto buildRecipeResponseDto(Recipe recipe) {
         UserDto userDto = fetchUserDetails(recipe.getUserId());
         Long likesCount = likeRecipeService.getLikesCount(recipe.getId());
 
+        // 재료 리스트 변환
         List<RecipeIngredientDto> ingredientDtoList =  recipeIngredientService.getIngredientsByRecipeId(recipe.getId()).stream()
                 .map(recipeIngredientService::convertToDto)
                 .collect(Collectors.toList());
 
+        // 조리 과정 리스트 변환
         List<RecipeProcessDto> processDtoList = recipeProcessService.getProcessByRecipeId(recipe.getId()).stream()
                 .map(recipeProcessService::convertToDto)
                 .collect(Collectors.toList());
@@ -134,12 +148,14 @@ public class RecipeService {
                 .build();
     }
 
+    // 특정 사용자의 레시피 목록을 가져오는 메소드 (마이페이지에서 사용)
     public List<MypageRecipeResponseDto> getRecipesByUserId(Long userId) {
         return recipeRepository.findAllByUserId(userId).stream()
                 .map(this::buildMypageRecipeResponseDto)
                 .collect(Collectors.toList());
     }
 
+    // 사용자가 좋아요한 레시피 목록을 가져오는 메소드
     public List<MypageRecipeResponseDto> getLikeRecipesByUserId(Long userId) {
         // LikePostService를 사용하여 사용자가 좋아요한 Post ID 리스트를 가져옴
         List<Long> likedRecipeIds = likeRecipeService.getLikedRecipeIdsByUserId(userId);
@@ -153,10 +169,12 @@ public class RecipeService {
                 .collect(Collectors.toList());
     }
 
+    // Recipe 엔티티를 MypageRecipeResponseDto로 변환하는 메소드
     private MypageRecipeResponseDto buildMypageRecipeResponseDto(Recipe recipe) {
         UserDto userDto = fetchUserDetails(recipe.getUserId());
         Long likesCount = likeRecipeService.getLikesCount(recipe.getId());
 
+        // 재료 리스트 변환
         List<RecipeIngredientDto> ingredientDtoList = recipeIngredientService.getIngredientsByRecipeId(recipe.getId())
                 .stream()
                 .map(recipeIngredientService::convertToDto)

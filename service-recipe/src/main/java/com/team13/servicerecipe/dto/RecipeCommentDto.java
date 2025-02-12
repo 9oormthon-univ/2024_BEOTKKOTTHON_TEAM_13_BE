@@ -22,6 +22,5 @@ public class RecipeCommentDto {
     private String userNickname;
     private String profileImageUrl;
     private List<RecipeCommentDto> replies;
-
 }
 

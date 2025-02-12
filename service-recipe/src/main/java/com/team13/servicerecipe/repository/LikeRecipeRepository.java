@@ -9,6 +9,5 @@ import java.util.Optional;
 public interface LikeRecipeRepository extends JpaRepository<LikeRecipe, Long> {
     Long countByRecipeId(Long recipeId);
     Optional<LikeRecipe> findByRecipeIdAndUserId(Long recipeId, Long userId);
-
     List<LikeRecipe> findByUserId(Long userId);
 }
