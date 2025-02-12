@@ -40,9 +40,9 @@ public class SignUpService {
         User savedUser = userRepository.save(SignConverter.toUserEntity(registerRequestDto, encoder.encode(registerRequestDto.getPassword())));
 
         // TOOD: 개발 단계에서 모든 유저는 테스트 채팅방에 초대함 (추후 테스트 완료시 아래 코드 제거)
-//        Map<String, String> requestBody = new HashMap<>();
-//        requestBody.put("chatroomId", "test-chatroom");
-//        requestBody.put("userId", savedUser.getId().toString());
-//        chatServiceClient.joinChatroom(requestBody);
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("chatroomId", "test-chatroom");
+        requestBody.put("userId", savedUser.getId().toString());
+        chatServiceClient.joinChatroom(requestBody);
     }
 }
