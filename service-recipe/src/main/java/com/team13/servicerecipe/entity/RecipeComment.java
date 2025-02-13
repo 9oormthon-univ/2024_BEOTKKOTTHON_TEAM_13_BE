@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecipeComment {
+public class RecipeComment extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +23,6 @@ public class RecipeComment {
 
     @Column(name = "comment", nullable = false, length = 100)
     private String comment;
-
-    @Column(name = "created_at", nullable = false)
-    private Date createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipes_id", nullable = false)

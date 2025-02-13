@@ -14,7 +14,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Recipe {
+public class Recipe extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,11 +36,5 @@ public class Recipe {
 
     @Column(name="thumbnail_image_path", nullable = false, length = 200)
     private String thumbnailImagePath;
-
-    @Column(name = "created_at", nullable = false)
-    private Date createdAt;
-
-    @Column(name = "type", nullable = false)
-    private int type;
 
 }

@@ -14,8 +14,6 @@ public class RecipeRequestDto {
     private String title;
     private String contents;
     private String thumbnailImagePath;
-    private Date createdAt;
-    private int type;
     private List<RecipeIngredientDto> ingredients;
     private List<RecipeProcessDto> processes;
 }
