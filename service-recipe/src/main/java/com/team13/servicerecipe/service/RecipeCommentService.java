@@ -28,13 +28,11 @@ public class RecipeCommentService {
     private UserServiceClient userServiceClient;
 
     public RecipeCommentDto addComment(Long recipeId, RecipeCommentDto commentDto) {
-        Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RuntimeException("해당 레시피를 찾을 수 없습니다."));
 
         RecipeComment comment = RecipeComment.builder()
                 .comment(commentDto.getComment())
                 .userId(commentDto.getUserId())
-                .recipe(recipe)
+                .recipe(Recipe.builder().id(recipeId).build())
                 .parentComment(commentDto.getParentCommentId() != null ? getCommentById(commentDto.getParentCommentId()) : null)
                 .build();
 
@@ -96,3 +94,4 @@ public class RecipeCommentService {
         return response.getBody();
     }
 }
+
