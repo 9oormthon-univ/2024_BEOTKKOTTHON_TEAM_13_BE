@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/comments")public class RecipeCommentController {
+@RequestMapping("/comments")
+public class RecipeCommentController {
 
     @Autowired
     private RecipeCommentService recipeCommentService;

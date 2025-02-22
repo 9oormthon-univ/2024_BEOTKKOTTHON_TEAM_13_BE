@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,9 +83,12 @@ public class RecipeCommentService {
                 .parentCommentId(comment.getParentComment() != null ? comment.getParentComment().getId() : null)
                 .userNickname(userDto.getNickname())
                 .profileImageUrl(userDto.getProfileImageUrl())
-                .replies(comment.getReplies().stream().map(this::convertToDto).collect(Collectors.toList()))
+                .replies(comment.getReplies() != null
+                        ? comment.getReplies().stream().map(this::convertToDto).collect(Collectors.toList())
+                        : Collections.emptyList())
                 .build();
     }
+
 
     private UserDto fetchUserDetails(Long userId) {
         ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
