@@ -22,6 +22,11 @@ public class RouterValidator {
             List.of("GET", "/api2/recipe/recipes"),
             List.of("POST", "/api2/recipe/recipes/like"), //동적 처리 {Id} 인식 위해서
             List.of("GET", "/api2/recipe/recipes/like"),
+            // NOTE: 레시피 댓글
+            List.of("POST", "/api2/recipe/comments"), // 댓글 추가
+            List.of("GET", "/api2/recipe/comments"), // 특정 레시피의 댓글 조회
+            List.of("GET", "/api2/recipe/comments/replies"), // 특정 댓글의 답글 조회
+            List.of("GET", "/api2/recipe/comments/user"), // 사용자가 작성한 댓글 조회
             // NOTE: 채팅 서비스
             List.of("GET", "/api2/chat/chatroom"),
             List.of("GET", "/api2/chat/chatroom/list"),
@@ -40,10 +45,12 @@ public class RouterValidator {
         return securedApiEndpoints.stream().anyMatch(methodAndPath ->
                 request.getMethod().toString().equals(methodAndPath.get(0)) &&
                         (
-                                path.equals(methodAndPath.get(1))
-                                        || (path.startsWith("/api2/recipe/recipes/like/") && methodAndPath.get(1).equals("/api2/recipe/recipes/like"))
-                                        ||(path.startsWith("/api2/post/posts/like/") && methodAndPath.get(1).equals("/api2/post/posts/like"))
+                                path.equals(methodAndPath.get(1)) ||
+                                        (path.startsWith("/api2/recipe/recipes/like/") && methodAndPath.get(1).equals("/api2/recipe/recipes/like")) ||
+                                        (path.startsWith("/api2/post/posts/like/") && methodAndPath.get(1).equals("/api2/post/posts/like")) ||
+                                        (path.startsWith("/api2/recipe/comments/") && methodAndPath.get(1).equals("/api2/recipe/comments"))
                         )
         );
+
     }
 }

@@ -12,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +47,6 @@ public class RecipeCommentService {
         return recipeCommentRepository.save(comment);
     }
 
-
     //댓글 테이블 번호로 해당 내용가져오기
     public RecipeComment getCommentById(Long commentId) {
         return recipeCommentRepository.findById(commentId)
@@ -59,9 +60,10 @@ public class RecipeCommentService {
                 .collect(Collectors.toList());
     }
 
-    //해당 레시피에 적힌 댓글 모두 불러오기
+    //해당 레시피에 적힌 댓글 모두 불러오기 대댓글 계층 구분
     public List<RecipeCommentDto> getCommentsByRecipeId(Long recipeId) {
         return recipeCommentRepository.findByRecipeId(recipeId).stream().
+                filter(comment -> comment.getParentComment() == null).
                 map(this::convertToDto).
                 collect(Collectors.toList());
     }
@@ -80,6 +82,7 @@ public class RecipeCommentService {
                 .comment(comment.getComment())
                 .userId(comment.getUserId())
                 .recipeId(comment.getRecipe().getId())
+                .createdAt(Date.from(comment.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant()))
                 .parentCommentId(comment.getParentComment() != null ? comment.getParentComment().getId() : null)
                 .userNickname(userDto.getNickname())
                 .profileImageUrl(userDto.getProfileImageUrl())

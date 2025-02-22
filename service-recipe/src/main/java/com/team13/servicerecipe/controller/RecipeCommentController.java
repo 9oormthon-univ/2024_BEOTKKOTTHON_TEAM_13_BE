@@ -53,8 +53,8 @@ public class RecipeCommentController {
     }
 
     //내가 쓴 댓글 확인
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<RecipeCommentDto>> getCommentsByUserId(@PathVariable("userId") Long userId) {
+    @GetMapping("/user")
+    public ResponseEntity<List<RecipeCommentDto>> getCommentsByUserId(@RequestHeader("X-User-Id") Long userId) {
         List<RecipeCommentDto> comments = recipeCommentService.getCommentsByUserId(userId);
         return comments.isEmpty()
                 ? ResponseEntity.status(HttpStatus.NOT_FOUND).build()
