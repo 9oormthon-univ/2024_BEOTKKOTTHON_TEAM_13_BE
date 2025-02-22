@@ -28,11 +28,11 @@ public class RecipeCommentService {
     @Autowired
     private UserServiceClient userServiceClient;
 
-    public RecipeCommentDto addComment(Long recipeId, RecipeCommentDto commentDto) {
+    public RecipeCommentDto addComment(Long recipeId, RecipeCommentDto commentDto, Long userId) {
 
         RecipeComment comment = RecipeComment.builder()
                 .comment(commentDto.getComment())
-                .userId(commentDto.getUserId())
+                .userId(userId)
                 .recipe(Recipe.builder().id(recipeId).build())
                 .parentComment(commentDto.getParentCommentId() != null ? getCommentById(commentDto.getParentCommentId()) : null)
                 .build();

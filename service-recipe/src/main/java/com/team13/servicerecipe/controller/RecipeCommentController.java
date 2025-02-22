@@ -25,12 +25,12 @@ public class RecipeCommentController {
     private RecipeService recipeService;
 
     @PostMapping("/{recipeId}")
-    public ResponseEntity<RecipeCommentDto> addComment(@PathVariable("recipeId") Long recipeId, @RequestBody RecipeCommentDto commentDto) {
+    public ResponseEntity<RecipeCommentDto> addComment(@PathVariable("recipeId") Long recipeId, @RequestBody RecipeCommentDto commentDto, @RequestHeader("X-User-Id") Long userId) {
         if (recipeService.getRecipeById(recipeId).isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        RecipeCommentDto savedCommentDto = recipeCommentService.addComment(recipeId, commentDto);
+        RecipeCommentDto savedCommentDto = recipeCommentService.addComment(recipeId, commentDto,userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCommentDto);
     }
 
