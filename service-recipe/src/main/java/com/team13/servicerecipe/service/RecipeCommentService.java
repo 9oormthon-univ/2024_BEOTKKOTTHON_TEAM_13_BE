@@ -62,10 +62,10 @@ public class RecipeCommentService {
 
     //해당 레시피에 적힌 댓글 모두 불러오기 대댓글 계층 구분
     public List<RecipeCommentDto> getCommentsByRecipeId(Long recipeId) {
-        return recipeCommentRepository.findByRecipeId(recipeId).stream().
-                filter(comment -> comment.getParentComment() == null).
-                map(this::convertToDto).
-                collect(Collectors.toList());
+        return recipeCommentRepository.findByRecipeId(recipeId).stream()
+                .filter(comment -> comment.getParentComment() == null)
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     //해당 댓글의 대댓글 확인
