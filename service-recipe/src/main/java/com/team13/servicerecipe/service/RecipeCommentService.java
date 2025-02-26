@@ -82,7 +82,7 @@ public class RecipeCommentService {
                 .comment(comment.getComment())
                 .userId(comment.getUserId())
                 .recipeId(comment.getRecipe().getId())
-                .createdAt(Date.from(comment.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant()))
+                .createdAt(Date.from(comment.getCreatedAt().atZone(ZoneId.of("UTC")).toInstant()))
                 .parentCommentId(comment.getParentComment() != null ? comment.getParentComment().getId() : null)
                 .userNickname(userDto.getNickname())
                 .profileImageUrl(userDto.getProfileImageUrl())
