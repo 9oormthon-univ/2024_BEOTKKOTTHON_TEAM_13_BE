@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/comments")public class RecipeCommentController {
+@RequestMapping("/comments")
+public class RecipeCommentController {
 
     @Autowired
     private RecipeCommentService recipeCommentService;
@@ -24,12 +25,12 @@ import java.util.Optional;
     private RecipeService recipeService;
 
     @PostMapping("/{recipeId}")
-    public ResponseEntity<RecipeCommentDto> addComment(@PathVariable("recipeId") Long recipeId, @RequestBody RecipeCommentDto commentDto) {
+    public ResponseEntity<RecipeCommentDto> addComment(@PathVariable("recipeId") Long recipeId, @RequestBody RecipeCommentDto commentDto, @RequestHeader("X-User-Id") Long userId) {
         if (recipeService.getRecipeById(recipeId).isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        RecipeCommentDto savedCommentDto = recipeCommentService.addComment(recipeId, commentDto);
+        RecipeCommentDto savedCommentDto = recipeCommentService.addComment(recipeId, commentDto,userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCommentDto);
     }
 
@@ -52,8 +53,8 @@ import java.util.Optional;
     }
 
     //내가 쓴 댓글 확인
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<RecipeCommentDto>> getCommentsByUserId(@PathVariable("userId") Long userId) {
+    @GetMapping("/user")
+    public ResponseEntity<List<RecipeCommentDto>> getCommentsByUserId(@RequestHeader("X-User-Id") Long userId) {
         List<RecipeCommentDto> comments = recipeCommentService.getCommentsByUserId(userId);
         return comments.isEmpty()
                 ? ResponseEntity.status(HttpStatus.NOT_FOUND).build()
