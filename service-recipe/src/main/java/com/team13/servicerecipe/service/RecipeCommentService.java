@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,11 +30,11 @@ public class RecipeCommentService {
     @Autowired
     private UserServiceClient userServiceClient;
 
-    public RecipeCommentDto addComment(Long recipeId, RecipeCommentDto commentDto) {
+    public RecipeCommentDto addComment(Long recipeId, RecipeCommentDto commentDto, Long userId) {
 
         RecipeComment comment = RecipeComment.builder()
                 .comment(commentDto.getComment())
-                .userId(commentDto.getUserId())
+                .userId(userId)
                 .recipe(Recipe.builder().id(recipeId).build())
                 .parentComment(commentDto.getParentCommentId() != null ? getCommentById(commentDto.getParentCommentId()) : null)
                 .build();
@@ -43,7 +46,6 @@ public class RecipeCommentService {
     public RecipeComment saveComment(RecipeComment comment) {
         return recipeCommentRepository.save(comment);
     }
-
 
     //댓글 테이블 번호로 해당 내용가져오기
     public RecipeComment getCommentById(Long commentId) {
@@ -58,11 +60,12 @@ public class RecipeCommentService {
                 .collect(Collectors.toList());
     }
 
-    //해당 레시피에 적힌 댓글 모두 불러오기
+    //해당 레시피에 적힌 댓글 모두 불러오기 대댓글 계층 구분
     public List<RecipeCommentDto> getCommentsByRecipeId(Long recipeId) {
-        return recipeCommentRepository.findByRecipeId(recipeId).stream().
-                map(this::convertToDto).
-                collect(Collectors.toList());
+        return recipeCommentRepository.findByRecipeId(recipeId).stream()
+                .filter(comment -> comment.getParentComment() == null)
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     //해당 댓글의 대댓글 확인
@@ -79,12 +82,16 @@ public class RecipeCommentService {
                 .comment(comment.getComment())
                 .userId(comment.getUserId())
                 .recipeId(comment.getRecipe().getId())
+                .createdAt(Date.from(comment.getCreatedAt().atZone(ZoneId.of("UTC")).toInstant()))
                 .parentCommentId(comment.getParentComment() != null ? comment.getParentComment().getId() : null)
                 .userNickname(userDto.getNickname())
                 .profileImageUrl(userDto.getProfileImageUrl())
-                .replies(comment.getReplies().stream().map(this::convertToDto).collect(Collectors.toList()))
+                .replies(comment.getReplies() != null
+                        ? comment.getReplies().stream().map(this::convertToDto).collect(Collectors.toList())
+                        : Collections.emptyList())
                 .build();
     }
+
 
     private UserDto fetchUserDetails(Long userId) {
         ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
