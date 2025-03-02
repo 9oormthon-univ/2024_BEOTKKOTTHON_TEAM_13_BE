@@ -22,9 +22,9 @@ public class RouterValidator {
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/recipes$")),
             List.of(Pattern.compile("POST"), Pattern.compile("^/api2/recipe/recipes$")),
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/recipes/like/")),
-            List.of(Pattern.compile("POST"), Pattern.compile("^/api2/recipe/recipes/like/")),
+            List.of(Pattern.compile("POST"), Pattern.compile("^/api2/recipe/recipes/like/\\d+$")),
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/comments/")),
-            List.of(Pattern.compile("POST"), Pattern.compile("^/api2/recipe/comments/")),
+            List.of(Pattern.compile("POST"), Pattern.compile("^/api2/recipe/comments/\\d+$")),
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/comments/replies$")),
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/comments/user$")),
             // NOTE: 채팅 서비스
