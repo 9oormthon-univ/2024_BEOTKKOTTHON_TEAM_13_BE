@@ -36,7 +36,7 @@ public class RouterValidator {
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/post/posts$")),
             List.of(Pattern.compile("POST"), Pattern.compile("^/api2/post/posts$")),
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/post/posts/like/")),
-            List.of(Pattern.compile("POST"), Pattern.compile("^/api2/post/posts/like/"))
+            List.of(Pattern.compile("POST"), Pattern.compile("^/api2/post/posts/like/\\d+$"))
     );
 
     // 만약 request의 path가 securedApiEndpoints 중 하나인 경우 true를 반환하고, 그렇지 않으면 false를 반환함
