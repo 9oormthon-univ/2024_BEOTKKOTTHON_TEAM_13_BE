@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,9 @@ public class SignInService {
 
     //비밀번호 인코딩
     private final BCryptPasswordEncoder encoder;
+
+    @Value("${app.cookie.domain}")
+    private String cookieDomain;
 
     public SignInService(@Value("${app.jwt.secret}") String tokenSecret,
                          @Value("${app.jwt.keep}") long tokenKeepDuration,
@@ -82,22 +86,26 @@ public class SignInService {
         log.debug("Generated JWT: {}", token);
 
         // 기존 LTK 쿠키 삭제
-        Cookie deleteCookie = new Cookie("LTK", null);
-        deleteCookie.setMaxAge(0); // 즉시 만료
-        deleteCookie.setHttpOnly(true); // 동일한 옵션 설정
-        deleteCookie.setSecure(true);  // 동일한 옵션 설정
-        deleteCookie.setPath("/");     // 경로 설정 (루트 경로)
-        deleteCookie.setDomain("localhost"); // 도메인 설정
-        response.addCookie(deleteCookie);
+        ResponseCookie deleteCookie = ResponseCookie.from("LTK", "")
+                .httpOnly(true)
+                .secure(false)  // ✅ 로컬에서는 false (HTTPS가 아니므로)
+                .path("/")
+                .domain(cookieDomain)
+                .maxAge(0) // 즉시 만료
+                .sameSite("None")  // ✅ SameSite=None 추가
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
 
         // 새로운 LTK 쿠키 생성
-        Cookie newCookie = new Cookie("LTK", token);
-        newCookie.setHttpOnly(true);
-        newCookie.setSecure(true); // HTTPS 환경에서만 전달
-        newCookie.setPath("/"); // 루트 경로
-        newCookie.setDomain("localhost"); // 도메인 설정
-        newCookie.setMaxAge((int) tokenKeepDuration / 1000); // 초 단위 만료 시간
-        response.addCookie(newCookie);
+        ResponseCookie newCookie = ResponseCookie.from("LTK", token)
+                .httpOnly(true)
+                .secure(false)  // ✅ 서버에서는 true (HTTPS 환경)
+                .path("/")
+                .domain(cookieDomain)  // ✅ 도메인 설정: n1.junyeong.dev
+                .maxAge(tokenKeepDuration / 1000)
+                .sameSite("None")  // ✅ SameSite=None 추가 (CORS 문제 방지)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, newCookie.toString());
 
         log.debug("LTK Cookie set with new JWT token.");
     }
