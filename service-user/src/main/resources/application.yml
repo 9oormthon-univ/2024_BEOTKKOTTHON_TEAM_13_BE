@@ -3,10 +3,6 @@ app:
     url: http://localhost:3964
   server-eureka:
     url: http://localhost:3743/eureka/
-  cookie:
-#    domain: "n1-beta.junyeong.dev"
-    domain: "n1.junyeong.dev"
-#    domain: "localhost"
 
 
 server:
