@@ -35,10 +35,12 @@ public class RecipeController {
     }
 
     @GetMapping("/{recipeId}")
-    public ResponseEntity<RecipeResponseDto> getRecipeById(@PathVariable("recipeId") Long recipeId) {
-        return recipeService.getRecipeWithUserDetails(recipeId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    public ResponseEntity<ApiResponse<RecipeResponseDto>> getRecipeById(@PathVariable("recipeId") Long recipeId) {
+        ApiResponse<RecipeResponseDto> response = recipeService.getRecipeWithUserDetails(recipeId);
+        if (!response.getIsSuccess()) {
+            return ResponseEntity.status(404).body(response);
+        }
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/like/{recipeId}")

@@ -2,6 +2,7 @@ package com.team13.servicerecipe.service;
 
 import com.team13.servicerecipe.apiPayload.ApiResponse;
 import com.team13.servicerecipe.apiPayload.code.status.ErrorStatus;
+import com.team13.servicerecipe.apiPayload.code.status.SuccessStatus;
 import com.team13.servicerecipe.dto.*;
 import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.entity.RecipeIngredient;
@@ -29,6 +30,8 @@ public class RecipeService {
     private RecipeProcessService recipeProcessService;
     @Autowired
     private LikeRecipeService likeRecipeService;
+    @Autowired
+    private RecipeCommentService recipeCommentService;
 
     //레시피를 저장
     public Recipe saveRecipe(Recipe recipe) {
@@ -93,16 +96,50 @@ public class RecipeService {
     }
 
     //특정 레시피 ID를 기반으로 사용자 정보를 포함한 레시피 DTO 조회
-    public Optional<RecipeResponseDto> getRecipeWithUserDetails(Long recipeId) {
+    public ApiResponse<RecipeResponseDto> getRecipeWithUserDetails(Long recipeId) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
-        if (!recipeOptional.isPresent()) {
-            return Optional.empty();
+        if (recipeOptional.isEmpty()) {
+            return ApiResponse.onFailure(ErrorStatus.RECIPE_NOT_FOUND.getCode(), ErrorStatus.RECIPE_NOT_FOUND.getMessage(), null);
         }
         Recipe recipe = recipeOptional.get();
-        String userNickname = fetchUserNickname(recipe.getUserId());
+
+        // 사용자 정보 조회
+        UserDto userDto = fetchUserDetails(recipe.getUserId());
+
+        // 좋아요 개수 조회
         Long likesCount = likeRecipeService.getLikesCount(recipeId);
 
-        return Optional.of(buildRecipeResponseDto(recipe));
+        // 해당 레시피에 달린 댓글 가져오기
+        List<RecipeCommentDto> comments = recipeCommentService.getCommentsByRecipeId(recipeId);
+
+        // DTO 변환 후 반환
+        RecipeResponseDto responseDto = buildRecipeResponseDto(recipe, userDto, comments, likesCount);
+        return ApiResponse.onSuccess(responseDto);
+    }
+
+    private RecipeResponseDto buildRecipeResponseDto(Recipe recipe, UserDto userDto, List<RecipeCommentDto> comments, Long likesCount) {
+        List<RecipeIngredientDto> ingredientDtoList = recipeIngredientService.getIngredientsByRecipeId(recipe.getId())
+                .stream()
+                .map(recipeIngredientService::convertToDto)
+                .collect(Collectors.toList());
+
+        List<RecipeProcessDto> processDtoList = recipeProcessService.getProcessByRecipeId(recipe.getId())
+                .stream()
+                .map(recipeProcessService::convertToDto)
+                .collect(Collectors.toList());
+
+        return RecipeResponseDto.builder()
+                .id(recipe.getId())
+                .userId(recipe.getUserId())
+                .title(recipe.getTitle())
+                .contents(recipe.getContents())
+                .thumbnailImagePath(recipe.getThumbnailImagePath())
+                .userNickname(userDto.getNickname())
+                .userProfileUrl(userDto.getProfileImageUrl())
+                .ingredients(ingredientDtoList)
+                .processes(processDtoList)
+                .comments(comments)
+                .build();
     }
 
     //사용자 닉네임을 조회
