@@ -1,5 +1,6 @@
 package com.team13.servicerecipe.controller;
 
+import com.team13.servicerecipe.apiPayload.ApiResponse;
 import com.team13.servicerecipe.dto.RecipeCommentDto;
 import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.entity.RecipeComment;
@@ -25,13 +26,11 @@ public class RecipeCommentController {
     private RecipeService recipeService;
 
     @PostMapping("/{recipeId}")
-    public ResponseEntity<RecipeCommentDto> addComment(@PathVariable("recipeId") Long recipeId, @RequestBody RecipeCommentDto commentDto, @RequestHeader("X-User-Id") Long userId) {
-        if (recipeService.getRecipeById(recipeId).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        RecipeCommentDto savedCommentDto = recipeCommentService.addComment(recipeId, commentDto,userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedCommentDto);
+    public ResponseEntity<ApiResponse<RecipeCommentDto>> addComment(@PathVariable("recipeId") Long recipeId,
+                                                                    @RequestBody RecipeCommentDto commentDto,
+                                                                    @RequestHeader("X-User-Id") Long userId) {
+        ApiResponse<RecipeCommentDto> response = recipeCommentService.addComment(recipeId, commentDto, userId);
+        return ResponseEntity.status(response.getIsSuccess() ? 201 : 404).body(response);
     }
 
     //해당 레시피에 있는 댓글

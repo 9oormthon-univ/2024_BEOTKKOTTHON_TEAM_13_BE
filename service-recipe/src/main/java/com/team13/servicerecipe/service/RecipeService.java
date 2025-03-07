@@ -56,8 +56,9 @@ public class RecipeService {
         }
         Recipe recipe = convertDtoToEntity(recipeRequestDto,userId);
         RecipeResponseDto responseDto = saveRecipeWithDetails(recipe, recipeRequestDto);
-        return ApiResponse.onSuccess(responseDto);
+        return new ApiResponse<>(true, SuccessStatus.RECIPE_CREATED.getCode(), SuccessStatus.RECIPE_CREATED.getMessage(), responseDto);
     }
+
 
     //DTO를 엔티티로 변환하는 메소드
     private Recipe convertDtoToEntity(RecipeRequestDto dto, Long userId) {
