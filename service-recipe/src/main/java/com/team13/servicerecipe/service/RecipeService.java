@@ -1,5 +1,7 @@
 package com.team13.servicerecipe.service;
 
+import com.team13.servicerecipe.apiPayload.ApiResponse;
+import com.team13.servicerecipe.apiPayload.code.status.ErrorStatus;
 import com.team13.servicerecipe.dto.*;
 import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.entity.RecipeIngredient;
@@ -45,12 +47,13 @@ public class RecipeService {
     }
 
     //레시피 생성 (세부사항 포함)
-    public RecipeResponseDto createRecipeWithDetails(RecipeRequestDto recipeRequestDto, Long userId) {
+    public ApiResponse<RecipeResponseDto> createRecipeWithDetails(RecipeRequestDto recipeRequestDto, Long userId) {
         if (!checkUserExists(userId)) {
-            throw new RuntimeException("회원이 존재하지 않습니다.");
+            return ApiResponse.onFailure(ErrorStatus.RECIPE_NOT_FOUND.getCode(), ErrorStatus.RECIPE_NOT_FOUND.getMessage(), null);
         }
         Recipe recipe = convertDtoToEntity(recipeRequestDto,userId);
-        return saveRecipeWithDetails(recipe, recipeRequestDto);
+        RecipeResponseDto responseDto = saveRecipeWithDetails(recipe, recipeRequestDto);
+        return ApiResponse.onSuccess(responseDto);
     }
 
     //DTO를 엔티티로 변환하는 메소드

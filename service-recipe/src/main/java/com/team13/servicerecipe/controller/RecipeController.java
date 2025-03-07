@@ -1,6 +1,7 @@
 package com.team13.servicerecipe.controller;
 
 
+import com.team13.servicerecipe.apiPayload.ApiResponse;
 import com.team13.servicerecipe.dto.MypageRecipeResponseDto;
 import com.team13.servicerecipe.dto.RecipeRequestDto;
 import com.team13.servicerecipe.dto.RecipeResponseDto;
@@ -27,9 +28,9 @@ public class RecipeController {
     private LikeRecipeService likeRecipeService;
 
     @PostMapping
-    public ResponseEntity<RecipeResponseDto> createRecipe(@RequestBody RecipeRequestDto recipeRequestDto, @RequestHeader("X-User-Id") Long userId) {
-            RecipeResponseDto savedRecipeResponse = recipeService.createRecipeWithDetails(recipeRequestDto, userId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedRecipeResponse);
+    public ResponseEntity<ApiResponse<RecipeResponseDto>> createRecipe(@RequestBody RecipeRequestDto recipeRequestDto, @RequestHeader("X-User-Id") Long userId) {
+        ApiResponse<RecipeResponseDto> response = recipeService.createRecipeWithDetails(recipeRequestDto, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{recipeId}")
