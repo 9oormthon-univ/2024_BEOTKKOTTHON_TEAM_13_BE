@@ -29,33 +29,31 @@ public class LikeRecipeService {
     private UserServiceClient userServiceClient;
 
     @Transactional
-    public boolean toggleLikeRecipe(Long recipeId, Long userId) {
-        //해당 recipe가 있는지 확인
+    public String toggleLikeRecipe(Long recipeId, Long userId) {
+        // 레시피 존재 여부 확인
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
-        if(recipeOptional.isEmpty()){
-            return false;
+        if (recipeOptional.isEmpty()) {
+            return "레시피 없음";  //  에러 처리를 위해 반환값 변경
         }
 
-        //좋아요 누르는 유저가 존재하는지 확인
+        // 사용자 존재 여부 확인
         ResponseEntity<UserDto> userResponse = userServiceClient.getUserById(userId);
         if (userResponse.getStatusCode() != HttpStatus.OK || userResponse.getBody() == null) {
-            return false;
+            return "유저 없음";  //  에러 처리를 위해 반환값 변경
         }
 
-        Optional<LikeRecipe> existingLike = likeRecipeRepository.findByRecipeIdAndUserId(recipeId,userId);
+        // 기존 좋아요 여부 확인
+        Optional<LikeRecipe> existingLike = likeRecipeRepository.findByRecipeIdAndUserId(recipeId, userId);
         if (existingLike.isPresent()) {
-            //이전에 좋아요 기록있다면 좋아요 취소 기능
             likeRecipeRepository.delete(existingLike.get());
-            return true; //좋아요 취소 성공
+            return "좋아요 취소";
         } else {
-            // 이전 좋아요 없다면 좋아요 추가 기능
             LikeRecipe likeRecipe = new LikeRecipe();
             likeRecipe.setRecipe(recipeOptional.get());
             likeRecipe.setUserId(userId);
             likeRecipeRepository.save(likeRecipe);
-            return true;// 좋아요 추가 성공
+            return "좋아요 실행";
         }
-
     }
 
     public Long getLikesCount(Long recipeId) {

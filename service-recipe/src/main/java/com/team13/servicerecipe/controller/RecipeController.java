@@ -2,6 +2,7 @@ package com.team13.servicerecipe.controller;
 
 
 import com.team13.servicerecipe.apiPayload.ApiResponse;
+import com.team13.servicerecipe.apiPayload.code.status.ErrorStatus;
 import com.team13.servicerecipe.dto.MypageRecipeResponseDto;
 import com.team13.servicerecipe.dto.RecipeRequestDto;
 import com.team13.servicerecipe.dto.RecipeResponseDto;
@@ -41,11 +42,34 @@ public class RecipeController {
     }
 
     @PostMapping("/like/{recipeId}")
-    public ResponseEntity<String> toggleLikeRecipe(@PathVariable("recipeId") Long recipeId, @RequestHeader("X-User-Id") Long userId) {
-            boolean success = likeRecipeService.toggleLikeRecipe(recipeId, userId);
-            return success
-                    ? ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다")
-                    : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
+    public ResponseEntity<ApiResponse<String>> toggleLikeRecipe(@PathVariable("recipeId") Long recipeId,
+                                                                @RequestHeader("X-User-Id") Long userId) {
+        String result = likeRecipeService.toggleLikeRecipe(recipeId, userId);
+
+        //  응답 분기 처리
+        if ("레시피 없음".equals(result)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.onFailure(ErrorStatus.RECIPE_NOT_FOUND.getCode(),
+                            ErrorStatus.RECIPE_NOT_FOUND.getMessage(),
+                            null));
+        }
+        if ("유저 없음".equals(result)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.onFailure(ErrorStatus.MEMBER_NOT_FOUND.getCode(),
+                            ErrorStatus.MEMBER_NOT_FOUND.getMessage(),
+                            null));
+        }
+        if ("좋아요 실행".equals(result)) {
+            return ResponseEntity.ok(ApiResponse.onSuccess("좋아요를 실행했습니다."));
+        }
+        if ("좋아요 취소".equals(result)) {
+            return ResponseEntity.ok(ApiResponse.onSuccess("좋아요 취소가 실행됐습니다."));
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.onFailure(ErrorStatus._INTERNAL_SERVER_ERROR.getCode(),
+                        ErrorStatus._INTERNAL_SERVER_ERROR.getMessage(),
+                        null));
     }
 
     //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
