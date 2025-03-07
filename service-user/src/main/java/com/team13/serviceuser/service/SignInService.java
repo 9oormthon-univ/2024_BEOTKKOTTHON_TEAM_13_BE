@@ -88,26 +88,40 @@ public class SignInService {
         // 기존 LTK 쿠키 삭제
         ResponseCookie deleteCookie = ResponseCookie.from("LTK", "")
                 .httpOnly(true)
-                .secure(false)  // ✅ 로컬에서는 false (HTTPS가 아니므로)
+                .secure(false)  // 로컬에서는 false (HTTPS가 아니므로)
                 .path("/")
                 .domain(cookieDomain)
                 .maxAge(0) // 즉시 만료
-                .sameSite("None")  // ✅ SameSite=None 추가
+                .sameSite("None")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
 
         // 새로운 LTK 쿠키 생성
         ResponseCookie newCookie = ResponseCookie.from("LTK", token)
                 .httpOnly(true)
-                .secure(false)  // ✅ 서버에서는 true (HTTPS 환경)
+                .secure(false)  // 서버에서는 true (HTTPS 환경)
                 .path("/")
-                .domain(cookieDomain)  // ✅ 도메인 설정: n1.junyeong.dev
+                .domain(cookieDomain)
                 .maxAge(tokenKeepDuration / 1000)
-                .sameSite("None")  // ✅ SameSite=None 추가 (CORS 문제 방지)
+                .sameSite("None")  //  SameSite=None 추가 (CORS 문제 방지)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, newCookie.toString());
 
         log.debug("LTK Cookie set with new JWT token.");
+    }
+
+    // JWT 쿠키 삭제 메서드 추가
+    public void clearAuthCookie(HttpServletResponse response) {
+        ResponseCookie deleteCookie = ResponseCookie.from("LTK", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .domain(cookieDomain)
+                .maxAge(0) // 즉시 만료
+                .sameSite("None")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+        log.debug("LTK Cookie cleared (User logged out).");
     }
 
 

@@ -95,4 +95,10 @@ public class SignController {
 
         return ResponseEntity.ok(ApiResponse.onSuccess("로그인 성공"));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Object>> logout(HttpServletResponse response) {
+        signInService.clearAuthCookie(response);
+        return ResponseEntity.ok(ApiResponse.onSuccess("로그아웃 성공"));
+    }
 }
