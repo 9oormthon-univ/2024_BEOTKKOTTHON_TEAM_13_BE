@@ -15,7 +15,6 @@ public class PostRequestDto {
     private int groupSize;
     private int curGroupSize;
     private String chatId;
-    private Date createdAt;
     private Date closedAt;
     private int locationBcode;
     private String locationAddress;
@@ -27,7 +26,5 @@ public class PostRequestDto {
     private String contents;
     private List<PostImageDto> images;
     private List<PostIngredientDto> ingredients;
-
-    //nickname이랑 좋아요수는 입력 x
 }
 
