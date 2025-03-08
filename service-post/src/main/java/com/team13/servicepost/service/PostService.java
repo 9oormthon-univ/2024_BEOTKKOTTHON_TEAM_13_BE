@@ -73,7 +73,6 @@ public class PostService {
 
     private Post convertDtoToEntity(PostRequestDto postRequestDto) {
         Post post = new Post();
-        post.setStatus(postRequestDto.getStatus());
         post.setGroupSize(postRequestDto.getGroupSize());
         post.setCurGroupSize(postRequestDto.getCurGroupSize());
         post.setChatId(postRequestDto.getChatId());
@@ -130,15 +129,6 @@ public class PostService {
         }
         Post post = postOptional.get();
         return Optional.of(buildPostResponseDto(post));
-    }
-
-
-    private String fetchUserNickname(Long userId) {
-        ResponseEntity<UserDto> response = userServiceClient.getUserById(userId);
-        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-            throw new RuntimeException("Failed to fetch user nickname.");
-        }
-        return response.getBody().getNickname();
     }
 
     private PostResponseDto buildPostResponseDto(Post post) {

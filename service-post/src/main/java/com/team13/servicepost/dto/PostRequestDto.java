@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostRequestDto {
-    private int status;
     private int groupSize;
     private int curGroupSize;
     private String chatId;
