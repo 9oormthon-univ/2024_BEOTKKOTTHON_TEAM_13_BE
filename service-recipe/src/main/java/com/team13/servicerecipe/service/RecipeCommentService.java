@@ -1,5 +1,8 @@
 package com.team13.servicerecipe.service;
 
+import com.team13.servicerecipe.apiPayload.ApiResponse;
+import com.team13.servicerecipe.apiPayload.code.status.ErrorStatus;
+import com.team13.servicerecipe.apiPayload.code.status.SuccessStatus;
 import com.team13.servicerecipe.dto.RecipeCommentDto;
 import com.team13.servicerecipe.dto.UserDto;
 import com.team13.servicerecipe.entity.Recipe;
@@ -30,7 +33,10 @@ public class RecipeCommentService {
     @Autowired
     private UserServiceClient userServiceClient;
 
-    public RecipeCommentDto addComment(Long recipeId, RecipeCommentDto commentDto, Long userId) {
+    public ApiResponse<RecipeCommentDto> addComment(Long recipeId, RecipeCommentDto commentDto, Long userId) {
+        if (recipeRepository.findById(recipeId).isEmpty()) {
+            return ApiResponse.onFailure(ErrorStatus.RECIPE_NOT_FOUND.getCode(), ErrorStatus.RECIPE_NOT_FOUND.getMessage(), null);
+        }
 
         RecipeComment comment = RecipeComment.builder()
                 .comment(commentDto.getComment())
@@ -39,8 +45,10 @@ public class RecipeCommentService {
                 .parentComment(commentDto.getParentCommentId() != null ? getCommentById(commentDto.getParentCommentId()) : null)
                 .build();
 
-        RecipeComment savedComment = saveComment(comment);
-        return convertToDto(savedComment);
+        RecipeComment savedComment = recipeCommentRepository.save(comment);
+        RecipeCommentDto responseDto = convertToDto(savedComment);
+
+        return new ApiResponse<>(true, SuccessStatus.COMMENT_CREATED.getCode(), SuccessStatus.COMMENT_CREATED.getMessage(), responseDto);
     }
 
     public RecipeComment saveComment(RecipeComment comment) {

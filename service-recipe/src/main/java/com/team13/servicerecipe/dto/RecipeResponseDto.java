@@ -22,4 +22,5 @@ public class RecipeResponseDto {
     private String thumbnailImagePath;
     private List<RecipeIngredientDto> ingredients;
     private List<RecipeProcessDto> processes;
+    private List<RecipeCommentDto> comments;
 }
