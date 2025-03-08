@@ -1,5 +1,7 @@
 package com.team13.servicepost.controller;
 
+import com.team13.servicepost.apiPyaload.ApiResponse;
+import com.team13.servicepost.apiPyaload.code.status.SuccessStatus;
 import com.team13.servicepost.dto.MypagePostResponseDto;
 import com.team13.servicepost.dto.PostRequestDto;
 import com.team13.servicepost.dto.PostResponseDto;
@@ -37,11 +39,28 @@ public class PostController {
     }
 
     @PostMapping("/like/{postId}")
-    public ResponseEntity<String> toggleLikePost(@PathVariable("postId") Long postId, @RequestHeader("X-User-Id") Long userId) {
-        return likePostService.toggleLikePost(postId, userId)
-                ? ResponseEntity.ok("게시글에 대한 좋아요 혹은 좋아요 취소가 실행됐습니다")
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 게시글 혹은 유저확인이 문제로 좋아요 관련 기능이 실행되지 않았습니다.");
+    public ApiResponse<String> toggleLike(@PathVariable Long postId, @RequestHeader("X-User-Id") Long userId) {
+        String result = likePostService.toggleLikePost(postId, userId);
+
+        if (result.equals("좋아요 실행")) {
+            return ApiResponse.of(SuccessStatus.LIKE_ADDED, "좋아요가 추가되었습니다.");
+        }
+
+        if (result.equals("좋아요 취소")) {
+            return ApiResponse.of(SuccessStatus.LIKE_REMOVED, "좋아요가 취소되었습니다.");
+        }
+
+        if (result.equals("게시글 없음")) {
+            return ApiResponse.onFailure("POST_NOT_FOUND", "게시글을 찾을 수 없습니다.", null);
+        }
+
+        if (result.equals("유저 없음")) {
+            return ApiResponse.onFailure("USER_NOT_FOUND", "사용자를 찾을 수 없습니다.", null);
+        }
+
+        return ApiResponse.onFailure("LIKE_FAILED", "좋아요 처리에 실패했습니다.", null);
     }
+
 
     //단순 확인용 나중에 지울예정 postResponseDto에서 좋아요수까지 확인가능
     @GetMapping("/like/{postId}")
