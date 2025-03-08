@@ -34,4 +34,5 @@ public class PostResponseDto {
     private String userNickname;
     private Long likesCount;
     private String userProfileUrl;
+    private float userRating;
 }

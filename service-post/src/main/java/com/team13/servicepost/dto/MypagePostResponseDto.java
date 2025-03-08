@@ -28,4 +28,5 @@ public class MypagePostResponseDto {
     private List<PostIngredientDto> ingredients;
     private Long likesCount;
     private String userProfileUrl;
+    private float userRating;
 }

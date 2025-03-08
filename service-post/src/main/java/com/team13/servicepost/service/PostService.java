@@ -119,10 +119,6 @@ public class PostService {
             images.forEach(postImageService::saveImage);
         }
 
-        // 응답을 위한 사용자 닉네임 가져오기 및 좋아요 수 초기화
-        String userNickname = fetchUserNickname(post.getUserId());
-        Long likesCount = 0L;  // 새 게시물은 0개의 좋아요로 시작
-
         // 사용자 세부 정보 및 저장된 데이터를 포함한 응답 DTO 반환
         return buildPostResponseDto(savedPost);
     }
@@ -132,7 +128,6 @@ public class PostService {
         if (!postOptional.isPresent()) {
             return Optional.empty();
         }
-
         Post post = postOptional.get();
         return Optional.of(buildPostResponseDto(post));
     }
@@ -182,6 +177,7 @@ public class PostService {
                 .images(imageDto)
                 .ingredients(ingredientDto)
                 .likesCount(likePostService.getLikesCount(post.getId()))
+                .userRating(userDto.getUserRating())
                 .build();
     }
 
@@ -235,8 +231,8 @@ public class PostService {
                 .pricePerUser(post.getPricePerUser())
                 .type(post.getType())
                 .contents(post.getContents())
-                .userNickname(userDto.getNickname()) //  사용자 닉네임 추가
-                .userProfileUrl(userDto.getProfileImageUrl()) //  사용자 프로필 URL 추가
+                .userNickname(userDto.getNickname())
+                .userProfileUrl(userDto.getProfileImageUrl())
                 .ingredients(ingredientDtoList)
                 .likesCount(likesCount)
                 .build();
