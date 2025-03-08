@@ -27,15 +27,20 @@ public class PostController {
     private LikePostService likePostService;
 
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto,@RequestHeader("X-User-Id") Long userId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPostWithDetails(postRequestDto, userId));
+    public ApiResponse<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto,@RequestHeader("X-User-Id") Long userId) {
+        PostResponseDto responseDto = postService.createPostWithDetails(postRequestDto, userId);
+        return ApiResponse.of(SuccessStatus.POST_CREATED, responseDto);
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> getPostById(@PathVariable("postId") Long postId) {
-        return postService.getPostWithUserDetails(postId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    public ApiResponse<PostResponseDto> getPostById(@PathVariable("postId") Long postId) {
+        Optional<PostResponseDto> postOptional = postService.getPostWithUserDetails(postId);
+
+        if (postOptional.isPresent()) {
+            return ApiResponse.of(SuccessStatus.POST_FOUND, postOptional.get());
+        }
+
+        return ApiResponse.onFailure("POST_NOT_FOUND", "게시글을 찾을 수 없습니다.", null);
     }
 
     @PostMapping("/like/{postId}")
