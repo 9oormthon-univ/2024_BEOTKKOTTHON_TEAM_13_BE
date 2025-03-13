@@ -12,17 +12,13 @@ import java.util.List;
 @NoArgsConstructor
 public class MypagePostResponseDto {
     private Long id;
-    private Long userId;
-    private int status;
-    private int groupSize;
-    private int curGroupSize;
-    private Date createdAt;
-    private Date closedAt;
     private String title;
     private int pricePerUser;
     private int type;
-    private String contents;
-    private String userNickname;
     private List<PostIngredientDto> ingredients;
-    private Long likesCount;
+    private List<PostImageDto> images;
+    private Long userId;
+    private String userNickname;
+    private String userProfileUrl;
+    private float userRating;
 }

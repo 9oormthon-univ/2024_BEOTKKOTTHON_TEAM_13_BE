@@ -201,30 +201,27 @@ public class PostService {
 
     private MypagePostResponseDto buildMypagePostResponseDto(Post post) {
         UserDto userDto = fetchUserDetails(post.getUserId());
-        Long likesCount = likePostService.getLikesCount(post.getId());
 
         // 재료 리스트 변환
         List<PostIngredientDto> ingredientDtoList = postIngredientService.getIngredientsByPostId(post.getId())
                 .stream()
                 .map(postIngredientService::convertToDto)
                 .collect(Collectors.toList());
+        //사진 리스트 반환
+        List<PostImageDto> imageDtoList = postImageService.getImagesByPostId(post.getId())
+                .stream()
+                .map(postImageService::convertToDto)
+                .collect(Collectors.toList());
 
         return MypagePostResponseDto.builder()
                 .id(post.getId())
-                .userId(post.getUserId())
-                .status(post.getStatus())
-                .groupSize(post.getGroupSize())
-                .curGroupSize(post.getCurGroupSize())
-                .createdAt(post.getCreatedAt())
-                .closedAt(post.getClosedAt())
                 .title(post.getTitle())
                 .pricePerUser(post.getPricePerUser())
-                .type(post.getType())
-                .contents(post.getContents())
+                .ingredients(ingredientDtoList)
+                .images(imageDtoList)
+                .userId(post.getUserId())
                 .userNickname(userDto.getNickname())
                 .userProfileUrl(userDto.getProfileImageUrl())
-                .ingredients(ingredientDtoList)
-                .likesCount(likesCount)
                 .build();
     }
 
