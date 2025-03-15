@@ -2,7 +2,7 @@ package com.team13.servicechat.controller;
 
 import com.team13.servicechat.dto.ChatroomDto;
 import com.team13.servicechat.dto.JwtPayloadDto;
-import com.team13.servicechat.feign.UserFeignClient;
+import com.team13.servicechat.feign.UserServiceClient;
 import com.team13.servicechat.service.ChatroomService;
 import com.team13.servicechat.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class IndexController {
     @Value("${app.test-string}")
     private String configTestString;
 
-    private final UserFeignClient userFeignClient;    // 서비스 간 통신 테스트용 Feign Client
+    private final UserServiceClient userServiceClient;    // 서비스 간 통신 테스트용 Feign Client
 
     private final ChatroomService chatroomService;    // 채팅방 정보를 가져오기 위한 서비스
     private final JwtService jwtService;              // JWT 토큰 관리를 위한 서비스
@@ -40,7 +40,7 @@ public class IndexController {
 
     @GetMapping("/service-connection-test")
     public String serviceConnectionTest() {
-        return userFeignClient.serviceConnectionTest().data();
+        return userServiceClient.serviceConnectionTest().data();
     }
 
 

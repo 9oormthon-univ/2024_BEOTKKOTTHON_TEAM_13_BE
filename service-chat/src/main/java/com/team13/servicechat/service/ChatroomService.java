@@ -41,6 +41,9 @@ public class ChatroomService {
     // 사용자가 읽지 않은 메시지 정보를 관리하는 서비스
     private final UserUnreadMsgsService userUnreadMsgsService;
 
+    // NOTE: 사용자 채팅 세션을 관리하는 서비스
+    private final ChatSessionService chatSessionService;
+
 
     @PostConstruct
     private void init() {
@@ -177,8 +180,12 @@ public class ChatroomService {
         // 현재 채탕방에서 사용자가 읽지 않은 메시지 삭제
         userUnreadMsgsService.removeUnreadMessagesInChatroom(userId, chatroomId);
 
+        // NOTE: 새로운 사용자 채팅 세션 반환
+        String chat_token = chatSessionService.addChatSession(userId);
+
         return ChatroomDto.builder()
                 .id(chatroom.getId())
+                .chat_token(chat_token)
                 .postId(chatroom.getPostId())
                 .userIds(chatroom.getUserIds())
                 .messages(messages)
