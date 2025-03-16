@@ -7,7 +7,6 @@ import com.team13.serviceuser.feign.ChatServiceClient;
 import com.team13.serviceuser.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +19,10 @@ import java.util.Map;
 public class SignUpService {
 
     private final UserRepository userRepository;
+
     private final BCryptPasswordEncoder encoder;
 
-    @Autowired
-    private ChatServiceClient chatServiceClient;
+    private final ChatServiceClient chatServiceClient;
 
     public boolean checkEmailDuplicate(String email) {
         return userRepository.existsByEmail(email);

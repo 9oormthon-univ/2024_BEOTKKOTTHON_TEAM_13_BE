@@ -46,7 +46,7 @@ public class IndexController {
 
     // 채팅방 정보(공동구매 데이터 및 메시지 리스트) 반환
     @GetMapping("/chatroom")
-    public ResponseEntity<ChatroomDto> getChatroom(@CookieValue("LTK") String loginToken,
+    public ResponseEntity<ChatroomDto> getChatroomInfo(@CookieValue("LTK") String loginToken,
                                                    @RequestParam("id") String chatroomId) {
 
         JwtPayloadDto payload = jwtService.getPayloadFromToken(loginToken);
@@ -55,7 +55,7 @@ public class IndexController {
         if (chatroomService.existsChatroomId(chatroomId) &&
             chatroomService.verifyUserInChatroom(payload.getUserId(), chatroomId)) {
 
-            return ResponseEntity.ok(chatroomService.getChatroomDtoById(chatroomId,
+            return ResponseEntity.ok(chatroomService.getChatroomInfoById(chatroomId,
                     Long.parseLong(payload.getUserId())));
         }
 
@@ -92,6 +92,8 @@ public class IndexController {
     // feign 클라이언트 전용
     @PostMapping("/chatroom/join")
     public ResponseEntity<String> joinChatroom(@RequestBody Map<String, String> request) {
+
+        log.info(request);
 
         // chatroomId와 userId가 유효한 경우에만 사용자 추가
         if (request.containsKey("chatroomId") && request.containsKey("userId")) {

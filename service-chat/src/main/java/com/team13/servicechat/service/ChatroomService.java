@@ -157,7 +157,7 @@ public class ChatroomService {
 
     // 채팅방 Dto 불러오기 (채팅방 메시지 포함)
     // 입력되는 chatroomId는 존재하는 채팅방 ID이어야 함
-    public ChatroomDto getChatroomDtoById(String chatroomId, Long userId) {
+    public ChatroomDto getChatroomInfoById(String chatroomId, Long userId) {
 
         Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow();
 
@@ -174,6 +174,7 @@ public class ChatroomService {
                     .senderUserId(message.getSenderUserId())
                     .senderUserName(message.getSenderUserName())
                     .createdAt(message.getCreatedAt())
+                    .self(userId.equals(message.getSenderUserId()))
                     .build()));
         }
 
