@@ -188,6 +188,7 @@ public class ChatroomService {
                 .id(chatroom.getId())
                 .chat_token(chat_token)
                 .postId(chatroom.getPostId())
+                .userId(userId)
                 .userIds(chatroom.getUserIds())
                 .messages(messages)
                 .build();
