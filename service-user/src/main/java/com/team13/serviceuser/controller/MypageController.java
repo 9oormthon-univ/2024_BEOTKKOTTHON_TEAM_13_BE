@@ -39,7 +39,7 @@ public class MypageController {
 
     //사용자가 작성한 레시피 가져오기
     @GetMapping("/recipes")
-    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<MypageRecipeListResponseDto> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
         return ResponseEntity.ok(myPageService.getRecipesByUserId(userId));
     }
 
@@ -54,9 +54,9 @@ public class MypageController {
 
     //사용자가 좋아요 누른 레시피
     @GetMapping("/likeRecipes")
-    public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
-            List<MypageRecipeResponseDto> likedRecipes = myPageService.getLikeRecipesByUserId(userId);
-            return likedRecipes.isEmpty()
+    public ResponseEntity<MypageRecipeListResponseDto> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
+        MypageRecipeListResponseDto likedRecipes = myPageService.getLikeRecipesByUserId(userId);
+            return likedRecipes.getRecipes().isEmpty()
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
                     : ResponseEntity.ok(likedRecipes);
     }

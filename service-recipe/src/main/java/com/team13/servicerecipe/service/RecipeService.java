@@ -9,6 +9,7 @@ import com.team13.servicerecipe.entity.RecipeIngredient;
 import com.team13.servicerecipe.entity.RecipeProcess;
 import com.team13.servicerecipe.feign.UserServiceClient;
 import com.team13.servicerecipe.repository.RecipeRepository;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -190,48 +191,54 @@ public class RecipeService {
     }
 
     // 특정 사용자의 레시피 목록을 가져오는 메소드 (마이페이지에서 사용)
-    public List<MypageRecipeResponseDto> getRecipesByUserId(Long userId) {
-        return recipeRepository.findAllByUserId(userId).stream()
-                .map(this::buildMypageRecipeResponseDto)
+    public MypageRecipeListResponseDto getRecipesByUserId(Long userId) {
+        UserDto userDto = fetchUserDetails(userId);
+
+        // 해당 사용자의 레시피 목록 가져오기
+        List<MypageRecipeResponseDto> recipeList = recipeRepository.findAllByUserId(userId)
+                .stream()
+                .map(recipe -> buildMypageRecipeResponseDto(recipe, userDto))
                 .collect(Collectors.toList());
+
+        return MypageRecipeListResponseDto.builder()
+                .userId(userDto.getId())
+                .userNickname(userDto.getNickname())
+                .userProfileUrl(userDto.getProfileImageUrl())
+                .userRating(userDto.getUserRating())
+                .recipes(recipeList)
+                .build();
     }
 
     // 사용자가 좋아요한 레시피 목록을 가져오는 메소드
-    public List<MypageRecipeResponseDto> getLikeRecipesByUserId(Long userId) {
-        // LikePostService를 사용하여 사용자가 좋아요한 Post ID 리스트를 가져옴
+    public MypageRecipeListResponseDto getLikeRecipesByUserId(Long userId) {
+        // 사용자 정보를 한 번만 가져오기
+        UserDto userDto = fetchUserDetails(userId);
+
+        // 사용자가 좋아요한 레시피 목록 가져오기
         List<Long> likedRecipeIds = likeRecipeService.getLikedRecipeIdsByUserId(userId);
 
-        // 각 Post ID를 사용하여 Post 엔티티를 조회하고, PostResponseDto로 변환
-        return likedRecipeIds.stream()
+        List<MypageRecipeResponseDto> recipeList = likedRecipeIds.stream()
                 .map(recipeRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(this::buildMypageRecipeResponseDto)
-                .collect(Collectors.toList());
-    }
-
-    // Recipe 엔티티를 MypageRecipeResponseDto로 변환하는 메소드
-    private MypageRecipeResponseDto buildMypageRecipeResponseDto(Recipe recipe) {
-        UserDto userDto = fetchUserDetails(recipe.getUserId());
-        Long likesCount = likeRecipeService.getLikesCount(recipe.getId());
-
-        // 재료 리스트 변환
-        List<RecipeIngredientDto> ingredientDtoList = recipeIngredientService.getIngredientsByRecipeId(recipe.getId())
-                .stream()
-                .map(recipeIngredientService::convertToDto)
+                .map(recipe -> buildMypageRecipeResponseDto(recipe, userDto))
                 .collect(Collectors.toList());
 
-        return MypageRecipeResponseDto.builder()
-                .id(recipe.getId())
-                .userId(recipe.getUserId())
-                .title(recipe.getTitle())
-                .contents(recipe.getContents())
-                .commentCount(recipe.getCommentCount())
-                .thumbnailImagePath(recipe.getThumbnailImagePath())
+        return MypageRecipeListResponseDto.builder()
+                .userId(userDto.getId())
                 .userNickname(userDto.getNickname())
                 .userProfileUrl(userDto.getProfileImageUrl())
-                .ingredients(ingredientDtoList)
-                .likesCount(likesCount)
+                .userRating(userDto.getUserRating())
+                .recipes(recipeList)
+                .build();
+    }
+
+
+    // Recipe 엔티티를 MypageRecipeResponseDto로 변환하는 메소드
+    private MypageRecipeResponseDto buildMypageRecipeResponseDto(Recipe recipe, UserDto userDto) {
+        return MypageRecipeResponseDto.builder()
+                .id(recipe.getId())
+                .thumbnailImagePath(recipe.getThumbnailImagePath())
                 .build();
     }
 }

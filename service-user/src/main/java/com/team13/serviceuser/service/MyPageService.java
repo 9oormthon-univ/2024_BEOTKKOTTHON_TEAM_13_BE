@@ -23,14 +23,14 @@ public class MyPageService {
     public MypagePostListResponseDto getPostsByUserId(Long userId) {
         return postServiceClient.getPostsByUserId(userId);
     }
-    public List<MypageRecipeResponseDto> getRecipesByUserId(Long userId) {
+    public MypageRecipeListResponseDto getRecipesByUserId(Long userId) {
         return recipeServiceClient.getRecipesByUserId(userId);
     }
     public List<MypagePostResponseDto> getLikePostsByUserId(Long userId) {
         return postServiceClient.getLikePostsByUserId(userId);
     }
 
-    public List<MypageRecipeResponseDto> getLikeRecipesByUserId(Long userId) {
+    public MypageRecipeListResponseDto getLikeRecipesByUserId(Long userId) {
         return recipeServiceClient.getLikeRecipesByUserId(userId);
     }
 

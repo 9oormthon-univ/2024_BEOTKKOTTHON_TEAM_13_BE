@@ -12,14 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 public class MypageRecipeResponseDto {
     private Long id;
-    private Long userId;
-    private String title;
-    private String contents;
-    private int commentCount;
     private String thumbnailImagePath;
-    private Date createdAt;
-    private int type;
-    private String userNickname;
-    private List<RecipeIngredientDto> ingredients;
-    private Long likesCount;
 }

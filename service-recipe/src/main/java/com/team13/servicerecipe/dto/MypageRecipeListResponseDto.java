@@ -5,14 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MypageRecipeResponseDto {
-    private Long id;
-    private String thumbnailImagePath;
+public class MypageRecipeListResponseDto {
+    private Long userId;
+    private String userNickname;
+    private String userProfileUrl;
+    private float userRating;
+    private List<MypageRecipeResponseDto> recipes;
 }

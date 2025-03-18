@@ -3,6 +3,7 @@ package com.team13.servicerecipe.controller;
 
 import com.team13.servicerecipe.apiPayload.ApiResponse;
 import com.team13.servicerecipe.apiPayload.code.status.ErrorStatus;
+import com.team13.servicerecipe.dto.MypageRecipeListResponseDto;
 import com.team13.servicerecipe.dto.MypageRecipeResponseDto;
 import com.team13.servicerecipe.dto.RecipeRequestDto;
 import com.team13.servicerecipe.dto.RecipeResponseDto;
@@ -81,17 +82,17 @@ public class RecipeController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<MypageRecipeResponseDto>> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
-            List<MypageRecipeResponseDto> recipes = recipeService.getRecipesByUserId(userId);
-            return recipes.isEmpty()
+    public ResponseEntity<MypageRecipeListResponseDto> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
+        MypageRecipeListResponseDto recipes = recipeService.getRecipesByUserId(userId);
+            return recipes.getRecipes().isEmpty()
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
                     : ResponseEntity.ok(recipes);
     }
 
     @GetMapping("/like/user")
-    public ResponseEntity<List<MypageRecipeResponseDto>> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
-            List<MypageRecipeResponseDto> likedRecipes = recipeService.getLikeRecipesByUserId(userId);
-            return likedRecipes.isEmpty()
+    public ResponseEntity<MypageRecipeListResponseDto> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
+        MypageRecipeListResponseDto likedRecipes = recipeService.getLikeRecipesByUserId(userId);
+            return likedRecipes.getRecipes().isEmpty()
                     ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
                     : ResponseEntity.ok(likedRecipes);
     }
