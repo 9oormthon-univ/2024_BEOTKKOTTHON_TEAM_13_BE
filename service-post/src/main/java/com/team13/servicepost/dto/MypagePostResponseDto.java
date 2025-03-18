@@ -19,8 +19,4 @@ public class MypagePostResponseDto {
     private int type;
     private List<PostIngredientDto> ingredients;
     private List<PostImageDto> images;
-    private Long userId;
-    private String userNickname;
-    private String userProfileUrl;
-    private float userRating;
 }

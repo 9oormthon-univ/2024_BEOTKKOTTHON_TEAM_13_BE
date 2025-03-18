@@ -179,28 +179,49 @@ public class PostService {
         return response.getBody();
     }
 
-    public List<MypagePostResponseDto> getPostsByUserId(Long userId) {
+    public MypagePostListResponseDto  getPostsByUserId(Long userId) {
         List<Post> posts = postRepository.findAllByUserId(userId);
 
-        return posts.stream()
+        UserDto userDto = fetchUserDetails(userId);
+
+        // 게시글 리스트 변환
+        List<MypagePostResponseDto> postList = posts.stream()
                 .map(this::buildMypagePostResponseDto)
                 .collect(Collectors.toList());
+
+        // 공통 사용자 정보 + 게시글 리스트 반환
+        return MypagePostListResponseDto.builder()
+                .userId(userDto.getId())
+                .userNickname(userDto.getNickname())
+                .userProfileUrl(userDto.getProfileImageUrl())
+                .userRating(userDto.getUserRating())
+                .posts(postList)
+                .build();
     }
 
-    public List<MypagePostResponseDto> getLikePostsByUserId(Long userId) {
+    public MypagePostListResponseDto getLikePostsByUserId(Long userId) {
         List<Long> likedPostIds = likePostService.getLikedPostIdsByUserId(userId);
 
-        return likedPostIds.stream()
+        UserDto userDto = fetchUserDetails(userId);
+
+        List<MypagePostResponseDto> postList = likedPostIds.stream()
                 .map(postRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(this::buildMypagePostResponseDto)
                 .collect(Collectors.toList());
+
+        return MypagePostListResponseDto.builder()
+                .userId(userDto.getId())
+                .userNickname(userDto.getNickname())
+                .userProfileUrl(userDto.getProfileImageUrl())
+                .userRating(userDto.getUserRating())
+                .posts(postList)
+                .build();
     }
 
 
     private MypagePostResponseDto buildMypagePostResponseDto(Post post) {
-        UserDto userDto = fetchUserDetails(post.getUserId());
 
         // 재료 리스트 변환
         List<PostIngredientDto> ingredientDtoList = postIngredientService.getIngredientsByPostId(post.getId())
@@ -217,11 +238,9 @@ public class PostService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .pricePerUser(post.getPricePerUser())
+                .type(post.getType())
                 .ingredients(ingredientDtoList)
                 .images(imageDtoList)
-                .userId(post.getUserId())
-                .userNickname(userDto.getNickname())
-                .userProfileUrl(userDto.getProfileImageUrl())
                 .build();
     }
 

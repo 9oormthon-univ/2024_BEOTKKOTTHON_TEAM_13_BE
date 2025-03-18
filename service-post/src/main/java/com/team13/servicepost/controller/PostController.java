@@ -2,6 +2,7 @@ package com.team13.servicepost.controller;
 
 import com.team13.servicepost.apiPyaload.ApiResponse;
 import com.team13.servicepost.apiPyaload.code.status.SuccessStatus;
+import com.team13.servicepost.dto.MypagePostListResponseDto;
 import com.team13.servicepost.dto.MypagePostResponseDto;
 import com.team13.servicepost.dto.PostRequestDto;
 import com.team13.servicepost.dto.PostResponseDto;
@@ -74,19 +75,20 @@ public class PostController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<MypagePostResponseDto>> getPostsByUserId( @RequestHeader("X-User-Id") Long userId) {
-            List<MypagePostResponseDto> posts = postService.getPostsByUserId(userId);
-            return posts.isEmpty()
-                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-                    : ResponseEntity.ok(posts);
+    public ResponseEntity<MypagePostListResponseDto> getPostsByUserId(@RequestHeader("X-User-Id") Long userId) {
+        MypagePostListResponseDto posts = postService.getPostsByUserId(userId);
+
+        return posts.getPosts().isEmpty()  // posts 내부의 리스트가 비었는지 확인
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+                : ResponseEntity.ok(posts);
     }
 
     // 사용자가 좋아요한 게시글 가져오기
-    @GetMapping("/like/user")
-    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
-            List<MypagePostResponseDto> likedPosts = postService.getLikePostsByUserId(userId);
-            return likedPosts.isEmpty()
-                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-                    : ResponseEntity.ok(likedPosts);
-    }
+//    @GetMapping("/like/user")
+//    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
+//            List<MypagePostResponseDto> likedPosts = postService.getLikePostsByUserId(userId);
+//            return likedPosts.isEmpty()
+//                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+//                    : ResponseEntity.ok(likedPosts);
+//    }
 }
