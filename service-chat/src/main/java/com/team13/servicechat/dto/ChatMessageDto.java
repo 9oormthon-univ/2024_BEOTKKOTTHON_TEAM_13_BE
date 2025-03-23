@@ -28,5 +28,4 @@ public class ChatMessageDto {
     private Long senderUserId;      // 메시지 발신자 유저 ID
     private String senderUserName;  // 메시지 발신자 유저 이름
     private Date createdAt;         // 채팅 메시지 생성 날짜 및 시간
-    private boolean self;           // 자신이 보낸 메시지인지에 대한 여부
 }

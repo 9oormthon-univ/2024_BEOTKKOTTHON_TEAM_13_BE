@@ -174,7 +174,6 @@ public class ChatroomService {
                     .senderUserId(message.getSenderUserId())
                     .senderUserName(message.getSenderUserName())
                     .createdAt(message.getCreatedAt())
-                    .self(userId.equals(message.getSenderUserId()))
                     .build()));
         }
 
