@@ -1,6 +1,5 @@
 package com.team13.servicechat.dto;
 
-import com.team13.servicechat.entity.ChatMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

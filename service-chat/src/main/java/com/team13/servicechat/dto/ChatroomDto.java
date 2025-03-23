@@ -10,7 +10,9 @@ import java.util.List;
 @Builder
 public class ChatroomDto {
     private String id;
+    private String chat_token;
     private Long postId;
+    private Long userId;
     private List<Long> userIds;
     private List<ChatMessageDto> messages;
     private Integer unreadMsgsCounter;

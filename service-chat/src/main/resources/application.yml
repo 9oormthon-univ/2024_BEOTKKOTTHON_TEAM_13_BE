@@ -3,6 +3,8 @@ app:
     url: http://localhost:3964
   server-eureka:
     url: http://localhost:3743/eureka/
+  session:
+    ttlSeconds: 86400 # 채팅 세션 TTL (secs)
 
 server:
   port: 3615
@@ -19,6 +21,9 @@ spring:
           default:
             connect-timeout: 5000
             read-timeout: 5000
+  data:
+    mongodb:
+      auto-index-creation: true
 
 eureka:
   client:

@@ -2,7 +2,7 @@ package com.team13.servicechat.controller;
 
 import com.team13.servicechat.dto.ChatroomDto;
 import com.team13.servicechat.dto.JwtPayloadDto;
-import com.team13.servicechat.feign.UserFeignClient;
+import com.team13.servicechat.feign.UserServiceClient;
 import com.team13.servicechat.service.ChatroomService;
 import com.team13.servicechat.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class IndexController {
     @Value("${app.test-string}")
     private String configTestString;
 
-    private final UserFeignClient userFeignClient;    // 서비스 간 통신 테스트용 Feign Client
+    private final UserServiceClient userServiceClient;    // 서비스 간 통신 테스트용 Feign Client
 
     private final ChatroomService chatroomService;    // 채팅방 정보를 가져오기 위한 서비스
     private final JwtService jwtService;              // JWT 토큰 관리를 위한 서비스
@@ -40,13 +40,13 @@ public class IndexController {
 
     @GetMapping("/service-connection-test")
     public String serviceConnectionTest() {
-        return userFeignClient.serviceConnectionTest().data();
+        return userServiceClient.serviceConnectionTest().data();
     }
 
 
     // 채팅방 정보(공동구매 데이터 및 메시지 리스트) 반환
     @GetMapping("/chatroom")
-    public ResponseEntity<ChatroomDto> getChatroom(@CookieValue("LTK") String loginToken,
+    public ResponseEntity<ChatroomDto> getChatroomInfo(@CookieValue("LTK") String loginToken,
                                                    @RequestParam("id") String chatroomId) {
 
         JwtPayloadDto payload = jwtService.getPayloadFromToken(loginToken);
@@ -55,7 +55,7 @@ public class IndexController {
         if (chatroomService.existsChatroomId(chatroomId) &&
             chatroomService.verifyUserInChatroom(payload.getUserId(), chatroomId)) {
 
-            return ResponseEntity.ok(chatroomService.getChatroomDtoById(chatroomId,
+            return ResponseEntity.ok(chatroomService.getChatroomInfoById(chatroomId,
                     Long.parseLong(payload.getUserId())));
         }
 

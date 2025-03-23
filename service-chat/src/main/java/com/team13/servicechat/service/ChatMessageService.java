@@ -58,6 +58,7 @@ public class ChatMessageService {
             User sender = getUserInChatrooms(chatroomId, sessionId);
             message.setSenderUserId(sender.userId);
             message.setSenderUserName(sender.userName);
+            message.setCreatedAt(new Date());
 
             // 채팅방에 접속하지 않은 사용자에게 해당 메시지를 따로 전달함
             Chatroom chatroom = chatroomService.getChatroomById(chatroomId);
