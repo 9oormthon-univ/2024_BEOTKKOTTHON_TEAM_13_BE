@@ -39,7 +39,7 @@ public class WebSocketInterceptor implements ChannelInterceptor {
             // 토큰 가져오기
             String token = accessor.getFirstNativeHeader("Authorization");
 
-            // JWT 토큰 검증
+            // 토큰 검증
             if (!chatSessionService.isValid(token)) {
                 throw new RuntimeException("올바르지 않은 토큰입니다.");
             }
