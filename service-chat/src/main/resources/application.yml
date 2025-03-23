@@ -4,7 +4,7 @@ app:
   server-eureka:
     url: http://localhost:3743/eureka/
   session:
-    ttlSeconds: 60
+    ttlSeconds: 86400 # 채팅 세션 TTL (secs)
 
 server:
   port: 3615
