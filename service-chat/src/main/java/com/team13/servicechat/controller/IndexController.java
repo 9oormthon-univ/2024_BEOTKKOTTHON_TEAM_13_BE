@@ -93,8 +93,6 @@ public class IndexController {
     @PostMapping("/chatroom/join")
     public ResponseEntity<String> joinChatroom(@RequestBody Map<String, String> request) {
 
-        log.info(request);
-
         // chatroomId와 userId가 유효한 경우에만 사용자 추가
         if (request.containsKey("chatroomId") && request.containsKey("userId")) {
             chatroomService.joinChatroom(request.get("chatroomId"),
