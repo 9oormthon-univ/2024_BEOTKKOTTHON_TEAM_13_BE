@@ -20,7 +20,7 @@ public class MyPageService {
     @Autowired
     private RecipeServiceClient recipeServiceClient;
 
-    public MypagePostListResponseDto getPostsByUserId(Long userId) {
+    public MypagePostListResponseDto<MyPostResponseDto> getPostsByUserId(Long userId) {
         return postServiceClient.getPostsByUserId(userId);
     }
     public MypageRecipeListResponseDto getRecipesByUserId(Long userId) {

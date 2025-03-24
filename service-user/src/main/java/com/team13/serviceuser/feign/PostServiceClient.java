@@ -1,5 +1,6 @@
 package com.team13.serviceuser.feign;
 
+import com.team13.serviceuser.dto.MyPostResponseDto;
 import com.team13.serviceuser.dto.MypagePostListResponseDto;
 import com.team13.serviceuser.dto.MypagePostResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -12,7 +13,7 @@ import java.util.List;
 @FeignClient(name = "service-post")
 public interface PostServiceClient {
     @GetMapping("/posts/user")
-    MypagePostListResponseDto getPostsByUserId(@RequestHeader("X-User-Id") Long userId);
+    MypagePostListResponseDto<MyPostResponseDto> getPostsByUserId(@RequestHeader("X-User-Id") Long userId);
 
     @GetMapping("/posts/like/user")
     List<MypagePostResponseDto> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId);

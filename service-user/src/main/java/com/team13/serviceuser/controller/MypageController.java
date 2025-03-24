@@ -33,7 +33,7 @@ public class MypageController {
 
     // 사용자가 작성한 공동구매게시글 가져오기
     @GetMapping("/posts")
-    public ResponseEntity<MypagePostListResponseDto> getPostsByUserId(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<MypagePostListResponseDto<MyPostResponseDto>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId) {
         return ResponseEntity.ok(myPageService.getPostsByUserId(userId));
     }
 
@@ -44,13 +44,13 @@ public class MypageController {
     }
 
     //사용자가 좋아요 누른 공동구매게시글
-//    @GetMapping("/likePosts")
-//    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
-//            List<MypagePostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
-//            return likedPosts.isEmpty()
-//                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-//                    : ResponseEntity.ok(likedPosts);
-//    }
+    @GetMapping("/likePosts")
+    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
+        List<MypagePostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
+        return likedPosts.isEmpty()
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+                : ResponseEntity.ok(likedPosts);
+    }
 
     //사용자가 좋아요 누른 레시피
     @GetMapping("/likeRecipes")

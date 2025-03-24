@@ -179,18 +179,15 @@ public class PostService {
         return response.getBody();
     }
 
-    public MypagePostListResponseDto  getPostsByUserId(Long userId) {
+    public MypagePostListResponseDto<MyPostResponseDto> getPostsByUserId(Long userId) {
         List<Post> posts = postRepository.findAllByUserId(userId);
-
         UserDto userDto = fetchUserDetails(userId);
 
-        // 게시글 리스트 변환
-        List<MypagePostResponseDto> postList = posts.stream()
-                .map(this::buildMypagePostResponseDto)
+        List<MyPostResponseDto> postList = posts.stream()
+                .map(this::buildMyPostResponseDto)
                 .collect(Collectors.toList());
 
-        // 공통 사용자 정보 + 게시글 리스트 반환
-        return MypagePostListResponseDto.builder()
+        return MypagePostListResponseDto.<MyPostResponseDto>builder()
                 .userId(userDto.getId())
                 .userNickname(userDto.getNickname())
                 .userProfileUrl(userDto.getProfileImageUrl())
@@ -199,36 +196,47 @@ public class PostService {
                 .build();
     }
 
-    public MypagePostListResponseDto getLikePostsByUserId(Long userId) {
-        List<Long> likedPostIds = likePostService.getLikedPostIdsByUserId(userId);
-
-        UserDto userDto = fetchUserDetails(userId);
-
-        List<MypagePostResponseDto> postList = likedPostIds.stream()
-                .map(postRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(this::buildMypagePostResponseDto)
-                .collect(Collectors.toList());
-
-        return MypagePostListResponseDto.builder()
-                .userId(userDto.getId())
-                .userNickname(userDto.getNickname())
-                .userProfileUrl(userDto.getProfileImageUrl())
-                .userRating(userDto.getUserRating())
-                .posts(postList)
-                .build();
-    }
-
-
-    private MypagePostResponseDto buildMypagePostResponseDto(Post post) {
-
-        // 재료 리스트 변환
+    private MyPostResponseDto buildMyPostResponseDto(Post post) {
         List<PostIngredientDto> ingredientDtoList = postIngredientService.getIngredientsByPostId(post.getId())
                 .stream()
                 .map(postIngredientService::convertToDto)
                 .collect(Collectors.toList());
-        //사진 리스트 반환
+
+        List<PostImageDto> imageDtoList = postImageService.getImagesByPostId(post.getId())
+                .stream()
+                .map(postImageService::convertToDto)
+                .collect(Collectors.toList());
+
+        return MyPostResponseDto.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .pricePerUser(post.getPricePerUser())
+                .type(post.getType())
+                .ingredients(ingredientDtoList)
+                .images(imageDtoList)
+                .build();
+    }
+
+    //  좋아요한 글 목록
+    public List<MypagePostResponseDto> getLikePostsByUserId(Long userId) {
+        List<Long> likedPostIds = likePostService.getLikedPostIdsByUserId(userId);
+
+        return likedPostIds.stream()
+                .map(postRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(this::buildMypagePostResponseDtoForLikedPosts)
+                .collect(Collectors.toList());
+    }
+
+    private MypagePostResponseDto buildMypagePostResponseDtoForLikedPosts(Post post) {
+        UserDto userDto = fetchUserDetails(post.getUserId());
+
+        List<PostIngredientDto> ingredientDtoList = postIngredientService.getIngredientsByPostId(post.getId())
+                .stream()
+                .map(postIngredientService::convertToDto)
+                .collect(Collectors.toList());
+
         List<PostImageDto> imageDtoList = postImageService.getImagesByPostId(post.getId())
                 .stream()
                 .map(postImageService::convertToDto)
@@ -241,9 +249,8 @@ public class PostService {
                 .type(post.getType())
                 .ingredients(ingredientDtoList)
                 .images(imageDtoList)
+                .userNickname(userDto.getNickname())
                 .build();
     }
-
-
 
 }
