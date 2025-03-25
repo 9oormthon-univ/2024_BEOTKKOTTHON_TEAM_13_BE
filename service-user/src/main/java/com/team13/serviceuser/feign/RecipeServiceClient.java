@@ -1,5 +1,6 @@
 package com.team13.serviceuser.feign;
 
+import com.team13.serviceuser.apiPyaload.ApiResponse;
 import com.team13.serviceuser.dto.MypageRecipeListResponseDto;
 import com.team13.serviceuser.dto.MypageRecipeResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -13,8 +14,8 @@ import java.util.List;
 public interface RecipeServiceClient {
 
     @GetMapping("/recipes/user")
-    MypageRecipeListResponseDto getRecipesByUserId(@RequestHeader("X-User-Id") Long userId);
+    ApiResponse<MypageRecipeListResponseDto> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId);
 
     @GetMapping("/recipes/like/user")
-    MypageRecipeListResponseDto getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId);
+    ApiResponse<MypageRecipeListResponseDto> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId);
 }

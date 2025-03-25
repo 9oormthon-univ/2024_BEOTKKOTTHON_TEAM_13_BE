@@ -1,5 +1,6 @@
 package com.team13.serviceuser.feign;
 
+import com.team13.serviceuser.apiPyaload.ApiResponse;
 import com.team13.serviceuser.dto.MyPostResponseDto;
 import com.team13.serviceuser.dto.MypagePostListResponseDto;
 import com.team13.serviceuser.dto.MypagePostResponseDto;
@@ -13,8 +14,8 @@ import java.util.List;
 @FeignClient(name = "service-post")
 public interface PostServiceClient {
     @GetMapping("/posts/user")
-    MypagePostListResponseDto<MyPostResponseDto> getPostsByUserId(@RequestHeader("X-User-Id") Long userId);
+    ApiResponse<MypagePostListResponseDto<MyPostResponseDto>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId);
 
     @GetMapping("/posts/like/user")
-    List<MypagePostResponseDto> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId);
+    ApiResponse<MypagePostListResponseDto<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId);
 }

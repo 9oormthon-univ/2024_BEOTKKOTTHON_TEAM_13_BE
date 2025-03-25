@@ -1,5 +1,6 @@
 package com.team13.serviceuser.service;
 
+import com.team13.serviceuser.apiPyaload.ApiResponse;
 import com.team13.serviceuser.dto.*;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.feign.PostServiceClient;
@@ -20,18 +21,20 @@ public class MyPageService {
     @Autowired
     private RecipeServiceClient recipeServiceClient;
 
-    public MypagePostListResponseDto<MyPostResponseDto> getPostsByUserId(Long userId) {
-        return postServiceClient.getPostsByUserId(userId);
-    }
     public MypageRecipeListResponseDto getRecipesByUserId(Long userId) {
-        return recipeServiceClient.getRecipesByUserId(userId);
-    }
-    public List<MypagePostResponseDto> getLikePostsByUserId(Long userId) {
-        return postServiceClient.getLikePostsByUserId(userId);
+        return recipeServiceClient.getRecipesByUserId(userId).getResult();
     }
 
     public MypageRecipeListResponseDto getLikeRecipesByUserId(Long userId) {
-        return recipeServiceClient.getLikeRecipesByUserId(userId);
+        return recipeServiceClient.getLikeRecipesByUserId(userId).getResult();
+    }
+
+    public MypagePostListResponseDto<MyPostResponseDto> getPostsByUserId(Long userId) {
+        return postServiceClient.getPostsByUserId(userId).getResult();
+    }
+
+    public MypagePostListResponseDto<MypagePostResponseDto> getLikePostsByUserId(Long userId) {
+        return postServiceClient.getLikePostsByUserId(userId).getResult();
     }
 
     public UserDto getUserById(Long userId) {

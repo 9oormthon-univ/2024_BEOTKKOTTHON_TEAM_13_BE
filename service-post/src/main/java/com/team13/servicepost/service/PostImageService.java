@@ -25,7 +25,6 @@ public class PostImageService {
     public PostImageDto convertToDto(PostImage images) {
         PostImageDto dto = new PostImageDto();
         dto.setId(images.getId());
-        dto.setPostId(images.getPost().getId());
         dto.setImagePath(images.getImagePath());
         return dto;
     }

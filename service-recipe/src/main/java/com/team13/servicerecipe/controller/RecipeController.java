@@ -82,18 +82,36 @@ public class RecipeController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<MypageRecipeListResponseDto> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<ApiResponse<MypageRecipeListResponseDto>> getRecipesByUserId(
+            @RequestHeader("X-User-Id") Long userId) {
+
         MypageRecipeListResponseDto recipes = recipeService.getRecipesByUserId(userId);
-            return recipes.getRecipes().isEmpty()
-                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-                    : ResponseEntity.ok(recipes);
+
+        return recipes.getRecipes().isEmpty()
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiResponse.onFailure(
+                        ErrorStatus.MYPAGE_RECIPE_EMPTY.getCode(),
+                        ErrorStatus.MYPAGE_RECIPE_EMPTY.getMessage(),
+                        null))
+                : ResponseEntity.ok(ApiResponse.onSuccess(recipes));
     }
 
+
+
     @GetMapping("/like/user")
-    public ResponseEntity<MypageRecipeListResponseDto> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<ApiResponse<MypageRecipeListResponseDto>> getLikeRecipesByUserId(
+            @RequestHeader("X-User-Id") Long userId) {
+
         MypageRecipeListResponseDto likedRecipes = recipeService.getLikeRecipesByUserId(userId);
-            return likedRecipes.getRecipes().isEmpty()
-                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-                    : ResponseEntity.ok(likedRecipes);
+
+        return likedRecipes.getRecipes().isEmpty()
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiResponse.onFailure(
+                        ErrorStatus.MYPAGE_LIKE_RECIPE_EMPTY.getCode(),
+                        ErrorStatus.MYPAGE_LIKE_RECIPE_EMPTY.getMessage(),
+                        null))
+                : ResponseEntity.ok(ApiResponse.onSuccess(likedRecipes));
     }
+
+
 }

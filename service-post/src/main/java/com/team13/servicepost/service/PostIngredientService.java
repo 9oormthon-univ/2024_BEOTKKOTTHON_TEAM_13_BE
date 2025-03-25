@@ -27,7 +27,6 @@ public class PostIngredientService {
     public PostIngredientDto convertToDto(PostIngredient ingredient) {
         PostIngredientDto dto = new PostIngredientDto();
         dto.setId(ingredient.getId());
-        dto.setPostId(ingredient.getPost().getId());
         dto.setName(ingredient.getName());
         dto.setUrl(ingredient.getUrl());
         return dto;

@@ -218,15 +218,24 @@ public class PostService {
     }
 
     //  좋아요한 글 목록
-    public List<MypagePostResponseDto> getLikePostsByUserId(Long userId) {
+    public MypagePostListResponseDto<MypagePostResponseDto> getLikePostsResponseByUserId(Long userId) {
         List<Long> likedPostIds = likePostService.getLikedPostIdsByUserId(userId);
+        UserDto userDto = fetchUserDetails(userId); // 좋아요한 사용자 정보 (조회자 본인)
 
-        return likedPostIds.stream()
+        List<MypagePostResponseDto> likedPosts = likedPostIds.stream()
                 .map(postRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(this::buildMypagePostResponseDtoForLikedPosts)
                 .collect(Collectors.toList());
+
+        return MypagePostListResponseDto.<MypagePostResponseDto>builder()
+                .userId(userDto.getId())
+                .userNickname(userDto.getNickname())
+                .userProfileUrl(userDto.getProfileImageUrl())
+                .userRating(userDto.getUserRating())
+                .posts(likedPosts)
+                .build();
     }
 
     private MypagePostResponseDto buildMypagePostResponseDtoForLikedPosts(Post post) {
@@ -254,3 +263,4 @@ public class PostService {
     }
 
 }
+

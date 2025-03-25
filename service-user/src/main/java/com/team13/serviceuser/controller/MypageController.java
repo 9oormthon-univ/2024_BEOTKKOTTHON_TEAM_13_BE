@@ -1,5 +1,6 @@
 package com.team13.serviceuser.controller;
 
+import com.team13.serviceuser.apiPyaload.ApiResponse;
 import com.team13.serviceuser.dto.*;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.repository.UserRepository;
@@ -45,9 +46,9 @@ public class MypageController {
 
     //사용자가 좋아요 누른 공동구매게시글
     @GetMapping("/likePosts")
-    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
-        List<MypagePostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
-        return likedPosts.isEmpty()
+    public ResponseEntity<MypagePostListResponseDto<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
+        MypagePostListResponseDto<MypagePostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
+        return likedPosts.getPosts().isEmpty()
                 ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
                 : ResponseEntity.ok(likedPosts);
     }

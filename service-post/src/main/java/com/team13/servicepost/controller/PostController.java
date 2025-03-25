@@ -1,6 +1,7 @@
 package com.team13.servicepost.controller;
 
 import com.team13.servicepost.apiPyaload.ApiResponse;
+import com.team13.servicepost.apiPyaload.code.status.ErrorStatus;
 import com.team13.servicepost.apiPyaload.code.status.SuccessStatus;
 import com.team13.servicepost.dto.*;
 import com.team13.servicepost.service.LikePostService;
@@ -72,20 +73,29 @@ public class PostController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<MypagePostListResponseDto<MyPostResponseDto>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<ApiResponse<MypagePostListResponseDto<MyPostResponseDto>>> getPostsByUserId(
+            @RequestHeader("X-User-Id") Long userId) {
+
         MypagePostListResponseDto<MyPostResponseDto> posts = postService.getPostsByUserId(userId);
 
-        return posts.getPosts().isEmpty()  // posts 내부의 리스트가 비었는지 확인
-                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-                : ResponseEntity.ok(posts);
+        return posts.getPosts().isEmpty()
+                ? ResponseEntity.badRequest().body(ApiResponse.onFailure(
+                ErrorStatus.MYPAGE_RECIPE_EMPTY.getCode(),
+                ErrorStatus.MYPAGE_RECIPE_EMPTY.getMessage(),
+                null))
+                : ResponseEntity.ok(ApiResponse.onSuccess(posts));
     }
 
     // 사용자가 좋아요한 게시글 가져오기
     @GetMapping("/like/user")
-    public ResponseEntity<List<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
-        List<MypagePostResponseDto> likedPosts = postService.getLikePostsByUserId(userId);
-        return likedPosts.isEmpty()
-                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-                : ResponseEntity.ok(likedPosts);
+    public ResponseEntity<ApiResponse<MypagePostListResponseDto<MypagePostResponseDto>>> getLikePostsByUserId(
+            @RequestHeader("X-User-Id") Long userId) {
+
+        MypagePostListResponseDto<MypagePostResponseDto> likedPosts = postService.getLikePostsResponseByUserId(userId);
+
+        return likedPosts.getPosts().isEmpty()
+                ? ResponseEntity.badRequest().body(ApiResponse.onFailure(ErrorStatus.MYPAGE_LIKE_RECIPE_EMPTY.getCode(), ErrorStatus.MYPAGE_LIKE_RECIPE_EMPTY.getMessage(), null))
+                : ResponseEntity.ok(ApiResponse.onSuccess(likedPosts));
     }
+
 }
