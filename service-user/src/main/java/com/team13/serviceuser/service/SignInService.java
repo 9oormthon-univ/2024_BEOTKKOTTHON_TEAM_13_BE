@@ -5,13 +5,10 @@ import com.team13.serviceuser.apiPyaload.code.status.ErrorStatus;
 import com.team13.serviceuser.dto.SignRequest;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.repository.UserRepository;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
@@ -36,6 +33,15 @@ public class SignInService {
     //비밀번호 인코딩
     private final BCryptPasswordEncoder encoder;
 
+    // NOTE: 쿠키 Samesite 옵션
+    @Value("${app.cookie.same-site}")
+    private String cookieSameSite;
+
+    // NOTE: 쿠키 Secure 옵션
+    @Value("${app.cookie.secure}")
+    private boolean cookieSecure;
+
+    // NOTE: 쿠키 도메인
     @Value("${app.cookie.domain}")
     private String cookieDomain;
 
@@ -88,22 +94,22 @@ public class SignInService {
         // 기존 LTK 쿠키 삭제
         ResponseCookie deleteCookie = ResponseCookie.from("LTK", "")
                 .httpOnly(true)
-                .secure(false)  // 로컬에서는 false (HTTPS가 아니므로)
+                .secure(cookieSecure)
                 .path("/")
                 .domain(cookieDomain)
                 .maxAge(0) // 즉시 만료
-                .sameSite("None")
+                .sameSite(cookieSameSite)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
 
         // 새로운 LTK 쿠키 생성
         ResponseCookie newCookie = ResponseCookie.from("LTK", token)
                 .httpOnly(true)
-                .secure(false)  // 서버에서는 true (HTTPS 환경)
+                .secure(cookieSecure)  // NOTE: false(개발기), true(OP)
                 .path("/")
-                .domain(cookieDomain)
+                .domain(cookieDomain)  // NOTE: "localhost"(개발기), "n1.junyeong.dev"(OP)
                 .maxAge(tokenKeepDuration / 1000)
-                .sameSite("None")  //  SameSite=None 추가 (CORS 문제 방지)
+                .sameSite(cookieSameSite) // NOTE: Lax(개발기), None(OP)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, newCookie.toString());
 
