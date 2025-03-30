@@ -105,11 +105,11 @@ public class SignInService {
         // 새로운 LTK 쿠키 생성
         ResponseCookie newCookie = ResponseCookie.from("LTK", token)
                 .httpOnly(true)
-                .secure(cookieSecure)  // NOTE: false(개발기), true(OP)
+                .secure(cookieSecure)  // NOTE: false(DEV), true(OP)
                 .path("/")
-                .domain(cookieDomain)  // NOTE: "localhost"(개발기), "n1.junyeong.dev"(OP)
+                .domain(cookieDomain)  // NOTE: "localhost"(DEV), "n1.junyeong.dev"(OP)
                 .maxAge(tokenKeepDuration / 1000)
-                .sameSite(cookieSameSite) // NOTE: Lax(개발기), None(OP)
+                .sameSite(cookieSameSite) // NOTE: Strict(DEV), None(OP)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, newCookie.toString());
 
