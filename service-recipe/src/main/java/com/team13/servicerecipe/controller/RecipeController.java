@@ -90,8 +90,8 @@ public class RecipeController {
         return recipes.getRecipes().isEmpty()
                 ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ApiResponse.onFailure(
-                        ErrorStatus.MYPAGE_RECIPE_EMPTY.getCode(),
-                        ErrorStatus.MYPAGE_RECIPE_EMPTY.getMessage(),
+                        ErrorStatus.EMPTY_DATA.getCode(),
+                        ErrorStatus.EMPTY_DATA.getMessage(),
                         null))
                 : ResponseEntity.ok(ApiResponse.onSuccess(recipes));
     }
@@ -104,14 +104,12 @@ public class RecipeController {
 
         MypageRecipeListResponseDto likedRecipes = recipeService.getLikeRecipesByUserId(userId);
 
-        return likedRecipes.getRecipes().isEmpty()
-                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ApiResponse.onFailure(
-                        ErrorStatus.MYPAGE_LIKE_RECIPE_EMPTY.getCode(),
-                        ErrorStatus.MYPAGE_LIKE_RECIPE_EMPTY.getMessage(),
-                        null))
-                : ResponseEntity.ok(ApiResponse.onSuccess(likedRecipes));
+        if (likedRecipes.getRecipes().isEmpty()) {
+            return ResponseEntity.ok(ApiResponse.onFailure(
+                    ErrorStatus.EMPTY_DATA.getCode(),
+                    ErrorStatus.EMPTY_DATA.getMessage(),
+                    null));
+        }
+        return ResponseEntity.ok(ApiResponse.onSuccess(likedRecipes));
     }
-
-
 }

@@ -1,6 +1,7 @@
 package com.team13.serviceuser.controller;
 
 import com.team13.serviceuser.apiPyaload.ApiResponse;
+import com.team13.serviceuser.apiPyaload.code.status.ErrorStatus;
 import com.team13.serviceuser.dto.*;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.repository.UserRepository;
@@ -40,26 +41,35 @@ public class MypageController {
 
     //사용자가 작성한 레시피 가져오기
     @GetMapping("/recipes")
-    public ResponseEntity<MypageRecipeListResponseDto> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
-        return ResponseEntity.ok(myPageService.getRecipesByUserId(userId));
+    public ResponseEntity<ApiResponse<MypageRecipeListResponseDto>> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
+        MypageRecipeListResponseDto recipes = myPageService.getRecipesByUserId(userId);
+        if (recipes.getRecipes().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null));
+        }
+        return ResponseEntity.ok(ApiResponse.onSuccess(recipes));
     }
 
     //사용자가 좋아요 누른 공동구매게시글
     @GetMapping("/likePosts")
-    public ResponseEntity<MypagePostListResponseDto<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<ApiResponse<MypagePostListResponseDto<MypagePostResponseDto>>>getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
         MypagePostListResponseDto<MypagePostResponseDto> likedPosts = myPageService.getLikePostsByUserId(userId);
-        return likedPosts.getPosts().isEmpty()
-                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-                : ResponseEntity.ok(likedPosts);
+        if (likedPosts.getPosts().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null));
+        }
+        return ResponseEntity.ok(ApiResponse.onSuccess(likedPosts));
     }
 
     //사용자가 좋아요 누른 레시피
     @GetMapping("/likeRecipes")
-    public ResponseEntity<MypageRecipeListResponseDto> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<ApiResponse<MypageRecipeListResponseDto>> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
         MypageRecipeListResponseDto likedRecipes = myPageService.getLikeRecipesByUserId(userId);
-            return likedRecipes.getRecipes().isEmpty()
-                    ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-                    : ResponseEntity.ok(likedRecipes);
+        if (likedRecipes.getRecipes().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null));
+        }
+        return ResponseEntity.ok(ApiResponse.onSuccess(likedRecipes));
     }
 
     @PutMapping("/user/{userId}")

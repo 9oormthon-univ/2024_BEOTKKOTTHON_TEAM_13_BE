@@ -9,6 +9,7 @@ import com.team13.serviceuser.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -22,11 +23,48 @@ public class MyPageService {
     private RecipeServiceClient recipeServiceClient;
 
     public MypageRecipeListResponseDto getRecipesByUserId(Long userId) {
-        return recipeServiceClient.getRecipesByUserId(userId).getResult();
+        try {
+            ApiResponse<MypageRecipeListResponseDto> response = recipeServiceClient.getRecipesByUserId(userId);
+
+            if (response == null || !response.getIsSuccess() || response.getResult() == null) {
+                return MypageRecipeListResponseDto.builder()
+                        .userId(userId)
+                        .userNickname(null)
+                        .userProfileUrl(null)
+                        .userRating(0.0f)
+                        .recipes(Collections.emptyList())
+                        .build();
+            }
+
+            return response.getResult();
+        } catch (Exception e) {
+            // 예외 발생 시 빈 리스트 반환
+            return MypageRecipeListResponseDto.builder()
+                    .userId(userId)
+                    .userNickname(null)
+                    .userProfileUrl(null)
+                    .userRating(0.0f)
+                    .recipes(Collections.emptyList())
+                    .build();
+        }
     }
 
+
     public MypageRecipeListResponseDto getLikeRecipesByUserId(Long userId) {
-        return recipeServiceClient.getLikeRecipesByUserId(userId).getResult();
+        ApiResponse<MypageRecipeListResponseDto> response = recipeServiceClient.getLikeRecipesByUserId(userId);
+
+        if (response == null || !response.getIsSuccess() || response.getResult() == null) {
+            // 빈 값으로 기본 객체 리턴
+            return MypageRecipeListResponseDto.builder()
+                    .userId(userId)
+                    .userNickname(null)
+                    .userProfileUrl(null)
+                    .userRating(0.0f)
+                    .recipes(Collections.emptyList())
+                    .build();
+        }
+
+        return response.getResult();
     }
 
     public MypagePostListResponseDto<MyPostResponseDto> getPostsByUserId(Long userId) {
