@@ -1,21 +1,18 @@
 package com.team13.serviceuser.feign;
 
 import com.team13.serviceuser.apiPyaload.ApiResponse;
-import com.team13.serviceuser.dto.MyPostResponseDto;
-import com.team13.serviceuser.dto.MypagePostListResponseDto;
-import com.team13.serviceuser.dto.MypagePostResponseDto;
+import com.team13.serviceuser.dto.MyPostDto;
+import com.team13.serviceuser.dto.MyPostListDto;
+import com.team13.serviceuser.dto.MyPostLikeDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
-
-import java.util.List;
 
 @FeignClient(name = "service-post")
 public interface PostServiceClient {
     @GetMapping("/posts/user")
-    ApiResponse<MypagePostListResponseDto<MyPostResponseDto>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId);
+    ApiResponse<MyPostListDto<MyPostDto>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId);
 
     @GetMapping("/posts/like/user")
-    ApiResponse<MypagePostListResponseDto<MypagePostResponseDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId);
+    ApiResponse<MyPostListDto<MyPostLikeDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId);
 }

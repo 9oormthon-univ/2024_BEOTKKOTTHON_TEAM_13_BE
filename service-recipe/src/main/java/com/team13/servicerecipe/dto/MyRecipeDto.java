@@ -1,16 +1,15 @@
-package com.team13.serviceuser.dto;
+package com.team13.servicerecipe.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MypageRecipeResponseDto {
+@Builder
+public class MyRecipeDto {
     private Long id;
     private String thumbnailImagePath;
 }

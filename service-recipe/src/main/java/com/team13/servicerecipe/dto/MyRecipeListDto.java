@@ -1,4 +1,4 @@
-package com.team13.serviceuser.dto;
+package com.team13.servicerecipe.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,15 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MypagePostListResponseDto<T> {
+public class MyRecipeListDto {
     private Long userId;
     private String userNickname;
     private String userProfileUrl;
     private float userRating;
-    private List<T> posts;
-
-    public MypagePostListResponseDto(List<T> posts) {
-        this.posts = posts;
-    }
+    private List<MyRecipeDto> recipes;
 }
-

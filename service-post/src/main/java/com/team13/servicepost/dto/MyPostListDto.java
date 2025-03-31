@@ -5,19 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MypagePostResponseDto {
-    private Long id;
-    private String title;
-    private int pricePerUser;
-    private int type;
-    private List<PostIngredientDto> ingredients;
-    private List<PostImageDto> images;
+public class MyPostListDto<T> {
+    private Long userId;
     private String userNickname;
+    private String userProfileUrl;
+    private float userRating;
+    private List<?> posts;
 }

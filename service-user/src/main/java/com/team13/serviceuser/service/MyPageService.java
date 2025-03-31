@@ -22,20 +22,20 @@ public class MyPageService {
     @Autowired
     private RecipeServiceClient recipeServiceClient;
 
-    public MypageRecipeListResponseDto getRecipesByUserId(Long userId) {
+    public MyRecipeListDto getRecipesByUserId(Long userId) {
         return fetchRecipeDataSafely(() -> recipeServiceClient.getRecipesByUserId(userId), userId);
     }
 
-    public MypageRecipeListResponseDto getLikeRecipesByUserId(Long userId) {
+    public MyRecipeListDto getLikeRecipesByUserId(Long userId) {
         return fetchRecipeDataSafely(() -> recipeServiceClient.getLikeRecipesByUserId(userId), userId);
     }
 
-    private MypageRecipeListResponseDto fetchRecipeDataSafely(
-            Supplier<ApiResponse<MypageRecipeListResponseDto>> supplier,
+    private MyRecipeListDto fetchRecipeDataSafely(
+            Supplier<ApiResponse<MyRecipeListDto>> supplier,
             Long userId
     ) {
         try {
-            ApiResponse<MypageRecipeListResponseDto> response = supplier.get();
+            ApiResponse<MyRecipeListDto> response = supplier.get();
             if (response == null || !response.getIsSuccess() || response.getResult() == null) {
                 return emptyRecipeList(userId);
             }
@@ -45,8 +45,8 @@ public class MyPageService {
         }
     }
 
-    private MypageRecipeListResponseDto emptyRecipeList(Long userId) {
-        return MypageRecipeListResponseDto.builder()
+    private MyRecipeListDto emptyRecipeList(Long userId) {
+        return MyRecipeListDto.builder()
                 .userId(userId)
                 .userNickname(null)
                 .userProfileUrl(null)
@@ -55,24 +55,24 @@ public class MyPageService {
                 .build();
     }
 
-    public MypagePostListResponseDto<MyPostResponseDto> getPostsByUserId(Long userId) {
+    public MyPostListDto<MyPostDto> getPostsByUserId(Long userId) {
         return fetchPostDataSafely(() -> postServiceClient.getPostsByUserId(userId));
     }
 
-    public MypagePostListResponseDto<MypagePostResponseDto> getLikePostsByUserId(Long userId) {
+    public MyPostListDto<MyPostLikeDto> getLikePostsByUserId(Long userId) {
         return fetchPostDataSafely(() -> postServiceClient.getLikePostsByUserId(userId));
     }
 
     // 공통 처리 메서드 - Post 전용
-    private <T> MypagePostListResponseDto<T> fetchPostDataSafely(Supplier<ApiResponse<MypagePostListResponseDto<T>>> supplier) {
+    private <T> MyPostListDto<T> fetchPostDataSafely(Supplier<ApiResponse<MyPostListDto<T>>> supplier) {
         try {
-            ApiResponse<MypagePostListResponseDto<T>> response = supplier.get();
+            ApiResponse<MyPostListDto<T>> response = supplier.get();
             if (response == null || !response.getIsSuccess() || response.getResult() == null) {
-                return new MypagePostListResponseDto<>(Collections.emptyList());
+                return new MyPostListDto<>(Collections.emptyList());
             }
             return response.getResult();
         } catch (Exception e) {
-            return new MypagePostListResponseDto<>(Collections.emptyList());
+            return new MyPostListDto<>(Collections.emptyList());
         }
     }
 

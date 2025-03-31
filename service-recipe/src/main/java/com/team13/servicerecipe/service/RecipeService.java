@@ -9,7 +9,6 @@ import com.team13.servicerecipe.entity.RecipeIngredient;
 import com.team13.servicerecipe.entity.RecipeProcess;
 import com.team13.servicerecipe.feign.UserServiceClient;
 import com.team13.servicerecipe.repository.RecipeRepository;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -191,16 +190,16 @@ public class RecipeService {
     }
 
     // 특정 사용자의 레시피 목록을 가져오는 메소드 (마이페이지에서 사용)
-    public MypageRecipeListResponseDto getRecipesByUserId(Long userId) {
+    public MyRecipeListDto getRecipesByUserId(Long userId) {
         UserDto userDto = fetchUserDetails(userId);
 
         // 해당 사용자의 레시피 목록 가져오기
-        List<MypageRecipeResponseDto> recipeList = recipeRepository.findAllByUserId(userId)
+        List<MyRecipeDto> recipeList = recipeRepository.findAllByUserId(userId)
                 .stream()
                 .map(recipe -> buildMypageRecipeResponseDto(recipe, userDto))
                 .collect(Collectors.toList());
 
-        return MypageRecipeListResponseDto.builder()
+        return MyRecipeListDto.builder()
                 .userId(userDto.getId())
                 .userNickname(userDto.getNickname())
                 .userProfileUrl(userDto.getProfileImageUrl())
@@ -210,21 +209,21 @@ public class RecipeService {
     }
 
     // 사용자가 좋아요한 레시피 목록을 가져오는 메소드
-    public MypageRecipeListResponseDto getLikeRecipesByUserId(Long userId) {
+    public MyRecipeListDto getLikeRecipesByUserId(Long userId) {
         // 사용자 정보를 한 번만 가져오기
         UserDto userDto = fetchUserDetails(userId);
 
         // 사용자가 좋아요한 레시피 목록 가져오기
         List<Long> likedRecipeIds = likeRecipeService.getLikedRecipeIdsByUserId(userId);
 
-        List<MypageRecipeResponseDto> recipeList = likedRecipeIds.stream()
+        List<MyRecipeDto> recipeList = likedRecipeIds.stream()
                 .map(recipeRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(recipe -> buildMypageRecipeResponseDto(recipe, userDto))
                 .collect(Collectors.toList());
 
-        return MypageRecipeListResponseDto.builder()
+        return MyRecipeListDto.builder()
                 .userId(userDto.getId())
                 .userNickname(userDto.getNickname())
                 .userProfileUrl(userDto.getProfileImageUrl())
@@ -235,8 +234,8 @@ public class RecipeService {
 
 
     // Recipe 엔티티를 MypageRecipeResponseDto로 변환하는 메소드
-    private MypageRecipeResponseDto buildMypageRecipeResponseDto(Recipe recipe, UserDto userDto) {
-        return MypageRecipeResponseDto.builder()
+    private MyRecipeDto buildMypageRecipeResponseDto(Recipe recipe, UserDto userDto) {
+        return MyRecipeDto.builder()
                 .id(recipe.getId())
                 .thumbnailImagePath(recipe.getThumbnailImagePath())
                 .build();

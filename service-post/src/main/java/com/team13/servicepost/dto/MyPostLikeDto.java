@@ -1,4 +1,4 @@
-package com.team13.serviceuser.dto;
+package com.team13.servicepost.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,11 +11,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MyPostResponseDto {
+public class MyPostLikeDto {
     private Long id;
     private String title;
     private int pricePerUser;
     private int type;
     private List<PostIngredientDto> ingredients;
     private List<PostImageDto> images;
+    private String userNickname;
 }

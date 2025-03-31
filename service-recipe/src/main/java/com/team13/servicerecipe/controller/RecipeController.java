@@ -3,22 +3,15 @@ package com.team13.servicerecipe.controller;
 
 import com.team13.servicerecipe.apiPayload.ApiResponse;
 import com.team13.servicerecipe.apiPayload.code.status.ErrorStatus;
-import com.team13.servicerecipe.dto.MypageRecipeListResponseDto;
-import com.team13.servicerecipe.dto.MypageRecipeResponseDto;
+import com.team13.servicerecipe.dto.MyRecipeListDto;
 import com.team13.servicerecipe.dto.RecipeRequestDto;
 import com.team13.servicerecipe.dto.RecipeResponseDto;
-import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.service.LikeRecipeService;
 import com.team13.servicerecipe.service.RecipeService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/recipes")
@@ -82,10 +75,10 @@ public class RecipeController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<ApiResponse<MypageRecipeListResponseDto>> getRecipesByUserId(
+    public ResponseEntity<ApiResponse<MyRecipeListDto>> getRecipesByUserId(
             @RequestHeader("X-User-Id") Long userId) {
 
-        MypageRecipeListResponseDto recipes = recipeService.getRecipesByUserId(userId);
+        MyRecipeListDto recipes = recipeService.getRecipesByUserId(userId);
 
         return recipes.getRecipes().isEmpty()
                 ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -99,10 +92,10 @@ public class RecipeController {
 
 
     @GetMapping("/like/user")
-    public ResponseEntity<ApiResponse<MypageRecipeListResponseDto>> getLikeRecipesByUserId(
+    public ResponseEntity<ApiResponse<MyRecipeListDto>> getLikeRecipesByUserId(
             @RequestHeader("X-User-Id") Long userId) {
 
-        MypageRecipeListResponseDto likedRecipes = recipeService.getLikeRecipesByUserId(userId);
+        MyRecipeListDto likedRecipes = recipeService.getLikeRecipesByUserId(userId);
 
         if (likedRecipes.getRecipes().isEmpty()) {
             return ResponseEntity.ok(ApiResponse.onFailure(

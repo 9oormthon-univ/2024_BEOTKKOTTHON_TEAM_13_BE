@@ -11,10 +11,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MypagePostListResponseDto<T> {
-    private Long userId;
-    private String userNickname;
-    private String userProfileUrl;
-    private float userRating;
-    private List<?> posts;
+public class MyPostDto {
+    private Long id;
+    private String title;
+    private int pricePerUser;
+    private int type;
+    private List<PostIngredientDto> ingredients;
+    private List<PostImageDto> images;
 }

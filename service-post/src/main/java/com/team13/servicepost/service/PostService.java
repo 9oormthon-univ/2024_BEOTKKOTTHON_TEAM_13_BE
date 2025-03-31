@@ -1,7 +1,6 @@
 package com.team13.servicepost.service;
 
 import com.team13.servicepost.dto.*;
-import com.team13.servicepost.entity.LikePost;
 import com.team13.servicepost.entity.Post;
 import com.team13.servicepost.entity.PostImage;
 import com.team13.servicepost.entity.PostIngredient;
@@ -179,15 +178,15 @@ public class PostService {
         return response.getBody();
     }
 
-    public MypagePostListResponseDto<MyPostResponseDto> getPostsByUserId(Long userId) {
+    public MyPostListDto<MyPostDto> getPostsByUserId(Long userId) {
         List<Post> posts = postRepository.findAllByUserId(userId);
         UserDto userDto = fetchUserDetails(userId);
 
-        List<MyPostResponseDto> postList = posts.stream()
+        List<MyPostDto> postList = posts.stream()
                 .map(this::buildMyPostResponseDto)
                 .collect(Collectors.toList());
 
-        return MypagePostListResponseDto.<MyPostResponseDto>builder()
+        return MyPostListDto.<MyPostDto>builder()
                 .userId(userDto.getId())
                 .userNickname(userDto.getNickname())
                 .userProfileUrl(userDto.getProfileImageUrl())
@@ -196,7 +195,7 @@ public class PostService {
                 .build();
     }
 
-    private MyPostResponseDto buildMyPostResponseDto(Post post) {
+    private MyPostDto buildMyPostResponseDto(Post post) {
         List<PostIngredientDto> ingredientDtoList = postIngredientService.getIngredientsByPostId(post.getId())
                 .stream()
                 .map(postIngredientService::convertToDto)
@@ -207,7 +206,7 @@ public class PostService {
                 .map(postImageService::convertToDto)
                 .collect(Collectors.toList());
 
-        return MyPostResponseDto.builder()
+        return MyPostDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .pricePerUser(post.getPricePerUser())
@@ -218,18 +217,18 @@ public class PostService {
     }
 
     //  좋아요한 글 목록
-    public MypagePostListResponseDto<MypagePostResponseDto> getLikePostsResponseByUserId(Long userId) {
+    public MyPostListDto<MyPostLikeDto> getLikePostsResponseByUserId(Long userId) {
         List<Long> likedPostIds = likePostService.getLikedPostIdsByUserId(userId);
         UserDto userDto = fetchUserDetails(userId); // 좋아요한 사용자 정보 (조회자 본인)
 
-        List<MypagePostResponseDto> likedPosts = likedPostIds.stream()
+        List<MyPostLikeDto> likedPosts = likedPostIds.stream()
                 .map(postRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(this::buildMypagePostResponseDtoForLikedPosts)
                 .collect(Collectors.toList());
 
-        return MypagePostListResponseDto.<MypagePostResponseDto>builder()
+        return MyPostListDto.<MyPostLikeDto>builder()
                 .userId(userDto.getId())
                 .userNickname(userDto.getNickname())
                 .userProfileUrl(userDto.getProfileImageUrl())
@@ -238,7 +237,7 @@ public class PostService {
                 .build();
     }
 
-    private MypagePostResponseDto buildMypagePostResponseDtoForLikedPosts(Post post) {
+    private MyPostLikeDto buildMypagePostResponseDtoForLikedPosts(Post post) {
         UserDto userDto = fetchUserDetails(post.getUserId());
 
         List<PostIngredientDto> ingredientDtoList = postIngredientService.getIngredientsByPostId(post.getId())
@@ -251,7 +250,7 @@ public class PostService {
                 .map(postImageService::convertToDto)
                 .collect(Collectors.toList());
 
-        return MypagePostResponseDto.builder()
+        return MyPostLikeDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .pricePerUser(post.getPricePerUser())

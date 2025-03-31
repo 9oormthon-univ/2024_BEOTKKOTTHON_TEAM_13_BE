@@ -6,15 +6,11 @@ import com.team13.servicepost.apiPyaload.code.status.SuccessStatus;
 import com.team13.servicepost.dto.*;
 import com.team13.servicepost.service.LikePostService;
 import com.team13.servicepost.service.PostService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/posts")
@@ -73,10 +69,10 @@ public class PostController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<ApiResponse<MypagePostListResponseDto<MyPostResponseDto>>> getPostsByUserId(
+    public ResponseEntity<ApiResponse<MyPostListDto<MyPostDto>>> getPostsByUserId(
             @RequestHeader("X-User-Id") Long userId) {
 
-        MypagePostListResponseDto<MyPostResponseDto> posts = postService.getPostsByUserId(userId);
+        MyPostListDto<MyPostDto> posts = postService.getPostsByUserId(userId);
 
         return posts.getPosts().isEmpty()
                 ? ResponseEntity.badRequest().body(ApiResponse.onFailure(
@@ -88,10 +84,10 @@ public class PostController {
 
     // 사용자가 좋아요한 게시글 가져오기
     @GetMapping("/like/user")
-    public ResponseEntity<ApiResponse<MypagePostListResponseDto<MypagePostResponseDto>>> getLikePostsByUserId(
+    public ResponseEntity<ApiResponse<MyPostListDto<MyPostLikeDto>>> getLikePostsByUserId(
             @RequestHeader("X-User-Id") Long userId) {
 
-        MypagePostListResponseDto<MypagePostResponseDto> likedPosts = postService.getLikePostsResponseByUserId(userId);
+        MyPostListDto<MyPostLikeDto> likedPosts = postService.getLikePostsResponseByUserId(userId);
 
         return likedPosts.getPosts().isEmpty()
                 ? ResponseEntity.badRequest().body(ApiResponse.onFailure(ErrorStatus.EMPTY_DATA.getCode(), ErrorStatus.EMPTY_DATA.getMessage(), null))
