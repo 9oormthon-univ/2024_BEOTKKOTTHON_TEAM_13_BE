@@ -2,7 +2,11 @@ package com.team13.serviceuser.controller;
 
 import com.team13.serviceuser.apiPyaload.ApiResponse;
 import com.team13.serviceuser.apiPyaload.code.status.ErrorStatus;
-import com.team13.serviceuser.dto.*;
+import com.team13.serviceuser.dto.MyPostDto;
+import com.team13.serviceuser.dto.MyPostLikeDto;
+import com.team13.serviceuser.dto.MyPostListDto;
+import com.team13.serviceuser.dto.MyRecipeListDto;
+import com.team13.serviceuser.dto.UserDto;
 import com.team13.serviceuser.service.MyPageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

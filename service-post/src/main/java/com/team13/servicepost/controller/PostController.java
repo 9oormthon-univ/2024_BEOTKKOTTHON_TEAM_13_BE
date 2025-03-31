@@ -3,7 +3,12 @@ package com.team13.servicepost.controller;
 import com.team13.servicepost.apiPyaload.ApiResponse;
 import com.team13.servicepost.apiPyaload.code.status.ErrorStatus;
 import com.team13.servicepost.apiPyaload.code.status.SuccessStatus;
-import com.team13.servicepost.dto.*;
+
+import com.team13.servicepost.dto.MyPostDto;
+import com.team13.servicepost.dto.MyPostLikeDto;
+import com.team13.servicepost.dto.MyPostListDto;
+import com.team13.servicepost.dto.PostRequestDto;
+import com.team13.servicepost.dto.PostResponseDto;
 import com.team13.servicepost.service.LikePostService;
 import com.team13.servicepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +27,7 @@ public class PostController {
     private LikePostService likePostService;
 
     @PostMapping
-    public ApiResponse<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto,@RequestHeader("X-User-Id") Long userId) {
+    public ApiResponse<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto, @RequestHeader("X-User-Id") Long userId) {
         PostResponseDto responseDto = postService.createPostWithDetails(postRequestDto, userId);
         return ApiResponse.of(SuccessStatus.POST_CREATED, responseDto);
     }
