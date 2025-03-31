@@ -35,8 +35,13 @@ public class MypageController {
 
     // 사용자가 작성한 공동구매게시글 가져오기
     @GetMapping("/posts")
-    public ResponseEntity<MypagePostListResponseDto<MyPostResponseDto>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId) {
-        return ResponseEntity.ok(myPageService.getPostsByUserId(userId));
+    public ResponseEntity<ApiResponse<MypagePostListResponseDto<MyPostResponseDto>>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId) {
+        MypagePostListResponseDto<MyPostResponseDto> posts = myPageService.getPostsByUserId(userId);
+        if (posts.getPosts().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null));
+        }
+        return ResponseEntity.ok(ApiResponse.onSuccess(posts));
     }
 
     //사용자가 작성한 레시피 가져오기

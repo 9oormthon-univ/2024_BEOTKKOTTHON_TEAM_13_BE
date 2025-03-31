@@ -16,6 +16,10 @@ public class MypagePostListResponseDto<T> {
     private String userNickname;
     private String userProfileUrl;
     private float userRating;
-    private List<?> posts;
+    private List<T> posts;
+
+    public MypagePostListResponseDto(List<T> posts) {
+        this.posts = posts;
+    }
 }
 

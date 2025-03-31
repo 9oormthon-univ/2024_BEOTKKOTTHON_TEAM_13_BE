@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 public class MyPageService {
@@ -23,56 +23,57 @@ public class MyPageService {
     private RecipeServiceClient recipeServiceClient;
 
     public MypageRecipeListResponseDto getRecipesByUserId(Long userId) {
+        return fetchRecipeDataSafely(() -> recipeServiceClient.getRecipesByUserId(userId), userId);
+    }
+
+    public MypageRecipeListResponseDto getLikeRecipesByUserId(Long userId) {
+        return fetchRecipeDataSafely(() -> recipeServiceClient.getLikeRecipesByUserId(userId), userId);
+    }
+
+    private MypageRecipeListResponseDto fetchRecipeDataSafely(
+            Supplier<ApiResponse<MypageRecipeListResponseDto>> supplier,
+            Long userId
+    ) {
         try {
-            ApiResponse<MypageRecipeListResponseDto> response = recipeServiceClient.getRecipesByUserId(userId);
-
+            ApiResponse<MypageRecipeListResponseDto> response = supplier.get();
             if (response == null || !response.getIsSuccess() || response.getResult() == null) {
-                return MypageRecipeListResponseDto.builder()
-                        .userId(userId)
-                        .userNickname(null)
-                        .userProfileUrl(null)
-                        .userRating(0.0f)
-                        .recipes(Collections.emptyList())
-                        .build();
+                return emptyRecipeList(userId);
             }
-
             return response.getResult();
         } catch (Exception e) {
-            // 예외 발생 시 빈 리스트 반환
-            return MypageRecipeListResponseDto.builder()
-                    .userId(userId)
-                    .userNickname(null)
-                    .userProfileUrl(null)
-                    .userRating(0.0f)
-                    .recipes(Collections.emptyList())
-                    .build();
+            return emptyRecipeList(userId);
         }
     }
 
-
-    public MypageRecipeListResponseDto getLikeRecipesByUserId(Long userId) {
-        ApiResponse<MypageRecipeListResponseDto> response = recipeServiceClient.getLikeRecipesByUserId(userId);
-
-        if (response == null || !response.getIsSuccess() || response.getResult() == null) {
-            // 빈 값으로 기본 객체 리턴
-            return MypageRecipeListResponseDto.builder()
-                    .userId(userId)
-                    .userNickname(null)
-                    .userProfileUrl(null)
-                    .userRating(0.0f)
-                    .recipes(Collections.emptyList())
-                    .build();
-        }
-
-        return response.getResult();
+    private MypageRecipeListResponseDto emptyRecipeList(Long userId) {
+        return MypageRecipeListResponseDto.builder()
+                .userId(userId)
+                .userNickname(null)
+                .userProfileUrl(null)
+                .userRating(0.0f)
+                .recipes(Collections.emptyList())
+                .build();
     }
 
     public MypagePostListResponseDto<MyPostResponseDto> getPostsByUserId(Long userId) {
-        return postServiceClient.getPostsByUserId(userId).getResult();
+        return fetchPostDataSafely(() -> postServiceClient.getPostsByUserId(userId));
     }
 
     public MypagePostListResponseDto<MypagePostResponseDto> getLikePostsByUserId(Long userId) {
-        return postServiceClient.getLikePostsByUserId(userId).getResult();
+        return fetchPostDataSafely(() -> postServiceClient.getLikePostsByUserId(userId));
+    }
+
+    // 공통 처리 메서드 - Post 전용
+    private <T> MypagePostListResponseDto<T> fetchPostDataSafely(Supplier<ApiResponse<MypagePostListResponseDto<T>>> supplier) {
+        try {
+            ApiResponse<MypagePostListResponseDto<T>> response = supplier.get();
+            if (response == null || !response.getIsSuccess() || response.getResult() == null) {
+                return new MypagePostListResponseDto<>(Collections.emptyList());
+            }
+            return response.getResult();
+        } catch (Exception e) {
+            return new MypagePostListResponseDto<>(Collections.emptyList());
+        }
     }
 
     public UserDto getUserById(Long userId) {
@@ -108,6 +109,4 @@ public class MyPageService {
                 .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
-
-
 }

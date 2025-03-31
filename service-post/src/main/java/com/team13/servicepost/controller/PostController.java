@@ -80,8 +80,8 @@ public class PostController {
 
         return posts.getPosts().isEmpty()
                 ? ResponseEntity.badRequest().body(ApiResponse.onFailure(
-                ErrorStatus.MYPAGE_RECIPE_EMPTY.getCode(),
-                ErrorStatus.MYPAGE_RECIPE_EMPTY.getMessage(),
+                ErrorStatus.EMPTY_DATA.getCode(),
+                ErrorStatus.EMPTY_DATA.getMessage(),
                 null))
                 : ResponseEntity.ok(ApiResponse.onSuccess(posts));
     }
@@ -94,7 +94,7 @@ public class PostController {
         MypagePostListResponseDto<MypagePostResponseDto> likedPosts = postService.getLikePostsResponseByUserId(userId);
 
         return likedPosts.getPosts().isEmpty()
-                ? ResponseEntity.badRequest().body(ApiResponse.onFailure(ErrorStatus.MYPAGE_LIKE_RECIPE_EMPTY.getCode(), ErrorStatus.MYPAGE_LIKE_RECIPE_EMPTY.getMessage(), null))
+                ? ResponseEntity.badRequest().body(ApiResponse.onFailure(ErrorStatus.EMPTY_DATA.getCode(), ErrorStatus.EMPTY_DATA.getMessage(), null))
                 : ResponseEntity.ok(ApiResponse.onSuccess(likedPosts));
     }
 
