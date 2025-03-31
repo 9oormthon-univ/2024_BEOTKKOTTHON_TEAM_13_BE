@@ -50,8 +50,8 @@ public class MypageController {
 
     //사용자가 좋아요 누른 공동구매게시글
     @GetMapping("/likePosts")
-    public ResponseEntity<ApiResponse<MyPostListDto<MyPostLikeDto>>>getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId) {
-        MyPostListDto<MyPostLikeDto> likedPosts = myPageService.getLikePostsByUserId(userId);
+    public ResponseEntity<ApiResponse<MyPostListDto<MyPostLikeDto>>>getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId, @RequestParam("type") int type) {
+        MyPostListDto<MyPostLikeDto> likedPosts = myPageService.getLikePostsByUserId(userId, type);
         if (likedPosts.getPosts().isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null));

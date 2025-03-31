@@ -16,5 +16,5 @@ public class MyPostListDto<T> {
     private String userNickname;
     private String userProfileUrl;
     private float userRating;
-    private List<?> posts;
+    private List<T> posts;
 }

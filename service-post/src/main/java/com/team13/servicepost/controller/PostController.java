@@ -85,9 +85,9 @@ public class PostController {
     // 사용자가 좋아요한 게시글 가져오기
     @GetMapping("/like/user")
     public ResponseEntity<ApiResponse<MyPostListDto<MyPostLikeDto>>> getLikePostsByUserId(
-            @RequestHeader("X-User-Id") Long userId) {
+            @RequestHeader("X-User-Id") Long userId,@RequestParam("type") int type) {
 
-        MyPostListDto<MyPostLikeDto> likedPosts = postService.getLikePostsResponseByUserId(userId);
+        MyPostListDto<MyPostLikeDto> likedPosts = postService.getLikePostsResponseByUserId(userId, type);
 
         return likedPosts.getPosts().isEmpty()
                 ? ResponseEntity.badRequest().body(ApiResponse.onFailure(ErrorStatus.EMPTY_DATA.getCode(), ErrorStatus.EMPTY_DATA.getMessage(), null))

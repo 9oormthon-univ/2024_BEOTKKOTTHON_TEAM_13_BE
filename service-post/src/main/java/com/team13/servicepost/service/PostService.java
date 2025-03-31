@@ -217,7 +217,7 @@ public class PostService {
     }
 
     //  좋아요한 글 목록
-    public MyPostListDto<MyPostLikeDto> getLikePostsResponseByUserId(Long userId) {
+    public MyPostListDto<MyPostLikeDto> getLikePostsResponseByUserId(Long userId, int type) {
         List<Long> likedPostIds = likePostService.getLikedPostIdsByUserId(userId);
         UserDto userDto = fetchUserDetails(userId); // 좋아요한 사용자 정보 (조회자 본인)
 
@@ -225,6 +225,7 @@ public class PostService {
                 .map(postRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .filter(post -> post.getType() == type)
                 .map(this::buildMypagePostResponseDtoForLikedPosts)
                 .collect(Collectors.toList());
 

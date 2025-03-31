@@ -8,6 +8,7 @@ import com.team13.serviceuser.feign.RecipeServiceClient;
 import com.team13.serviceuser.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
 import java.util.function.Supplier;
@@ -59,8 +60,8 @@ public class MyPageService {
         return fetchPostDataSafely(() -> postServiceClient.getPostsByUserId(userId));
     }
 
-    public MyPostListDto<MyPostLikeDto> getLikePostsByUserId(Long userId) {
-        return fetchPostDataSafely(() -> postServiceClient.getLikePostsByUserId(userId));
+    public MyPostListDto<MyPostLikeDto> getLikePostsByUserId(Long userId, int type) {
+        return fetchPostDataSafely(() -> postServiceClient.getLikePostsByUserId(userId,type));
     }
 
     // 공통 처리 메서드 - Post 전용
