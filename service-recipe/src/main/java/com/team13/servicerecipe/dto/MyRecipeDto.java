@@ -1,5 +1,6 @@
 package com.team13.servicerecipe.dto;
 
+import com.team13.servicerecipe.entity.Recipe;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,4 +13,11 @@ import lombok.NoArgsConstructor;
 public class MyRecipeDto {
     private Long id;
     private String thumbnailImagePath;
+
+    public static MyRecipeDto from(Recipe recipe) {
+        return MyRecipeDto.builder()
+                .id(recipe.getId())
+                .thumbnailImagePath(recipe.getThumbnailImagePath())
+                .build();
+    }
 }

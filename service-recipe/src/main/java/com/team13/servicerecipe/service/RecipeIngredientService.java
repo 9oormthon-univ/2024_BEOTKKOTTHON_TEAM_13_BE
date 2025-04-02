@@ -23,25 +23,4 @@ public class RecipeIngredientService {
         return recipeIngredientRepository.findByRecipeId(recipeId);
     }
 
-    public List<RecipeIngredientDto> getIngredientDtosByRecipeId(Long recipeId) {
-        return getIngredientsByRecipeId(recipeId).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-    public RecipeIngredientDto convertToDto(RecipeIngredient ingredient) {
-        return RecipeIngredientDto.builder()
-                .id(ingredient.getId())
-                .name(ingredient.getName())
-                .amount(ingredient.getAmount())
-                .build();
-    }
-
-    public  RecipeIngredient convertToEntity( RecipeIngredientDto dto) {
-        return RecipeIngredient.builder()
-                .id(dto.getId())
-                .name(dto.getName())
-                .amount(dto.getAmount())
-                .build();
-    }
-
 }

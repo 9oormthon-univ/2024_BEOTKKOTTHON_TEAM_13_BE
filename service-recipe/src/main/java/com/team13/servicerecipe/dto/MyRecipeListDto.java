@@ -17,4 +17,14 @@ public class MyRecipeListDto {
     private String userProfileUrl;
     private float userRating;
     private List<MyRecipeDto> recipes;
+
+    public static MyRecipeListDto from(UserDto userDto, List<MyRecipeDto> recipes) {
+        return MyRecipeListDto.builder()
+                .userId(userDto.getId())
+                .userNickname(userDto.getNickname())
+                .userProfileUrl(userDto.getProfileImageUrl())
+                .userRating(userDto.getUserRating())
+                .recipes(recipes)
+                .build();
+    }
 }
