@@ -29,5 +29,4 @@ public class RecipeIngredient extends BaseEntity{
     @JoinColumn(name="recipes_id", nullable = false)
     @JsonIgnore
     private Recipe recipe;
-
 }

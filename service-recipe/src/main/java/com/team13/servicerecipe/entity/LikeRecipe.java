@@ -1,6 +1,5 @@
 package com.team13.servicerecipe.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -21,12 +21,15 @@ public class RouterValidator {
             // NOTE: 레시피 서비스
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/recipes$")),
             List.of(Pattern.compile("POST"), Pattern.compile("^/api2/recipe/recipes$")),
-            List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/recipes/like/")),
             List.of(Pattern.compile("POST"), Pattern.compile("^/api2/recipe/recipes/like/\\d+$")),
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/comments/")),
             List.of(Pattern.compile("POST"), Pattern.compile("^/api2/recipe/comments/\\d+$")),
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/comments/replies$")),
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/comments/user$")),
+            // NOTE: 레시피 좋아요 확인용
+            List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/recipes/user$")),
+            List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/recipes/like/user$")),
+            List.of(Pattern.compile("GET"), Pattern.compile("^/api2/recipe/recipes/like/")),
             // NOTE: 채팅 서비스
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/chat/chatroom$")),
             List.of(Pattern.compile("POST"), Pattern.compile("^/api2/chat/chatroom$")),
@@ -35,8 +38,11 @@ public class RouterValidator {
             // NOTE: 공동구매 서비스
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/post/posts$")),
             List.of(Pattern.compile("POST"), Pattern.compile("^/api2/post/posts$")),
+            List.of(Pattern.compile("POST"), Pattern.compile("^/api2/post/posts/like/\\d+$")),
+            // NOTE: 공동구매 좋아요 확인용
             List.of(Pattern.compile("GET"), Pattern.compile("^/api2/post/posts/like/")),
-            List.of(Pattern.compile("POST"), Pattern.compile("^/api2/post/posts/like/\\d+$"))
+            List.of(Pattern.compile("GET"), Pattern.compile("^/api2/post/posts/user$")),
+            List.of(Pattern.compile("GET"), Pattern.compile("^/api2/post/posts/like/user$"))
     );
 
     // 만약 request의 path가 securedApiEndpoints 중 하나인 경우 true를 반환하고, 그렇지 않으면 false를 반환함

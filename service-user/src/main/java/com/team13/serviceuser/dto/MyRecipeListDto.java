@@ -5,14 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
-    private Long id;
-    private String email;
-    private String nickname;
+@Builder
+public class MyRecipeListDto {
+    private Long userId;
+    private String userNickname;
+    private String userProfileUrl;
     private float userRating;
-    private String profileImageUrl;
+    private List<MyRecipeDto> recipes;
 }

@@ -4,22 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MypageRecipeResponseDto {
+public class MyPostLikeDto {
     private Long id;
-    private Long userId;
     private String title;
-    private String contents;
-    private int commentCount;
-    private String thumbnailImagePath;
-    private Date createdAt;
+    private int pricePerUser;
     private int type;
+    private List<PostIngredientDto> ingredients;
+    private List<PostImageDto> images;
     private String userNickname;
-    private List<RecipeIngredientDto> ingredients;
-    private Long likesCount;
 }

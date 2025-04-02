@@ -1,5 +1,6 @@
 package com.team13.serviceuser.service;
 
+import com.team13.serviceuser.apiPyaload.ApiResponse;
 import com.team13.serviceuser.dto.*;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.feign.PostServiceClient;
@@ -8,7 +9,7 @@ import com.team13.serviceuser.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MyPageService {
@@ -20,19 +21,30 @@ public class MyPageService {
     @Autowired
     private RecipeServiceClient recipeServiceClient;
 
-    public List<MypagePostResponseDto> getPostsByUserId(Long userId) {
-        return postServiceClient.getPostsByUserId(userId);
-    }
-    public List<MypageRecipeResponseDto> getRecipesByUserId(Long userId) {
-        return recipeServiceClient.getRecipesByUserId(userId);
-    }
-    public List<MypagePostResponseDto> getLikePostsByUserId(Long userId) {
-        return postServiceClient.getLikePostsByUserId(userId);
+    public Optional<MyRecipeListDto> getRecipesByUserId(Long userId) {
+        return recipeServiceClient.getRecipesByUserId(userId)
+                .filter(ApiResponse::getIsSuccess)
+                .map(ApiResponse::getResult);
     }
 
-    public List<MypageRecipeResponseDto> getLikeRecipesByUserId(Long userId) {
-        return recipeServiceClient.getLikeRecipesByUserId(userId);
+    public Optional<MyRecipeListDto> getLikeRecipesByUserId(Long userId) {
+        return recipeServiceClient.getLikeRecipesByUserId(userId)
+                .filter(ApiResponse::getIsSuccess)
+                .map(ApiResponse::getResult);
     }
+
+    public Optional<MyPostListDto<MyPostDto>> getPostsByUserId(Long userId) {
+        return postServiceClient.getPostsByUserId(userId)
+                .filter(ApiResponse::getIsSuccess)
+                .map(ApiResponse::getResult);
+    }
+
+    public Optional<MyPostListDto<MyPostLikeDto>> getLikePostsByUserId(Long userId, int type) {
+        return postServiceClient.getLikePostsByUserId(userId,type)
+                .filter(ApiResponse::getIsSuccess)
+                .map(ApiResponse::getResult);
+    }
+
 
     public UserDto getUserById(Long userId) {
         User user = userRepository.findById(userId)
@@ -67,6 +79,4 @@ public class MyPageService {
                 .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
-
-
 }

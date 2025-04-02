@@ -2,8 +2,6 @@ package com.team13.servicerecipe.controller;
 
 import com.team13.servicerecipe.apiPayload.ApiResponse;
 import com.team13.servicerecipe.dto.RecipeCommentDto;
-import com.team13.servicerecipe.entity.Recipe;
-import com.team13.servicerecipe.entity.RecipeComment;
 import com.team13.servicerecipe.service.RecipeCommentService;
 import com.team13.servicerecipe.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/comments")
@@ -21,9 +17,6 @@ public class RecipeCommentController {
 
     @Autowired
     private RecipeCommentService recipeCommentService;
-
-    @Autowired
-    private RecipeService recipeService;
 
     @PostMapping("/{recipeId}")
     public ResponseEntity<ApiResponse<RecipeCommentDto>> addComment(@PathVariable("recipeId") Long recipeId,
@@ -59,7 +52,5 @@ public class RecipeCommentController {
                 ? ResponseEntity.status(HttpStatus.NOT_FOUND).build()
                 : ResponseEntity.ok(comments);
     }
-
-
 
 }

@@ -52,5 +52,4 @@ public class IndexController {
 
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
-
 }

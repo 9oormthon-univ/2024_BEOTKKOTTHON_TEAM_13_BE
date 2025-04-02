@@ -32,7 +32,9 @@ public enum ErrorStatus implements BaseErrorCode {
 
     LOGIN4001(HttpStatus.UNAUTHORIZED, "LOGIN4001", "비밀번호가 일치하지 않습니다."),
     LOGIN4002(HttpStatus.BAD_REQUEST, "LOGIN4002", "사용자를 찾을 수 없습니다."),
-    LOGIN4003(HttpStatus.BAD_REQUEST, "LOGIN4003", "요청값이 유효하지 않습니다.");
+    LOGIN4003(HttpStatus.BAD_REQUEST, "LOGIN4003", "요청값이 유효하지 않습니다."),
+
+    DATA_EMPTY(HttpStatus.NOT_FOUND, "COMMON404", "데이터가 존재하지 않습니다.");;
 
 
     private final HttpStatus httpStatus;

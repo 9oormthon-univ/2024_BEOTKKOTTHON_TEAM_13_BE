@@ -23,4 +23,3 @@ public class RecipeCommentDto {
     private String profileImageUrl;
     private List<RecipeCommentDto> replies;
 }
-
