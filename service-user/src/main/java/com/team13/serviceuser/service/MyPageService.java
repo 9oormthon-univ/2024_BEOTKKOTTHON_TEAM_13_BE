@@ -36,26 +36,18 @@ public class MyPageService {
                 .map(ApiResponse::getResult);
     }
 
-    public MyPostListDto<MyPostDto> getPostsByUserId(Long userId) {
-        return fetchPostDataSafely(() -> postServiceClient.getPostsByUserId(userId));
+    public Optional<MyPostListDto<MyPostDto>> getPostsByUserId(Long userId) {
+        return postServiceClient.getPostsByUserId(userId)
+                .filter(ApiResponse::getIsSuccess)
+                .map(ApiResponse::getResult);
     }
 
-    public MyPostListDto<MyPostLikeDto> getLikePostsByUserId(Long userId, int type) {
-        return fetchPostDataSafely(() -> postServiceClient.getLikePostsByUserId(userId,type));
+    public Optional<MyPostListDto<MyPostLikeDto>> getLikePostsByUserId(Long userId, int type) {
+        return postServiceClient.getLikePostsByUserId(userId,type)
+                .filter(ApiResponse::getIsSuccess)
+                .map(ApiResponse::getResult);
     }
 
-    // 공통 처리 메서드 - Post 전용
-    private <T> MyPostListDto<T> fetchPostDataSafely(Supplier<ApiResponse<MyPostListDto<T>>> supplier) {
-        try {
-            ApiResponse<MyPostListDto<T>> response = supplier.get();
-            if (response == null || !response.getIsSuccess() || response.getResult() == null) {
-                return new MyPostListDto<>(Collections.emptyList());
-            }
-            return response.getResult();
-        } catch (Exception e) {
-            return new MyPostListDto<>(Collections.emptyList());
-        }
-    }
 
     public UserDto getUserById(Long userId) {
         User user = userRepository.findById(userId)

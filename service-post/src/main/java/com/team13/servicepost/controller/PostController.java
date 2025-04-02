@@ -12,6 +12,7 @@ import com.team13.servicepost.dto.PostResponseDto;
 import com.team13.servicepost.service.LikePostService;
 import com.team13.servicepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,7 +81,7 @@ public class PostController {
         MyPostListDto<MyPostDto> posts = postService.getPostsByUserId(userId);
 
         return posts.getPosts().isEmpty()
-                ? ResponseEntity.badRequest().body(ApiResponse.onFailure(
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.onFailure(
                 ErrorStatus.EMPTY_DATA.getCode(),
                 ErrorStatus.EMPTY_DATA.getMessage(),
                 null))
@@ -95,7 +96,10 @@ public class PostController {
         MyPostListDto<MyPostLikeDto> likedPosts = postService.getLikePostsResponseByUserId(userId, type);
 
         return likedPosts.getPosts().isEmpty()
-                ? ResponseEntity.badRequest().body(ApiResponse.onFailure(ErrorStatus.EMPTY_DATA.getCode(), ErrorStatus.EMPTY_DATA.getMessage(), null))
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.onFailure(
+                        ErrorStatus.EMPTY_DATA.getCode(),
+                        ErrorStatus.EMPTY_DATA.getMessage(),
+                        null))
                 : ResponseEntity.ok(ApiResponse.onSuccess(likedPosts));
     }
 

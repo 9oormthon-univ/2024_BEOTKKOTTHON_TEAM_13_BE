@@ -33,12 +33,11 @@ public class MypageController {
     // 사용자가 작성한 공동구매게시글 가져오기
     @GetMapping("/posts")
     public ResponseEntity<ApiResponse<MyPostListDto<MyPostDto>>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId) {
-        MyPostListDto<MyPostDto> posts = myPageService.getPostsByUserId(userId);
-        if (posts.getPosts().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null));
-        }
-        return ResponseEntity.ok(ApiResponse.onSuccess(posts));
+        return myPageService.getPostsByUserId(userId)
+                .map(posts -> ResponseEntity.ok(ApiResponse.onSuccess(posts)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null)));
+
     }
 
     //사용자가 작성한 레시피 가져오기
@@ -53,12 +52,10 @@ public class MypageController {
     //사용자가 좋아요 누른 공동구매게시글
     @GetMapping("/likePosts")
     public ResponseEntity<ApiResponse<MyPostListDto<MyPostLikeDto>>>getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId, @RequestParam("type") int type) {
-        MyPostListDto<MyPostLikeDto> likedPosts = myPageService.getLikePostsByUserId(userId, type);
-        if (likedPosts.getPosts().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null));
-        }
-        return ResponseEntity.ok(ApiResponse.onSuccess(likedPosts));
+        return myPageService.getLikePostsByUserId(userId, type)
+                .map(posts -> ResponseEntity.ok(ApiResponse.onSuccess(posts)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null)));
     }
 
     //사용자가 좋아요 누른 레시피

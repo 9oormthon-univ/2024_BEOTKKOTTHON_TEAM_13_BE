@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "service-post")
+import java.util.Optional;
+
+@FeignClient(name = "service-post", dismiss404 = true)
 public interface PostServiceClient {
     @GetMapping("/posts/user")
-    ApiResponse<MyPostListDto<MyPostDto>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId);
+    Optional<ApiResponse<MyPostListDto<MyPostDto>>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId);
 
     @GetMapping("/posts/like/user")
-    ApiResponse<MyPostListDto<MyPostLikeDto>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId, @RequestParam("type") int type);
+    Optional<ApiResponse<MyPostListDto<MyPostLikeDto>>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId, @RequestParam("type") int type);
 }
