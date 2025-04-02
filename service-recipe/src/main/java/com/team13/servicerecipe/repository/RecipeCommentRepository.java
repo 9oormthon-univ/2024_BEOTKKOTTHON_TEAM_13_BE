@@ -11,5 +11,4 @@ public interface RecipeCommentRepository extends JpaRepository<RecipeComment, Lo
     List<RecipeComment> findByRecipeId(Long recipeId);
     List<RecipeComment> findByParentCommentId(Long parentCommentId);
     List<RecipeComment> findByUserId(Long userId);
-
 }

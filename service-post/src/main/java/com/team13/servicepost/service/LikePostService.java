@@ -1,6 +1,5 @@
 package com.team13.servicepost.service;
 
-import com.team13.servicepost.dto.PostResponseDto;
 import com.team13.servicepost.dto.UserDto;
 import com.team13.servicepost.entity.LikePost;
 import com.team13.servicepost.entity.Post;
@@ -72,5 +71,4 @@ public class LikePostService {
                 .map(likePost -> likePost.getPost().getId()) // 각 LikePost 엔티티에서 Post의 ID를 가져옴
                 .collect(Collectors.toList());
     }
-
 }

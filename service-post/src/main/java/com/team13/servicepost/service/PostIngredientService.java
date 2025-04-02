@@ -20,5 +20,4 @@ public class PostIngredientService {
     public List<PostIngredient> getIngredientsByPostId(Long postId) {
         return postIngredientRepository.findByPostId(postId);
     }
-
 }

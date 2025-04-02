@@ -44,6 +44,4 @@ public class PostRequestDto {
         post.setCreatedAt(new Date());
         return post;
     }
-
 }
-

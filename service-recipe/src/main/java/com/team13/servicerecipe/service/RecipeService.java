@@ -137,5 +137,4 @@ public class RecipeService {
                 .collect(Collectors.toList());
         return MyRecipeListDto.from(userDto, recipeList);
     }
-
 }

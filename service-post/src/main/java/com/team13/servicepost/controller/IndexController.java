@@ -121,6 +121,4 @@ public class IndexController {
         }
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
-
 }
-

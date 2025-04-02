@@ -18,8 +18,4 @@ public class MyPostListDto<T> {
     private float userRating;
     private List<T> posts;
 
-    public MyPostListDto(List<T> posts) {
-        this.posts = posts;
-    }
 }
-

@@ -1,6 +1,5 @@
 package com.team13.servicerecipe.controller;
 
-
 import com.team13.servicerecipe.apiPayload.ApiResponse;
 import com.team13.servicerecipe.apiPayload.code.status.ErrorStatus;
 import com.team13.servicerecipe.dto.MyRecipeListDto;
@@ -88,8 +87,6 @@ public class RecipeController {
                         null))
                 : ResponseEntity.ok(ApiResponse.onSuccess(recipes));
     }
-
-
 
     @GetMapping("/like/user")
     public ResponseEntity<ApiResponse<MyRecipeListDto>> getLikeRecipesByUserId(

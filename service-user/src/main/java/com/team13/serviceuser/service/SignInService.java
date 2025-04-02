@@ -5,13 +5,10 @@ import com.team13.serviceuser.apiPyaload.code.status.ErrorStatus;
 import com.team13.serviceuser.dto.SignRequest;
 import com.team13.serviceuser.entity.User;
 import com.team13.serviceuser.repository.UserRepository;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
@@ -123,7 +120,4 @@ public class SignInService {
         response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
         log.debug("LTK Cookie cleared (User logged out).");
     }
-
-
-
 }

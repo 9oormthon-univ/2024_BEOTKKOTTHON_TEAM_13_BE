@@ -1,6 +1,5 @@
 package com.team13.servicerecipe.controller;
 
-import com.mysql.cj.log.Log;
 import com.team13.servicerecipe.dto.RecipeDto;
 import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.feign.UserFeignClient;
@@ -93,5 +92,4 @@ public class IndexController {
         return new ResponseEntity<>(recipeDto, HttpStatus.OK);
 
     }
-
 }

@@ -1,12 +1,9 @@
 package com.team13.servicerecipe.dto;
 
-
-
 import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.entity.RecipeProcess;
 import lombok.Builder;
 import lombok.Data;
-
 
 @Data
 @Builder
