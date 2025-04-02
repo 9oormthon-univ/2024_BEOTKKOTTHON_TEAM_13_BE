@@ -98,7 +98,8 @@ public class RecipeController {
         MyRecipeListDto likedRecipes = recipeService.getLikeRecipesByUserId(userId);
 
         if (likedRecipes.getRecipes().isEmpty()) {
-            return ResponseEntity.ok(ApiResponse.onFailure(
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    ApiResponse.onFailure(
                     ErrorStatus.EMPTY_DATA.getCode(),
                     ErrorStatus.EMPTY_DATA.getMessage(),
                     null));

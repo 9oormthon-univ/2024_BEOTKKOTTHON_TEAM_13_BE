@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @Service
@@ -23,37 +24,16 @@ public class MyPageService {
     @Autowired
     private RecipeServiceClient recipeServiceClient;
 
-    public MyRecipeListDto getRecipesByUserId(Long userId) {
-        return fetchRecipeDataSafely(() -> recipeServiceClient.getRecipesByUserId(userId), userId);
+    public Optional<MyRecipeListDto> getRecipesByUserId(Long userId) {
+        return recipeServiceClient.getRecipesByUserId(userId)
+                .filter(ApiResponse::getIsSuccess)
+                .map(ApiResponse::getResult);
     }
 
-    public MyRecipeListDto getLikeRecipesByUserId(Long userId) {
-        return fetchRecipeDataSafely(() -> recipeServiceClient.getLikeRecipesByUserId(userId), userId);
-    }
-
-    private MyRecipeListDto fetchRecipeDataSafely(
-            Supplier<ApiResponse<MyRecipeListDto>> supplier,
-            Long userId
-    ) {
-        try {
-            ApiResponse<MyRecipeListDto> response = supplier.get();
-            if (response == null || !response.getIsSuccess() || response.getResult() == null) {
-                return emptyRecipeList(userId);
-            }
-            return response.getResult();
-        } catch (Exception e) {
-            return emptyRecipeList(userId);
-        }
-    }
-
-    private MyRecipeListDto emptyRecipeList(Long userId) {
-        return MyRecipeListDto.builder()
-                .userId(userId)
-                .userNickname(null)
-                .userProfileUrl(null)
-                .userRating(0.0f)
-                .recipes(Collections.emptyList())
-                .build();
+    public Optional<MyRecipeListDto> getLikeRecipesByUserId(Long userId) {
+        return recipeServiceClient.getLikeRecipesByUserId(userId)
+                .filter(ApiResponse::getIsSuccess)
+                .map(ApiResponse::getResult);
     }
 
     public MyPostListDto<MyPostDto> getPostsByUserId(Long userId) {

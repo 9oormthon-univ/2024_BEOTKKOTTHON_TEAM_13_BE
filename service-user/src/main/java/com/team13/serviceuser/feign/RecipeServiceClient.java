@@ -5,14 +5,15 @@ import com.team13.serviceuser.dto.MyRecipeListDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "service-recipe")
+import java.util.Optional;
+
+@FeignClient(name = "service-recipe", dismiss404 = true)
 public interface RecipeServiceClient {
 
     @GetMapping("/recipes/user")
-    ApiResponse<MyRecipeListDto> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId);
+    Optional<ApiResponse<MyRecipeListDto>> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId);
 
     @GetMapping("/recipes/like/user")
-    ApiResponse<MyRecipeListDto> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId);
+    Optional<ApiResponse<MyRecipeListDto>> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId);
 }
