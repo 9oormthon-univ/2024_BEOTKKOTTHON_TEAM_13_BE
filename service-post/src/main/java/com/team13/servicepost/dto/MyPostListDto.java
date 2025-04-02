@@ -17,4 +17,14 @@ public class MyPostListDto<T> {
     private String userProfileUrl;
     private float userRating;
     private List<T> posts;
+
+    public static <T> MyPostListDto<T> from(UserDto userDto, List<T> posts) {
+        return MyPostListDto.<T>builder()
+                .userId(userDto.getId())
+                .userNickname(userDto.getNickname())
+                .userProfileUrl(userDto.getProfileImageUrl())
+                .userRating(userDto.getUserRating())
+                .posts(posts)
+                .build();
+    }
 }

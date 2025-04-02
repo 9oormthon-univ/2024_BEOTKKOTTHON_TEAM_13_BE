@@ -1,5 +1,6 @@
 package com.team13.servicepost.dto;
 
+import com.team13.servicepost.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,4 +36,34 @@ public class PostResponseDto {
     private Long likesCount;
     private String userProfileUrl;
     private float userRating;
+
+    public static PostResponseDto from(Post post, UserDto userDto,
+                                       List<PostIngredientDto> ingredients,
+                                       List<PostImageDto> images,
+                                       Long likesCount) {
+        return PostResponseDto.builder()
+                .id(post.getId())
+                .userId(post.getUserId())
+                .status(post.getStatus())
+                .groupSize(post.getGroupSize())
+                .curGroupSize(post.getCurGroupSize())
+                .chatId(post.getChatId())
+                .createdAt(post.getCreatedAt())
+                .closedAt(post.getClosedAt())
+                .locationBcode(post.getLocationBcode())
+                .locationAddress(post.getLocationAddress())
+                .locationLongitude(post.getLocationLongitude())
+                .locationLatitude(post.getLocationLatitude())
+                .title(post.getTitle())
+                .pricePerUser(post.getPricePerUser())
+                .type(post.getType())
+                .contents(post.getContents())
+                .ingredients(ingredients)
+                .images(images)
+                .userNickname(userDto.getNickname())
+                .userProfileUrl(userDto.getProfileImageUrl())
+                .userRating(userDto.getUserRating())
+                .likesCount(likesCount)
+                .build();
+    }
 }
