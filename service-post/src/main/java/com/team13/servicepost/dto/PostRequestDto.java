@@ -14,7 +14,6 @@ import java.util.List;
 public class PostRequestDto {
     private int groupSize;
     private int curGroupSize;
-    private String chatId;
     private Date closedAt;
     private int locationBcode;
     private String locationAddress;
@@ -31,7 +30,6 @@ public class PostRequestDto {
         Post post = new Post();
         post.setGroupSize(this.groupSize);
         post.setCurGroupSize(this.curGroupSize);
-        post.setChatId(this.chatId);
         post.setClosedAt(this.closedAt);
         post.setLocationBcode(this.locationBcode);
         post.setLocationAddress(this.locationAddress);
