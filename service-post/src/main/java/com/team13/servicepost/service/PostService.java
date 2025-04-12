@@ -4,6 +4,8 @@ import com.team13.servicepost.dto.*;
 import com.team13.servicepost.entity.Post;
 import com.team13.servicepost.entity.PostImage;
 import com.team13.servicepost.entity.PostIngredient;
+import com.team13.servicepost.exception.ChatroomCreationException;
+import com.team13.servicepost.feign.ChatServiceClient;
 import com.team13.servicepost.feign.UserServiceClient;
 import com.team13.servicepost.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,6 +35,10 @@ public class PostService {
     @Autowired
     private LikePostService likePostService;
 
+    @Autowired
+    private ChatServiceClient chatServiceClient;
+
+
     public Post savePost(Post post) {
         return postRepository.save(post);
     }
@@ -51,7 +58,26 @@ public class PostService {
         Post post = postRequestDto.toEntity();
         post.setUserId(userId);
 
-        return savePostWithDetails(post, postRequestDto.getIngredients(), postRequestDto.getImages());
+        Post savedPost = savePost(post);
+
+        // 채팅방 생성
+        String chatId = createChatroomForPost(userId, savedPost.getId());
+        savedPost.setChatId(chatId);  // chatId 저장
+        postRepository.save(savedPost); // 다시 저장 (chatId 추가)
+
+        return savePostWithDetails(savedPost, postRequestDto.getIngredients(), postRequestDto.getImages());
+    }
+
+
+    private String createChatroomForPost(Long userId, Long postId) {
+        ChatroomCreateRequest request = new ChatroomCreateRequest(String.valueOf(userId), postId);
+        ResponseEntity<String> response = chatServiceClient.createChatroom(request);
+
+        if (response.getStatusCode() == HttpStatus.CREATED) {
+            return response.getBody();  // chatId
+        }
+
+        throw new ChatroomCreationException("채팅방 생성 실패");
     }
 
 

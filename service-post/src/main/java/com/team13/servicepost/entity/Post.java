@@ -31,7 +31,7 @@ public class Post {
     @Column(name = "cur_group_size", nullable = false)
     private int curGroupSize;
 
-    @Column(name = "chat_id", nullable = false, length = 100)
+    @Column(name = "chat_id", nullable = true, length = 100)
     private String chatId;
 
     @Column(name = "created_at", nullable = false)

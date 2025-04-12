@@ -9,6 +9,7 @@ import com.team13.servicepost.dto.MyPostLikeDto;
 import com.team13.servicepost.dto.MyPostListDto;
 import com.team13.servicepost.dto.PostRequestDto;
 import com.team13.servicepost.dto.PostResponseDto;
+import com.team13.servicepost.exception.ChatroomCreationException;
 import com.team13.servicepost.service.LikePostService;
 import com.team13.servicepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,12 @@ public class PostController {
 
     @PostMapping
     public ApiResponse<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto, @RequestHeader("X-User-Id") Long userId) {
-        PostResponseDto responseDto = postService.createPostWithDetails(postRequestDto, userId);
-        return ApiResponse.of(SuccessStatus.POST_CREATED, responseDto);
+        try {
+            PostResponseDto responseDto = postService.createPostWithDetails(postRequestDto, userId);
+            return ApiResponse.of(SuccessStatus.POST_CREATED, responseDto);
+        } catch (ChatroomCreationException e) {
+            return ApiResponse.onFailure("CHATROOM_CREATION_FAILED", e.getMessage(), null);
+        }
     }
 
     @GetMapping("/{postId}")
