@@ -4,6 +4,7 @@ import com.team13.servicepost.dto.*;
 import com.team13.servicepost.entity.Post;
 import com.team13.servicepost.entity.PostImage;
 import com.team13.servicepost.entity.PostIngredient;
+import com.team13.servicepost.exception.ChatroomCreationException;
 import com.team13.servicepost.feign.ChatServiceClient;
 import com.team13.servicepost.feign.UserServiceClient;
 import com.team13.servicepost.repository.PostRepository;
@@ -76,7 +77,7 @@ public class PostService {
             return response.getBody();  // chatId
         }
 
-        throw new RuntimeException("채팅방 생성 실패");
+        throw new ChatroomCreationException("채팅방 생성 실패");
     }
 
 
