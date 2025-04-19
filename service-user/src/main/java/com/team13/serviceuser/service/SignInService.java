@@ -116,6 +116,19 @@ public class SignInService {
         log.debug("LTK Cookie set with new JWT token.");
     }
 
+    // 사용자 ID를 담고있는 LUSER(Login User) 쿠키 생성
+    public void createLoginUserCookie(User user, HttpServletResponse response) {
+        ResponseCookie lUserCookie = ResponseCookie.from("LUSER", user.getId().toString())
+                .secure(cookieSecure)  // NOTE: false(DEV), true(OP)
+                .path("/")
+                .domain(cookieDomain)  // NOTE: "localhost"(DEV), "n1.junyeong.dev"(OP)
+                .maxAge(tokenKeepDuration / 1000)
+                .sameSite(cookieSameSite) // NOTE: Strict(DEV), None(OP)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, lUserCookie.toString());
+    }
+
     // JWT 쿠키 삭제 메서드 추가
     public void clearAuthCookie(HttpServletResponse response) {
         ResponseCookie deleteCookie = ResponseCookie.from("LTK", "")

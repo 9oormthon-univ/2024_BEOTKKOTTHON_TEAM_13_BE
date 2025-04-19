@@ -91,7 +91,8 @@ public class SignController {
 
         // 로그인 성공 시 쿠키 생성
         User user = (User) apiResponse.getResult();
-        signInService.createCookieFromUser(user, response);
+        signInService.createCookieFromUser(user, response);  // LTK 쿠키
+        signInService.createLoginUserCookie(user, response); // 로그인 여부 확인을 위한 쿠키
 
         return ResponseEntity.ok(ApiResponse.onSuccess("로그인 성공"));
     }
