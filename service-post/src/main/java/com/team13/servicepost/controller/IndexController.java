@@ -102,13 +102,17 @@ public class IndexController {
             Post post = new Post();
             post.setId(postId);
 
+            Date createdAt = RandomPostGenerator.createdAt();
+            Date closedAt = RandomPostGenerator.closedAt(createdAt);
+
             posts.add(PostDto.builder()
                     .id(postId)
                     .status(RandomPostGenerator.status())
                     .userNickname(RandomPostGenerator.userNickname())
                     .groupSize(groupSize)
                     .curGroupSize(curGroupSize)
-                    .createdAt(RandomPostGenerator.createdAt())
+                    .createdAt(createdAt)
+                    .closedAt(closedAt)
                     .locationLongitude(RandomPostGenerator.locationLongitude())
                     .locationLatitude(RandomPostGenerator.locationLatitude())
                     .title(RandomPostGenerator.title())
