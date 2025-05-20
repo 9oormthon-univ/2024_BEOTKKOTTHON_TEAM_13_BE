@@ -23,7 +23,6 @@ public class PostRequestDto {
     private int pricePerUser;
     private int type;
     private String contents;
-    private List<PostImageDto> images;
     private List<PostIngredientDto> ingredients;
 
     public Post toEntity() {

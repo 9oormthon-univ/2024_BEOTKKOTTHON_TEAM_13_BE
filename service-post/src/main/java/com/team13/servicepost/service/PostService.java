@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,7 +52,8 @@ public class PostService {
     }
 
     // 새 게시물, 재료, 이미지 저장을 처리하는 메서드
-    public PostResponseDto createPostWithDetails(PostRequestDto postRequestDto, Long userId) {
+    public PostResponseDto createPostWithDetails(PostRequestDto postRequestDto, Long userId, MultipartFile[] images)
+    {
         if (!checkUserExists(userId)) {
             throw new RuntimeException("회원이 존재하지 않습니다.");
         }
@@ -65,7 +68,7 @@ public class PostService {
         savedPost.setChatId(chatId);  // chatId 저장
         postRepository.save(savedPost); // 다시 저장 (chatId 추가)
 
-        return savePostWithDetails(savedPost, postRequestDto.getIngredients(), postRequestDto.getImages());
+        return savePostWithDetails(savedPost, postRequestDto.getIngredients(), images);
     }
 
 
@@ -81,7 +84,7 @@ public class PostService {
     }
 
 
-    public PostResponseDto savePostWithDetails(Post post, List<PostIngredientDto> ingredientsDto, List<PostImageDto> imagesDto) {
+    public PostResponseDto savePostWithDetails(Post post, List<PostIngredientDto> ingredientsDto, MultipartFile[] imageFiles) {
         Post savedPost = savePost(post);
 
         if (ingredientsDto != null && !ingredientsDto.isEmpty()) {
@@ -91,13 +94,11 @@ public class PostService {
             ingredients.forEach(postIngredientService::saveIngredient);
         }
 
-        if (imagesDto != null && !imagesDto.isEmpty()) {
-            List<PostImage> images = imagesDto.stream()
-                    .map(dto -> PostImageDto.toEntity(dto, savedPost))
-                    .collect(Collectors.toList());
-            images.forEach(postImageService::saveImage);
+        if (imageFiles != null && imageFiles.length > 0) {
+            for (MultipartFile file : imageFiles) {
+                postImageService.saveImageFile(file, savedPost);
+            }
         }
-
         return buildPostResponseDto(savedPost);
     }
 
