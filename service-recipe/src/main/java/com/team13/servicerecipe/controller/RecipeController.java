@@ -9,8 +9,10 @@ import com.team13.servicerecipe.service.LikeRecipeService;
 import com.team13.servicerecipe.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/recipes")
@@ -21,9 +23,13 @@ public class RecipeController {
     @Autowired
     private LikeRecipeService likeRecipeService;
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<RecipeResponseDto>> createRecipe(@RequestBody RecipeRequestDto recipeRequestDto, @RequestHeader("X-User-Id") Long userId) {
-        ApiResponse<RecipeResponseDto> response = recipeService.createRecipeWithDetails(recipeRequestDto, userId);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<RecipeResponseDto>> createRecipe(
+            @RequestPart("data") RecipeRequestDto recipeRequestDto,
+            @RequestPart("thumbnailImage") MultipartFile thumbnailImage,
+            @RequestPart("processImages") MultipartFile[] processImages,
+            @RequestHeader("X-User-Id") Long userId) {
+        ApiResponse<RecipeResponseDto> response = recipeService.createRecipeWithImages(recipeRequestDto, userId, thumbnailImage, processImages);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

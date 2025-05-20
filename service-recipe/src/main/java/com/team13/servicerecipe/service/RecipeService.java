@@ -10,13 +10,19 @@ import com.team13.servicerecipe.entity.RecipeProcess;
 import com.team13.servicerecipe.feign.UserServiceClient;
 import com.team13.servicerecipe.repository.RecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class RecipeService {
@@ -33,6 +39,9 @@ public class RecipeService {
     @Autowired
     private RecipeCommentService recipeCommentService;
 
+    @Value("${file.recipe-upload-dir}")
+    private String uploadDir;
+
     //레시피를 저장
     public Recipe saveRecipe(Recipe recipe) {
         return recipeRepository.save(recipe);
@@ -45,19 +54,49 @@ public class RecipeService {
     }
 
     //레시피 생성 (세부사항 포함)
-    public ApiResponse<RecipeResponseDto> createRecipeWithDetails(RecipeRequestDto recipeRequestDto, Long userId) {
+    public ApiResponse<RecipeResponseDto> createRecipeWithImages(RecipeRequestDto dto, Long userId,
+                                                                 MultipartFile thumbnailImage,
+                                                                 MultipartFile[] processImages) {
         if (!checkUserExists(userId)) {
             return ApiResponse.onFailure(ErrorStatus.RECIPE_NOT_FOUND.getCode(), ErrorStatus.RECIPE_NOT_FOUND.getMessage(), null);
         }
+
+        String thumbnailPath = saveImage(thumbnailImage);
         Recipe recipe = Recipe.builder()
                 .userId(userId)
-                .title(recipeRequestDto.getTitle())
-                .contents(recipeRequestDto.getContents())
-                .thumbnailImagePath(recipeRequestDto.getThumbnailImagePath())
+                .title(dto.getTitle())
+                .contents(dto.getContents())
+                .thumbnailImagePath(thumbnailPath)
                 .build();
 
-        RecipeResponseDto responseDto = saveRecipeWithDetails(recipe, recipeRequestDto);
-        return new ApiResponse<>(true, SuccessStatus.RECIPE_CREATED.getCode(), SuccessStatus.RECIPE_CREATED.getMessage(), responseDto);
+        Recipe savedRecipe = recipeRepository.save(recipe);
+
+        List<RecipeIngredient> ingredients = dto.getIngredients().stream()
+                .map(i -> RecipeIngredientDto.toEntity(i, savedRecipe)).toList();
+        ingredients.forEach(recipeIngredientService::saveIngredient);
+
+        List<RecipeProcessDto> processDtos = dto.getProcesses();
+        IntStream.range(0, processDtos.size()).forEach(i -> {
+            RecipeProcessDto processDto = processDtos.get(i);
+            String processImagePath = saveImage(processImages[i]);
+            processDto.setImagePath(processImagePath);
+            RecipeProcess entity = RecipeProcessDto.toEntity(processDto, savedRecipe);
+            recipeProcessService.saveProcess(entity);
+        });
+
+        return ApiResponse.onSuccess(buildRecipeResponseDto(savedRecipe));
+    }
+
+    private String saveImage(MultipartFile file) {
+        try {
+            String filename = UUID.randomUUID() + ".png";
+            File dest = new File(uploadDir + filename);
+            dest.getParentFile().mkdirs();
+            file.transferTo(dest);
+            return "/images/recipe/" + filename;
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 저장 실패", e);
+        }
     }
 
     //레시피를 저장하고, 해당 레시피의 재료 및 과정 정보도 저장
