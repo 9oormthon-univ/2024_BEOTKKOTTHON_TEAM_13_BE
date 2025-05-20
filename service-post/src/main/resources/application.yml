@@ -38,4 +38,3 @@ logging:
 
 file:
   post-upload-dir: /home/port/app/images/post/
-
