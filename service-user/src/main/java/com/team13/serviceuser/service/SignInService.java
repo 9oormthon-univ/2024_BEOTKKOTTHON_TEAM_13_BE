@@ -107,7 +107,7 @@ public class SignInService {
                 .httpOnly(true)
                 .secure(cookieSecure)  // NOTE: false(DEV), true(OP)
                 .path("/")
-                .domain(cookieDomain)  // NOTE: "localhost"(DEV), "n1.junyeong.dev"(OP)
+                .domain(cookieDomain)  // NOTE: "localhost"(DEV), "junyeong.dev"(OP)
                 .maxAge(tokenKeepDuration / 1000)
                 .sameSite(cookieSameSite) // NOTE: Strict(DEV), None(OP)
                 .build();
@@ -121,7 +121,7 @@ public class SignInService {
         ResponseCookie lUserCookie = ResponseCookie.from("LUSER", user.getId().toString())
                 .secure(cookieSecure)  // NOTE: false(DEV), true(OP)
                 .path("/")
-                .domain(cookieDomain)  // NOTE: "localhost"(DEV), "n1.junyeong.dev"(OP)
+                .domain(cookieDomain)  // NOTE: "localhost"(DEV), "junyeong.dev"(OP)
                 .maxAge(tokenKeepDuration / 1000)
                 .sameSite(cookieSameSite) // NOTE: Strict(DEV), None(OP)
                 .build();
