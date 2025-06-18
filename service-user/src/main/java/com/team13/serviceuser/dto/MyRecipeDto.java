@@ -9,5 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MyRecipeDto {
     private Long id;
+    private String title;
+    private int likesCount;
     private String thumbnailImagePath;
 }

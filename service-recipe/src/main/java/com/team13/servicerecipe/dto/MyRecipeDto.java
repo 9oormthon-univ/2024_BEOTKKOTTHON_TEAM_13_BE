@@ -12,11 +12,15 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MyRecipeDto {
     private Long id;
+    private String title;
+    private int likesCount;
     private String thumbnailImagePath;
 
     public static MyRecipeDto from(Recipe recipe) {
         return MyRecipeDto.builder()
                 .id(recipe.getId())
+                .title(recipe.getTitle())
+                .likesCount(recipe.getLikesCount())
                 .thumbnailImagePath(recipe.getThumbnailImagePath())
                 .build();
     }
