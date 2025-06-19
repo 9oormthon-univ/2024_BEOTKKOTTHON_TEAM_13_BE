@@ -39,8 +39,8 @@ public class MyPageService {
                 .map(ApiResponse::getResult);
     }
 
-    public Optional<MyPostListDto<MyPostLikeDto>> getLikePostsByUserId(Long userId, int type) {
-        return postServiceClient.getLikePostsByUserId(userId,type)
+    public Optional<MyPostListDto<MyPostLikeDto>> getLikePostsByUserId(Long userId) {
+        return postServiceClient.getLikePostsByUserId(userId)
                 .filter(ApiResponse::getIsSuccess)
                 .map(ApiResponse::getResult);
     }
