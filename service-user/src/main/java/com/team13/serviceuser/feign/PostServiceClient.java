@@ -17,5 +17,5 @@ public interface PostServiceClient {
     Optional<ApiResponse<MyPostListDto<MyPostDto>>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId);
 
     @GetMapping("/posts/like/user")
-    Optional<ApiResponse<MyPostListDto<MyPostLikeDto>>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId);
+    Optional<ApiResponse<MyPostListDto<MyPostLikeDto>>> getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId, @RequestParam("type") int type);
 }
