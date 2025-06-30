@@ -131,15 +131,29 @@ public class SignInService {
 
     // JWT 쿠키 삭제 메서드 추가
     public void clearAuthCookie(HttpServletResponse response) {
-        ResponseCookie deleteCookie = ResponseCookie.from("LTK", "")
+        // NOTE: LTK 쿠키 제거
+        ResponseCookie deleteLTKCookie = ResponseCookie.from("LTK", "")
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
                 .domain(cookieDomain)
                 .maxAge(0) // 즉시 만료
-                .sameSite("None")
+                .sameSite(cookieSameSite) // NOTE: Strict(DEV), None(OP)
                 .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteLTKCookie.toString());
+
+        // NOTE: LUSER 쿠키 제거
+        ResponseCookie deleteLUSERCookie = ResponseCookie.from("LUSER", "")
+                .secure(cookieSecure)  // NOTE: false(DEV), true(OP)
+                .path("/")
+                .domain(cookieDomain)  // NOTE: "localhost"(DEV), "n1.junyeong.dev"(OP)
+                .maxAge(0) // NOTE: 즉시 만료
+                .sameSite(cookieSameSite) // NOTE: Strict(DEV), None(OP)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteLUSERCookie.toString());
+
         log.debug("LTK Cookie cleared (User logged out).");
     }
 }

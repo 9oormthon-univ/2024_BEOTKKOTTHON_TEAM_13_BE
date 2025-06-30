@@ -57,6 +57,7 @@ public class PostService {
 
         Post post = postRequestDto.toEntity();
         post.setUserId(userId);
+        post.setChatId("na");
 
         Post savedPost = savePost(post);
 

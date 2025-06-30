@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/mypage")
 public class MypageController {
@@ -35,8 +37,8 @@ public class MypageController {
     public ResponseEntity<ApiResponse<MyPostListDto<MyPostDto>>> getPostsByUserId(@RequestHeader("X-User-Id") Long userId) {
         return myPageService.getPostsByUserId(userId)
                 .map(posts -> ResponseEntity.ok(ApiResponse.onSuccess(posts)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null)));
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.OK)
+                        .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), MyPostListDto.<MyPostDto>builder().build())));
 
     }
 
@@ -45,7 +47,7 @@ public class MypageController {
     public ResponseEntity<ApiResponse<MyRecipeListDto>> getRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
         return myPageService.getRecipesByUserId(userId)
                 .map(recipes -> ResponseEntity.ok(ApiResponse.onSuccess(recipes)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null)));
     }
 
@@ -54,7 +56,7 @@ public class MypageController {
     public ResponseEntity<ApiResponse<MyPostListDto<MyPostLikeDto>>>getLikePostsByUserId(@RequestHeader("X-User-Id") Long userId, @RequestParam("type") int type) {
         return myPageService.getLikePostsByUserId(userId, type)
                 .map(posts -> ResponseEntity.ok(ApiResponse.onSuccess(posts)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null)));
     }
 
@@ -63,7 +65,7 @@ public class MypageController {
     public ResponseEntity<ApiResponse<MyRecipeListDto>> getLikeRecipesByUserId(@RequestHeader("X-User-Id") Long userId) {
         return myPageService.getLikeRecipesByUserId(userId)
                 .map(recipes -> ResponseEntity.ok(ApiResponse.onSuccess(recipes)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onFailure(ErrorStatus.DATA_EMPTY.getCode(), ErrorStatus.DATA_EMPTY.getMessage(), null)));
     }
 
