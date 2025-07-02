@@ -3,6 +3,7 @@ package com.team13.servicerecipe.controller;
 import com.team13.servicerecipe.dto.RecipeDto;
 import com.team13.servicerecipe.entity.Recipe;
 import com.team13.servicerecipe.feign.UserFeignClient;
+import com.team13.servicerecipe.service.RecipeService;
 import com.team13.servicerecipe.util.RandomRecipeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping("/")
 @RequiredArgsConstructor
 public class IndexController {
+    private final RecipeService service;
 
     @Value("${app.test-string}")
     private String configTestString;
@@ -37,19 +39,12 @@ public class IndexController {
     }
 
 
+    /**
+     * 레시피 골라보기 (랜덤으로 10개 레시피 전달)
+     */
     @GetMapping("/brief")
     public List<RecipeDto> brief() {
-        List<RecipeDto> recipes = new ArrayList<>();
-
-        for (int i = 0; i < 10; i++) {
-            recipes.add(RecipeDto.builder()
-                            .id(RandomRecipeGenerator.id())
-                            .title(RandomRecipeGenerator.title())
-                            .thumbnailImagePath(RandomRecipeGenerator.thumbnailImagePath())
-                            .build());
-        }
-
-        return recipes;
+        return service.getRandomRecipes(10);
     }
 
 

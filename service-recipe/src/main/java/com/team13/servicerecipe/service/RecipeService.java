@@ -33,6 +33,18 @@ public class RecipeService {
     @Autowired
     private RecipeCommentService recipeCommentService;
 
+    /**
+     * 레시피 N를 랜덤으로 가져옴
+     * @param n - 가져올 레시피 수
+     * @return List<RecipeDto>
+     */
+    public List<RecipeDto> getRandomRecipes(int n) {
+        List<Recipe> recipes = recipeRepository.findRandom(n);
+
+        // NOTE: List<Recipe> -> List<RecipeDto>
+        return recipes.stream().map((RecipeDto::of)).toList();
+    }
+
     //레시피를 저장
     public Recipe saveRecipe(Recipe recipe) {
         return recipeRepository.save(recipe);
