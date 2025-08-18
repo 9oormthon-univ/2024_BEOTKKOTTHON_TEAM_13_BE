@@ -13,11 +13,15 @@ import com.team13.servicepost.exception.ChatroomCreationException;
 import com.team13.servicepost.service.LikePostService;
 import com.team13.servicepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/posts")
@@ -28,10 +32,15 @@ public class PostController {
     @Autowired
     private LikePostService likePostService;
 
-    @PostMapping
-    public ApiResponse<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto, @RequestHeader("X-User-Id") Long userId) {
+
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ApiResponse<PostResponseDto> createPost(
+            @RequestPart("data") PostRequestDto postRequestDto,
+            @RequestPart(value = "images", required = false) MultipartFile[] images,
+            @RequestHeader("X-User-Id") Long userId
+    ) {
         try {
-            PostResponseDto responseDto = postService.createPostWithDetails(postRequestDto, userId);
+            PostResponseDto responseDto = postService.createPostWithDetails(postRequestDto, userId, images);
             return ApiResponse.of(SuccessStatus.POST_CREATED, responseDto);
         } catch (ChatroomCreationException e) {
             return ApiResponse.onFailure("CHATROOM_CREATION_FAILED", e.getMessage(), null);

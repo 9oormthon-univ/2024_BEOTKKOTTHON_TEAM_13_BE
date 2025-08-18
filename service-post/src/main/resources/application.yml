@@ -35,3 +35,6 @@ eureka:
 
 logging:
   config: classpath:log4j2/log4j2-${spring.profiles.active}.properties
+
+file:
+  post-upload-dir: /home/port/app/images/post/

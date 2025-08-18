@@ -52,7 +52,11 @@ spring:
             - JwtAuthFilter
             - RewritePath=/api2/user(?<segment>.*),${segment}
 
-
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 20MB
 
 
   config:
